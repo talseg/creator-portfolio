@@ -19,7 +19,7 @@ export const StartPage: React.FC = () => {
             fontSize: "50px", 
             margin: "0px",
             textDecoration: "underline"
-          }}>Or Segal</div>
+          }}>Or Segal 1</div>
         </a>
       </h1>
       <h1 style={{ margin: "0px" }}>Portfolio</h1>
