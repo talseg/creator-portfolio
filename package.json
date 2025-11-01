@@ -1,15 +1,15 @@
 {
   "name": "creator-portfolio",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-	"postbuild": "node -e \"const fs=require('fs');fs.copyFileSync('dist/index.html','dist/404.html')\"",
+    "postbuild": "node -e \"const fs=require('fs');fs.copyFileSync('dist/index.html','dist/404.html')\"",
     "lint": "eslint .",
     "preview": "vite preview",
-	"start": "vite --host & sleep 1 && open http://localhost:5173/",
+    "start": "vite --host & sleep 1 && open http://localhost:5173/",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "bump-version": "npm version patch -m \"release: bump patch to %s\" && git push --follow-tags"
@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^4.1.2",
-	"@eslint/css": "^0.14.0",
+    "@eslint/css": "^0.14.0",
     "@eslint/js": "^9.39.0",
     "@storybook/addon-a11y": "^10.0.2",
     "@storybook/addon-docs": "^10.0.2",
@@ -35,7 +35,7 @@
     "@vitest/browser-playwright": "^4.0.6",
     "@vitest/coverage-v8": "^4.0.6",
     "eslint": "^9.39.0",
-	"eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "eslint-plugin-storybook": "^10.0.2",
@@ -45,7 +45,7 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.2",
     "vite": "^7.1.12",
-	"vite-plugin-svgr": "^4.5.0",
+    "vite-plugin-svgr": "^4.5.0",
     "vitest": "^4.0.6"
   }
 }

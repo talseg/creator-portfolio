@@ -1,40 +1,74 @@
 
 import styled from "styled-components";
 import pkg from "../../../package.json";
-import cats from "../../images/cats.png";
+import defaultImage from "./../../../public/ShopWindow.png";
+
+import { useRef, useState } from "react";
 
 const WrapperStyled = styled.div`
-       display: flex;
-      flex-direction: column;
-      gap: 20px;
-      max-width: 1280px;
-      text-align: center;
-      margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  max-width: 1280px;
+  text-align: center;
+  margin: 0;
+`;
+
+const NameStyled = styled.div`
+  font-size: 30px;
+  margin: 0px;
+  text-decoration: underline;
+  color: #a7a7a7;
 `;
 
 
 export const StartPage: React.FC = () => {
 
+  const [imageUrl, setImageUrl] = useState<string | null>(defaultImage);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleUploadClick = (): void => {
+    fileInputRef.current?.click();
+  }
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Create a temporary URL for the selected image
+    const url = URL.createObjectURL(file);
+    setImageUrl(url);
+  };
+
+
   return (
     <WrapperStyled>
-      <h1>
+
+
+      {/* Hidden input */}
+      <input
+        type="file"
+        accept="image/*"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        style={{ display: 'none' }}
+      />
+
+      <h1 style={{ margin: "0px" }}>
         <a href="https://www.orsegal.net">
-          <div style={{
-            fontSize: "50px", 
-            margin: "0px",
-            textDecoration: "underline"
-          }}>Or Segal 1</div>
+          <NameStyled>Or Segal</NameStyled>
         </a>
       </h1>
       <h1 style={{ margin: "0px" }}>Portfolio</h1>
       <div>
-        <button onClick={() => {}}>
+        <button onClick={handleUploadClick}>
           Upload
         </button>
       </div>
-      <img src={cats} alt="Portfolio Image" 
-        style={{ width: "90%", maxWidth: "600px" }}
-      />
+      {imageUrl &&
+        <img src={imageUrl} alt="Portfolio Image"
+          style={{ width: "90%", maxWidth: "600px", height: "400px" }}
+        />}
       <p
         style={{
           color: "#888"
