@@ -1,18 +1,22 @@
 
+import styled from "styled-components";
 import pkg from "../../../package.json";
 import cats from "../../images/cats.png";
+
+const WrapperStyled = styled.div`
+       display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 1280px;
+      text-align: center;
+      margin: 0;
+`;
+
 
 export const StartPage: React.FC = () => {
 
   return (
-    <div style={{
-      display: "flex",
-      flexDirection: "column",
-      gap: "20px",
-      maxWidth: "1280px",
-      textAlign: "center",
-      margin: "0",
-    }}>
+    <WrapperStyled>
       <h1>
         <a href="https://www.orsegal.net">
           <div style={{
@@ -37,6 +41,6 @@ export const StartPage: React.FC = () => {
         }}>
         version: {pkg.version}
       </p>
-    </div>
+    </WrapperStyled>
   )
 }
