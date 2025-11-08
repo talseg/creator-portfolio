@@ -1,7 +1,7 @@
 
 import styled from "styled-components";
 import pkg from "../../../package.json";
-import defaultImage from "./../../../public/ShopWindow.png";
+import defaultImage from "../../assets/ShopWindow.png"
 
 import { useRef, useState } from "react";
 
