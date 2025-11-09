@@ -76,6 +76,7 @@ const ErrorText = styled.div`
   color: #ff0000;
 `;
 
+// Test the deployment
 export const ProjectGallery: React.FC = () => {
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
@@ -108,7 +109,7 @@ export const ProjectGallery: React.FC = () => {
     }, []);
 
     if (error) return (
-        <ErrorText>Error: {error}</ErrorText>
+        <ErrorText>Error Loading Projects: {error}</ErrorText>
     )
     if (loading) return (
         <LoadingText>⏳Loading Projects...</LoadingText>
