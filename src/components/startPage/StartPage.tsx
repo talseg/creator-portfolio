@@ -1,9 +1,11 @@
 
 import styled from "styled-components";
 import pkg from "../../../package.json";
-import defaultImage from "../../assets/ShopWindow.png"
+//import defaultImage from "../../assets/ShopWindow.png"
 
-import { useRef, useState } from "react";
+import { useRef, 
+  //useState 
+} from "react";
 import { ProjectGallery } from "../ProjectGallery/ProjectGallery";
 
 const WrapperStyled = styled.div`
