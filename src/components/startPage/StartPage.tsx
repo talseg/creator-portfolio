@@ -4,6 +4,7 @@ import pkg from "../../../package.json";
 import defaultImage from "../../assets/ShopWindow.png"
 
 import { useRef, useState } from "react";
+import { ProjectGallery } from "../ProjectGallery/ProjectGallery";
 
 const WrapperStyled = styled.div`
   display: flex;
@@ -24,7 +25,7 @@ const NameStyled = styled.div`
 
 export const StartPage: React.FC = () => {
 
-  const [imageUrl, setImageUrl] = useState<string | null>(defaultImage);
+  //const [imageUrl, setImageUrl] = useState<string | null>(defaultImage);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleUploadClick = (): void => {
@@ -36,8 +37,8 @@ export const StartPage: React.FC = () => {
     if (!file) return;
 
     // Create a temporary URL for the selected image
-    const url = URL.createObjectURL(file);
-    setImageUrl(url);
+    //const url = URL.createObjectURL(file);
+    //setImageUrl(url);
   };
 
 
@@ -65,10 +66,13 @@ export const StartPage: React.FC = () => {
           Upload
         </button>
       </div>
-      {imageUrl &&
+
+      <ProjectGallery />
+
+      {/* {imageUrl &&
         <img src={imageUrl} alt="Portfolio Image"
           style={{ width: "90%", maxWidth: "600px", height: "400px" }}
-        />}
+        />} */}
       <p
         style={{
           color: "#888"
