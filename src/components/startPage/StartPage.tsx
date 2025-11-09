@@ -67,7 +67,7 @@ export const StartPage: React.FC = () => {
         </button>
       </div>
 
-      <ProjectGallery/>
+      <ProjectGallery />
 
       {/* {imageUrl &&
         <img src={imageUrl} alt="Portfolio Image"
