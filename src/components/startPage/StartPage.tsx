@@ -1,12 +1,15 @@
 
 import styled from "styled-components";
 import pkg from "../../../package.json";
+import { signInWithEmailAndPassword } from "firebase/auth";
 //import defaultImage from "../../assets/ShopWindow.png"
 
-import { useRef, 
+import {
+  useRef, useState,
   //useState 
 } from "react";
 import { ProjectGallery } from "../ProjectGallery/ProjectGallery";
+import { auth } from "../../database/firebaseConfig";
 
 const WrapperStyled = styled.div`
   display: flex;
@@ -27,6 +30,9 @@ const NameStyled = styled.div`
 
 export const StartPage: React.FC = () => {
 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   //const [imageUrl, setImageUrl] = useState<string | null>(defaultImage);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -42,6 +48,28 @@ export const StartPage: React.FC = () => {
     //const url = URL.createObjectURL(file);
     //setImageUrl(url);
   };
+
+
+  const isLoginValid = async (email: string, password: string): Promise<{ isValid: boolean; error?: string }> => {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      return { isValid: true };
+    }
+    catch (e) {
+      return (
+        { isValid: false, error: (e as Error).message }
+      )
+    }
+  }
+
+  const handleLogin = async () => {
+
+    const { isValid, error } = await isLoginValid(email, password);
+    if (isValid)
+      alert(`Login ${email} password: ${password} Success`);
+    else
+      alert(`Login ${email} password: ${password} Falied Error: ${error}`);
+  }
 
 
   return (
@@ -68,6 +96,19 @@ export const StartPage: React.FC = () => {
           Upload
         </button>
       </div>
+
+      <div style={{ display: "flex" }}>
+        <div>Email: </div>
+        <input type="email" value={email} onChange={(e) => { setEmail(e.target.value) }}></input>
+      </div>
+      <div style={{ display: "flex" }}>
+        <div>Password: </div>
+        <input type="password" value={password} onChange={(e) => { setPassword(e.target.value) }}></input>
+      </div>
+
+
+      <button onClick={() => handleLogin()}>Login</button>
+
 
       <ProjectGallery />
 
