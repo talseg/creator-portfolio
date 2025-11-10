@@ -1,4 +1,4 @@
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, doc, getDocs, orderBy, query, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "../../database/firebaseConfig";
 import styled from "styled-components";
@@ -76,11 +76,16 @@ const ErrorText = styled.div`
   color: #ff0000;
 `;
 
+const InputWithHeader = styled.div`
+  display: flex;
+`;
+
 // Test the deployment
 export const ProjectGallery: React.FC = () => {
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [firstProjectName, setFirstProjectName] = useState<string|undefined>("");
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -93,6 +98,7 @@ export const ProjectGallery: React.FC = () => {
                     ...(doc.data() as Omit<Project, "id">),
                 }));
                 setProjects(projectsData);
+                setFirstProjectName(projectsData[0]?.projectName);
             } catch (error) {
                 const errorMsg = (error as Error).message;
                 console.error("Error loading projects:", errorMsg);
@@ -116,9 +122,28 @@ export const ProjectGallery: React.FC = () => {
     );
 
 
-
+    const handleUpdateDB = async () => {
+      const projectId = projects[0]?.id;
+      if (!projectId) return;
+      const projectRef = doc(db, "projects", projectId);
+      
+      try {
+        await updateDoc(projectRef, { projectName: firstProjectName });
+      }
+      catch (e) {
+        alert(`Update Project name failed: ${(e as Error).message}`);
+      }
+    }
 
     return (
+      <>
+        <InputWithHeader>
+          <>First Project Name: </>
+          <input style={{ width: "100%" }}
+          
+          value={firstProjectName} onChange={(e) => setFirstProjectName(e.target.value)}/>
+        </InputWithHeader>
+        <button onClick={handleUpdateDB}>Update DB</button>
         <GalleryContainer>
             {projects.map((project) => (
                 <ProjectCard key={project.id}>
@@ -130,5 +155,6 @@ export const ProjectGallery: React.FC = () => {
                 </ProjectCard>
             ))}
         </GalleryContainer>
+      </>
     );
 }

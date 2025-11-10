@@ -32,6 +32,7 @@ export const StartPage: React.FC = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   //const [imageUrl, setImageUrl] = useState<string | null>(defaultImage);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -63,12 +64,15 @@ export const StartPage: React.FC = () => {
   }
 
   const handleLogin = async () => {
-
     const { isValid, error } = await isLoginValid(email, password);
-    if (isValid)
+    if (isValid) {
+      setIsLoggedIn(true);
       alert(`Login ${email} password: ${password} Success`);
-    else
+    }
+    else {
+      setIsLoggedIn(false);
       alert(`Login ${email} password: ${password} Falied Error: ${error}`);
+    }
   }
 
 
@@ -108,6 +112,7 @@ export const StartPage: React.FC = () => {
 
 
       <button onClick={() => handleLogin()}>Login</button>
+      <div>{isLoggedIn ? "LoggedIn" : "NOT LoggedIn"}</div>
 
 
       <ProjectGallery />
