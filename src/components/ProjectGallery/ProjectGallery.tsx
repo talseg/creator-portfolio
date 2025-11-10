@@ -104,7 +104,7 @@ export const ProjectGallery: React.FC = () => {
         };
 
         // Simulate loading time
-        setTimeout(fetchProjects, 3000);
+        fetchProjects();
 
     }, []);
 
