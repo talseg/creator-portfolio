@@ -1,24 +1,22 @@
-import { collection, doc, getDocs, orderBy, query, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { db } from "../../database/firebaseConfig";
 import styled from "styled-components";
+import { FirebaseDb } from "../../database/FirebaseDb";
+import { getExceptionString, logException } from "../../utilities/exceptionUtils";
 
 interface Image {
-    imageUrl: string;
-    imageIndex: number;
+  imageUrl: string;
+  imageIndex: number;
 }
 
 interface Project {
-    id: string;
-    projectName: string;
-    header: string;
-    projectImageUrl: string;
-    projectIndex: number;
-    images?: Image[];
+  id: string;
+  projectName: string;
+  header: string;
+  projectImageUrl: string;
+  projectIndex: number;
+  images?: Image[];
 }
 
-
-// ---------- Styled Components ----------
 const GalleryContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -76,85 +74,46 @@ const ErrorText = styled.div`
   color: #ff0000;
 `;
 
-const InputWithHeader = styled.div`
-  display: flex;
-`;
-
-// Test the deployment
 export const ProjectGallery: React.FC = () => {
-    const [projects, setProjects] = useState<Project[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [firstProjectName, setFirstProjectName] = useState<string|undefined>("");
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchProjects = async () => {
+
+        const loadProjects = async () => {
             try {
-                const q = query(collection(db, "projects"), orderBy("projectIndex", "asc"));
-                const snapshot = await getDocs(q);
-
-                const projectsData: Project[] = snapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    ...(doc.data() as Omit<Project, "id">),
-                }));
+                const projectsData = await FirebaseDb.fetchProjects();
                 setProjects(projectsData);
-                setFirstProjectName(projectsData[0]?.projectName);
-            } catch (error) {
-                const errorMsg = (error as Error).message;
-                console.error("Error loading projects:", errorMsg);
-                setError(errorMsg)
-            }
-            finally {
                 setLoading(false);
+            } catch (err) {
+                logException(err);
+                setError(getExceptionString(err));
             }
-        };
-
-        // Simulate loading time
-        fetchProjects();
+        }
+        loadProjects();
 
     }, []);
+    
+  if (error) return (
+    <ErrorText>Error Loading Projects: {error}</ErrorText>
+  )
+  if (loading) return (
+    <LoadingText>⏳Loading Projects...</LoadingText>
+  );
 
-    if (error) return (
-        <ErrorText>Error Loading Projects: {error}</ErrorText>
-    )
-    if (loading) return (
-        <LoadingText>⏳Loading Projects...</LoadingText>
-    );
+  return (
+    <GalleryContainer>
+      {projects.map((project) => (
+        <ProjectCard key={project.id}>
+          <ProjectImage src={project.projectImageUrl} alt={project.projectName} />
+          <ProjectInfo>
+            <ProjectTitle>{project.projectName}</ProjectTitle>
+            <ProjectHeader>{project.header}</ProjectHeader>
+          </ProjectInfo>
+        </ProjectCard>
+      ))}
+    </GalleryContainer>
 
-
-    const handleUpdateDB = async () => {
-      const projectId = projects[0]?.id;
-      if (!projectId) return;
-      const projectRef = doc(db, "projects", projectId);
-      
-      try {
-        await updateDoc(projectRef, { projectName: firstProjectName });
-      }
-      catch (e) {
-        alert(`Update Project name failed: ${(e as Error).message}`);
-      }
-    }
-
-    return (
-      <>
-        <InputWithHeader>
-          <>First Project Name: </>
-          <input style={{ width: "100%" }}
-          
-          value={firstProjectName} onChange={(e) => setFirstProjectName(e.target.value)}/>
-        </InputWithHeader>
-        <button onClick={handleUpdateDB}>Update DB</button>
-        <GalleryContainer>
-            {projects.map((project) => (
-                <ProjectCard key={project.id}>
-                    <ProjectImage src={project.projectImageUrl} alt={project.projectName} />
-                    <ProjectInfo>
-                        <ProjectTitle>{project.projectName}</ProjectTitle>
-                        <ProjectHeader>{project.header}</ProjectHeader>
-                    </ProjectInfo>
-                </ProjectCard>
-            ))}
-        </GalleryContainer>
-      </>
-    );
+  );
 }

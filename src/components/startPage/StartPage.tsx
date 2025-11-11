@@ -1,15 +1,10 @@
-
 import styled from "styled-components";
 import pkg from "../../../package.json";
-import { signInWithEmailAndPassword } from "firebase/auth";
-//import defaultImage from "../../assets/ShopWindow.png"
 
 import {
-  useRef, useState,
-  //useState 
+  useRef
 } from "react";
 import { ProjectGallery } from "../ProjectGallery/ProjectGallery";
-import { auth } from "../../database/firebaseConfig";
 
 const WrapperStyled = styled.div`
   display: flex;
@@ -27,19 +22,14 @@ const NameStyled = styled.div`
   color: #a7a7a7;
 `;
 
-
 export const StartPage: React.FC = () => {
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   //const [imageUrl, setImageUrl] = useState<string | null>(defaultImage);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleUploadClick = (): void => {
-    fileInputRef.current?.click();
-  }
+  // const handleUploadClick = (): void => {
+  //   fileInputRef.current?.click();
+  // }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -49,32 +39,6 @@ export const StartPage: React.FC = () => {
     //const url = URL.createObjectURL(file);
     //setImageUrl(url);
   };
-
-
-  const isLoginValid = async (email: string, password: string): Promise<{ isValid: boolean; error?: string }> => {
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      return { isValid: true };
-    }
-    catch (e) {
-      return (
-        { isValid: false, error: (e as Error).message }
-      )
-    }
-  }
-
-  const handleLogin = async () => {
-    const { isValid, error } = await isLoginValid(email, password);
-    if (isValid) {
-      setIsLoggedIn(true);
-      alert(`Login ${email} password: ${password} Success`);
-    }
-    else {
-      setIsLoggedIn(false);
-      alert(`Login ${email} password: ${password} Falied Error: ${error}`);
-    }
-  }
-
 
   return (
     <WrapperStyled>
@@ -95,32 +59,14 @@ export const StartPage: React.FC = () => {
         </a>
       </h1>
       <h1 style={{ margin: "0px" }}>Portfolio</h1>
-      <div>
+      {/* <div>
         <button onClick={handleUploadClick}>
           Upload
         </button>
-      </div>
-
-      <div style={{ display: "flex" }}>
-        <div>Email: </div>
-        <input type="email" value={email} onChange={(e) => { setEmail(e.target.value) }}></input>
-      </div>
-      <div style={{ display: "flex" }}>
-        <div>Password: </div>
-        <input type="password" value={password} onChange={(e) => { setPassword(e.target.value) }}></input>
-      </div>
-
-
-      <button onClick={() => handleLogin()}>Login</button>
-      <div>{isLoggedIn ? "LoggedIn" : "NOT LoggedIn"}</div>
-
+      </div> */}
 
       <ProjectGallery />
 
-      {/* {imageUrl &&
-        <img src={imageUrl} alt="Portfolio Image"
-          style={{ width: "90%", maxWidth: "600px", height: "400px" }}
-        />} */}
       <p
         style={{
           color: "#888"
