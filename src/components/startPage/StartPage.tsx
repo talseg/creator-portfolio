@@ -10,6 +10,7 @@ import {
 } from "react";
 import { ProjectGallery } from "../ProjectGallery/ProjectGallery";
 import { auth } from "../../database/firebaseConfig";
+import { logException } from "../../utilities/exceptionUtils";
 
 const WrapperStyled = styled.div`
   display: flex;
@@ -57,6 +58,8 @@ export const StartPage: React.FC = () => {
       return { isValid: true };
     }
     catch (e) {
+      console.log("***************")
+      logException(e);
       return (
         { isValid: false, error: (e as Error).message }
       )
@@ -101,26 +104,10 @@ export const StartPage: React.FC = () => {
         </button>
       </div>
 
-      <div style={{ display: "flex" }}>
-        <div>Email: </div>
-        <input type="email" value={email} onChange={(e) => { setEmail(e.target.value) }}></input>
-      </div>
-      <div style={{ display: "flex" }}>
-        <div>Password: </div>
-        <input type="password" value={password} onChange={(e) => { setPassword(e.target.value) }}></input>
-      </div>
-
-
-      <button onClick={() => handleLogin()}>Login</button>
-      <div>{isLoggedIn ? "LoggedIn" : "NOT LoggedIn"}</div>
 
 
       <ProjectGallery />
 
-      {/* {imageUrl &&
-        <img src={imageUrl} alt="Portfolio Image"
-          style={{ width: "90%", maxWidth: "600px", height: "400px" }}
-        />} */}
       <p
         style={{
           color: "#888"
