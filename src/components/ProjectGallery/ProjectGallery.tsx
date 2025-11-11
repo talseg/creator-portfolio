@@ -1,6 +1,4 @@
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { db } from "../../database/firebaseConfig";
 import styled from "styled-components";
 import { FirebaseDb } from "../../database/FirebaseDb";
 import { getExceptionString, logException } from "../../utilities/exceptionUtils";
