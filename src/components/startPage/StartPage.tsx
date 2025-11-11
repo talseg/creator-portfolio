@@ -1,16 +1,11 @@
 
 import styled from "styled-components";
 import pkg from "../../../package.json";
-import { signInWithEmailAndPassword } from "firebase/auth";
-//import defaultImage from "../../assets/ShopWindow.png"
 
 import {
-  useRef, useState,
-  //useState 
+  useRef
 } from "react";
 import { ProjectGallery } from "../ProjectGallery/ProjectGallery";
-import { auth } from "../../database/firebaseConfig";
-import { logException } from "../../utilities/exceptionUtils";
 
 const WrapperStyled = styled.div`
   display: flex;
@@ -28,12 +23,7 @@ const NameStyled = styled.div`
   color: #a7a7a7;
 `;
 
-
 export const StartPage: React.FC = () => {
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   //const [imageUrl, setImageUrl] = useState<string | null>(defaultImage);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -50,34 +40,6 @@ export const StartPage: React.FC = () => {
     //const url = URL.createObjectURL(file);
     //setImageUrl(url);
   };
-
-
-  const isLoginValid = async (email: string, password: string): Promise<{ isValid: boolean; error?: string }> => {
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      return { isValid: true };
-    }
-    catch (e) {
-      console.log("***************")
-      logException(e);
-      return (
-        { isValid: false, error: (e as Error).message }
-      )
-    }
-  }
-
-  const handleLogin = async () => {
-    const { isValid, error } = await isLoginValid(email, password);
-    if (isValid) {
-      setIsLoggedIn(true);
-      alert(`Login ${email} password: ${password} Success`);
-    }
-    else {
-      setIsLoggedIn(false);
-      alert(`Login ${email} password: ${password} Falied Error: ${error}`);
-    }
-  }
-
 
   return (
     <WrapperStyled>
@@ -103,8 +65,6 @@ export const StartPage: React.FC = () => {
           Upload
         </button>
       </div>
-
-
 
       <ProjectGallery />
 
