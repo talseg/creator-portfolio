@@ -1,4 +1,3 @@
-
 import styled from "styled-components";
 import pkg from "../../../package.json";
 
@@ -28,9 +27,9 @@ export const StartPage: React.FC = () => {
   //const [imageUrl, setImageUrl] = useState<string | null>(defaultImage);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleUploadClick = (): void => {
-    fileInputRef.current?.click();
-  }
+  // const handleUploadClick = (): void => {
+  //   fileInputRef.current?.click();
+  // }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -60,11 +59,11 @@ export const StartPage: React.FC = () => {
         </a>
       </h1>
       <h1 style={{ margin: "0px" }}>Portfolio</h1>
-      <div>
+      {/* <div>
         <button onClick={handleUploadClick}>
           Upload
         </button>
-      </div>
+      </div> */}
 
       <ProjectGallery />
 
