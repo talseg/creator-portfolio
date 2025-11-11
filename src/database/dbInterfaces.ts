@@ -1,4 +1,3 @@
-
 export interface Image {
     imageUrl: string;
     imageIndex: number;
