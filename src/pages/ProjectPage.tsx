@@ -39,13 +39,6 @@ const ProjectImage = styled.img`
   }
 `;
 
-const LoadingText = styled.div`
-  padding: 40px;
-  text-align: center;
-  font-size: 1.2rem;
-  color: #444;
-`;
-
 const ErrorText = styled.div`
   padding: 40px;
   text-align: center;
