@@ -1,4 +1,4 @@
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "./firebaseConfig";
 import type { DatabaseType, Project } from "./dbInterfaces";
 // ToDo - Move to MobX
@@ -14,6 +14,15 @@ const fetchFirebaseProjects = async (): Promise<Project[]> => {
     return (projects)
 };
 
+export const fetchProjectById = async (id: string): Promise<Project> => {
+    const docRef = doc(db, "projects", id);
+    const snap = await getDoc(docRef);
+    if (!snap.exists()) throw new Error("Project not found");
+    return { id: snap.id, ...(snap.data() as Omit<Project, "id">) };
+}
+
+
 export const FirebaseDb: DatabaseType = {
-    fetchProjects: fetchFirebaseProjects
+    fetchProjects: fetchFirebaseProjects,
+    fetchProjectById: fetchProjectById
 }

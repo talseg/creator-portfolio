@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FirebaseDb } from "../../database/FirebaseDb";
 import { getExceptionString, logException } from "../../utilities/exceptionUtils";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 interface Image {
   imageUrl: string;
@@ -78,6 +79,7 @@ export const ProjectGallery: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadProjects = async () => {
@@ -103,7 +105,7 @@ export const ProjectGallery: React.FC = () => {
   return (
     <GalleryContainer>
       {projects.map((project) => (
-        <ProjectCard key={project.id}>
+        <ProjectCard key={project.id} onClick={() => navigate(`project/${project.id}`)}>
           <ProjectImage src={project.projectImageUrl} alt={project.projectName} />
           <ProjectInfo>
             <ProjectTitle>{project.projectName}</ProjectTitle>
