@@ -1,6 +1,6 @@
 import pkg from "../../package.json";
 import { useRef } from "react";
-import { ProjectGallery } from "../components/projectGallery/ProjectGallery";
+import { ProjectGallery } from "../components/projectGallery1/ProjectGallery";
 import styled from "styled-components";
 
 const WrapperStyled = styled.div`
