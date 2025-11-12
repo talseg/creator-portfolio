@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react"
-import type { Project } from "../../database/dbInterfaces";
-import { FirebaseDb } from "../../database/FirebaseDb";
-import { getExceptionString, logException } from "../../utilities/exceptionUtils";
-import styled from "styled-components";
+
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
-import { auth, db } from "../../database/firebaseConfig";
 import { doc, updateDoc } from "firebase/firestore";
+import type { Project } from "../database/dbInterfaces";
+import { auth, db } from "../database/firebaseConfig";
+import { FirebaseDb } from "../database/FirebaseDb";
+
+import { getExceptionString, logException } from "../utilities/exceptionUtils";
+import styled from "styled-components";
 
 const Wrapper = styled.div`
     padding: 2rem;

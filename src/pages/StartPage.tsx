@@ -1,10 +1,7 @@
+import pkg from "../../package.json";
+import { useRef } from "react";
+import { ProjectGallery } from "../components/projectGallery/ProjectGallery";
 import styled from "styled-components";
-import pkg from "../../../package.json";
-
-import {
-  useRef
-} from "react";
-import { ProjectGallery } from "../ProjectGallery/ProjectGallery";
 
 const WrapperStyled = styled.div`
   display: flex;
