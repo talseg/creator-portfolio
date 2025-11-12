@@ -9,16 +9,14 @@ const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 40px 24px;
+  padding: 0 24px;
   min-height: 100vh;
 `;
 
 const ProjectTitle = styled.h1`
   font-size: 2rem;
   font-weight: 700;
-  margin-bottom: 32px;
   color: #222;
-  text-align: center;
 `;
 
 const ImagesContainer = styled.div`
@@ -78,18 +76,19 @@ export const ProjectPage: React.FC = () => {
 
     if (!projectId) return <ErrorText>❌ can not load project {projectId}</ErrorText>;
     if (error) return <ErrorText>❌ {error}</ErrorText>;
-    if (!project) return <LoadingText>⏳ Loading…</LoadingText>;
+    //if (!project) return <LoadingText>⏳ Loading…</LoadingText>;
+    if (!project) return <></>;
 
     return (
-    <PageContainer>
-      <ProjectTitle>{project.projectName}</ProjectTitle>
+        <PageContainer>
+            <ProjectTitle>{project.projectName}</ProjectTitle>
 
-      <ImagesContainer>
-        {project.images?.map((img) => (
-            <ProjectImage src={img.imageUrl} alt={`Image ${img.imageIndex}`} />
-        ))}
-      </ImagesContainer>
-    </PageContainer>
-  );
+            <ImagesContainer>
+                {project.images?.map((img) => (
+                    <ProjectImage src={img.imageUrl} alt={`Image ${img.imageIndex}`} loading="lazy" />
+                ))}
+            </ImagesContainer>
+        </PageContainer>
+    );
 
 }
