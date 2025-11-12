@@ -76,6 +76,7 @@ const ErrorText = styled.div`
   color: #ff0000;
 `;
 
+// todo - move back fro Project Gallery1 to ProjectGallery
 export const ProjectGallery: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
