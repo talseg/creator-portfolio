@@ -1,6 +1,6 @@
 import './App.css'
 import { AdminPage } from './pages/AdminPage';
-import { Project } from './pages/ProjectPage';
+import { ProjectPage } from './pages/ProjectPage';
 import { StartPage } from './pages/StartPage';
 import { HashRouter, Routes, Route, useLocation } from "react-router-dom";
 
@@ -15,7 +15,7 @@ function App() {
       <Routes>
         <Route path="/" element={<StartPage />} />
         <Route path="/admin" element={<AdminPage />} />
-        <Route path="/project/:projectId" element={<Project />} />
+        <Route path="/project/:projectId" element={<ProjectPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </HashRouter>
