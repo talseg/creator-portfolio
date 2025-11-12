@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import styled from "styled-components";
 import { FirebaseDb } from "../../database/FirebaseDb";
 import { getExceptionString, logException } from "../../utilities/exceptionUtils";
+import styled from "styled-components";
 
 interface Image {
   imageUrl: string;
@@ -79,22 +79,20 @@ export const ProjectGallery: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        const projectsData = await FirebaseDb.fetchProjects();
+        setProjects(projectsData);
+        setLoading(false);
+      } catch (err) {
+        logException(err);
+        setError(getExceptionString(err));
+      }
+    }
+    loadProjects();
+  }, []);
 
-        const loadProjects = async () => {
-            try {
-                const projectsData = await FirebaseDb.fetchProjects();
-                setProjects(projectsData);
-                setLoading(false);
-            } catch (err) {
-                logException(err);
-                setError(getExceptionString(err));
-            }
-        }
-        loadProjects();
-
-    }, []);
-    
   if (error) return (
     <ErrorText>Error Loading Projects: {error}</ErrorText>
   )
@@ -114,6 +112,5 @@ export const ProjectGallery: React.FC = () => {
         </ProjectCard>
       ))}
     </GalleryContainer>
-
   );
 }
