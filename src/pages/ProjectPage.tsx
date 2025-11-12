@@ -3,14 +3,13 @@ import { useParams } from "react-router-dom";
 import { FirebaseDb } from "../database/FirebaseDb";
 import { getExceptionString, logException } from "../utilities/exceptionUtils";
 import styled from "styled-components";
-import type { Project } from "../database/dbInterfaces";
+import type { DatabaseType, Project } from "../database/dbInterfaces";
 
 const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   padding: 40px 24px;
-  background-color: #fafafa;
   min-height: 100vh;
 `;
 
@@ -26,26 +25,20 @@ const ImagesContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
-  width: 100%;
-  max-width: 1000px;
-`;
-
-const ImageCard = styled.div`
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
-  transition: transform 0.2s ease;
-  width: 200px;
-  height: 200px;
-
-  &:hover {
-    transform: scale(1.02);
-  }
 `;
 
 const ProjectImage = styled.img`
-  object-fit: contain;
+  max-width: 30rem;
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.03);
+  }
 `;
 
 const LoadingText = styled.div`
@@ -67,14 +60,14 @@ export const ProjectPage: React.FC = () => {
 
     const { projectId } = useParams<{ projectId: string }>();
     const [project, setProject] = useState<Project | null>(null);
-
     const [error, setError] = useState<string | null>(null);
+    const db: DatabaseType = FirebaseDb;
 
     useEffect(() => {
         if (!projectId) return;
         (async () => {
             try {
-                const project = await FirebaseDb.fetchProjectById(projectId);
+                const project = await db.fetchProjectById(projectId);
                 setProject(project);
             } catch (err) {
                 logException(err);
@@ -93,9 +86,7 @@ export const ProjectPage: React.FC = () => {
 
       <ImagesContainer>
         {project.images?.map((img) => (
-          <ImageCard key={img.imageIndex}>
             <ProjectImage src={img.imageUrl} alt={`Image ${img.imageIndex}`} />
-          </ImageCard>
         ))}
       </ImagesContainer>
     </PageContainer>

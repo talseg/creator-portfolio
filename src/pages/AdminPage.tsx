@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { doc, updateDoc } from "firebase/firestore";
-import type { Project } from "../database/dbInterfaces";
+import type { DatabaseType, Project } from "../database/dbInterfaces";
 import { auth, db } from "../database/firebaseConfig";
 import { FirebaseDb } from "../database/FirebaseDb";
 
@@ -32,6 +32,7 @@ export const AdminPage: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [projects, setProjects] = useState<Project[]>([]);
     const [firstProjectName, setFirstProjectName] = useState<string | undefined>("");
+    const database: DatabaseType = FirebaseDb;
 
     useEffect(() => {
         // 🔹 Track login state reliably
@@ -92,8 +93,7 @@ export const AdminPage: React.FC = () => {
 
         const loadProjects = async () => {
             try {
-
-                const projectsData = await FirebaseDb.fetchProjects();
+                const projectsData = await database.fetchProjects();
                 setProjects(projectsData);
                 setFirstProjectName(projectsData[0]?.projectName);
             } catch (err) {

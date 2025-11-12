@@ -3,6 +3,7 @@ import { FirebaseDb } from "../../database/FirebaseDb";
 import { getExceptionString, logException } from "../../utilities/exceptionUtils";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import type { DatabaseType } from "../../database/dbInterfaces";
 
 interface Image {
   imageUrl: string;
@@ -80,11 +81,12 @@ export const ProjectGallery: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const database: DatabaseType = FirebaseDb;
 
   useEffect(() => {
     const loadProjects = async () => {
       try {
-        const projectsData = await FirebaseDb.fetchProjects();
+        const projectsData = await database.fetchProjects();
         setProjects(projectsData);
         setLoading(false);
       } catch (err) {
