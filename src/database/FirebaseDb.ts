@@ -23,7 +23,9 @@ export const fetchProjectById = async (id: string): Promise<Project> => {
 
     const imagesColRef = collection(docRef, "images");
     const imagesSnap = await getDocs(imagesColRef);
-    const images = imagesSnap.docs.map(doc => doc.data() as Image);
+    const images = imagesSnap.docs
+        .map(doc => doc.data() as Image)
+        .sort((a,b) => a.imageIndex - b.imageIndex);
 
     const projectWithImages: Project = {
         id: snap.id,
