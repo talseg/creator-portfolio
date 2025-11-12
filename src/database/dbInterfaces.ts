@@ -15,4 +15,5 @@ export interface Project {
 
 export interface DatabaseType {
     fetchProjects : () =>  Promise<Project[]>;
+    fetchProjectById: (id: string) => Promise<Project>;
 }

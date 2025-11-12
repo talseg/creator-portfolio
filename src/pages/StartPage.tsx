@@ -1,15 +1,15 @@
 import pkg from "../../package.json";
 import { useRef } from "react";
-import { ProjectGallery } from "../components/projectGallery/ProjectGallery";
+import { ProjectGallery } from "../components/projectGallery1/ProjectGallery";
 import styled from "styled-components";
 
 const WrapperStyled = styled.div`
   display: flex;
   flex-direction: column;
   gap: 40px;
-  max-width: 1280px;
   text-align: center;
-  margin: 0;
+  min-height: 100vh;
+  min-width: 98vw;
 `;
 
 const NameStyled = styled.div`

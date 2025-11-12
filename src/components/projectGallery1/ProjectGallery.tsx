@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { FirebaseDb } from "../../database/FirebaseDb";
 import { getExceptionString, logException } from "../../utilities/exceptionUtils";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import type { DatabaseType } from "../../database/dbInterfaces";
 
 interface Image {
   imageUrl: string;
@@ -74,15 +76,18 @@ const ErrorText = styled.div`
   color: #ff0000;
 `;
 
+// todo - move back fro Project Gallery1 to ProjectGallery
 export const ProjectGallery: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const database: DatabaseType = FirebaseDb;
 
   useEffect(() => {
     const loadProjects = async () => {
       try {
-        const projectsData = await FirebaseDb.fetchProjects();
+        const projectsData = await database.fetchProjects();
         setProjects(projectsData);
         setLoading(false);
       } catch (err) {
@@ -103,7 +108,7 @@ export const ProjectGallery: React.FC = () => {
   return (
     <GalleryContainer>
       {projects.map((project) => (
-        <ProjectCard key={project.id}>
+        <ProjectCard key={project.id} onClick={() => navigate(`project/${project.id}`)}>
           <ProjectImage src={project.projectImageUrl} alt={project.projectName} />
           <ProjectInfo>
             <ProjectTitle>{project.projectName}</ProjectTitle>
