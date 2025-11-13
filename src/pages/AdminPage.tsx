@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react"
-
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
+
 import { doc, updateDoc } from "firebase/firestore";
-import type { DatabaseType, Project } from "../database/dbInterfaces";
 import { auth, db } from "../database/firebaseConfig";
 import { FirebaseDb } from "../database/FirebaseDb";
+import type { DatabaseType, Project } from "../database/dbInterfaces";
 
 import { getExceptionString, logException } from "../utilities/exceptionUtils";
+import { EmailPasswordDialog } from "../components/projectGallery/userPassword/EmailPasswordDialog";
 import styled from "styled-components";
 
 const Wrapper = styled.div`
@@ -26,33 +27,39 @@ const TextHeader = styled.div`
 
 export const AdminPage: React.FC = () => {
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState(true);
     const [projects, setProjects] = useState<Project[]>([]);
     const [firstProjectName, setFirstProjectName] = useState<string | undefined>("");
+    const [isLoginDialogOPen, setIsLoginDialogOPen] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+    const [email, setEmail] = useState<string | null>(null);
+
     const database: DatabaseType = FirebaseDb;
 
     useEffect(() => {
         // 🔹 Track login state reliably
         const unsubscribe = onAuthStateChanged(auth, (user) => {
-            console.log("Auth state changed, user:", user);
-            setIsLoggedIn(!!user);
             setIsLoading(false);
+
+            if (user) {
+                console.log(user);
+                setIsLoggedIn(true);
+                setEmail(user?.email);
+            }
+            else {
+                setIsLoginDialogOPen(true);
+            }
         });
         return () => unsubscribe();
     }, []);
 
-
-    const handleLogin = async () => {
+    const handleSubmit = async (email: string, password: string): Promise<void> => {
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            alert("Login success");
             setIsLoggedIn(true);
+            setIsLoginDialogOPen(false);
         }
         catch (e) {
-            alert("login Failed");
             setIsLoggedIn(false);
         }
     }
@@ -61,8 +68,6 @@ export const AdminPage: React.FC = () => {
         const projectId = projects[0]?.id;
         if (!projectId) return;
         const projectRef = doc(db, "projects", projectId);
-        console.log(projectId);
-        console.log("auth.currentUser: ", auth.currentUser);
 
         try {
             await updateDoc(projectRef, { projectName: firstProjectName });
@@ -89,6 +94,10 @@ export const AdminPage: React.FC = () => {
 
     }
 
+    const handleSignIn = async () => {
+        setIsLoginDialogOPen(true);
+    }
+
     useEffect(() => {
 
         const loadProjects = async () => {
@@ -106,25 +115,17 @@ export const AdminPage: React.FC = () => {
 
     }, []);
 
-    console.log("render isLoggedIn: ", isLoggedIn);
 
     return (
         <Wrapper>
 
-            <InputWithHeader>
-                <TextHeader>Email: </TextHeader>
-                <input type="email" value={email} onChange={(e) => { setEmail(e.target.value) }}></input>
-            </InputWithHeader>
-            <InputWithHeader>
-                <TextHeader>Password: </TextHeader>
-                <input type="password" value={password} onChange={(e) => { setPassword(e.target.value) }}></input>
-            </InputWithHeader>
+            <EmailPasswordDialog
+                open={isLoginDialogOPen}
+                onSubmit={handleSubmit}
+                onClose={() => { setIsLoginDialogOPen(false) }}
+            />
 
-            <div>
-                <button onClick={() => handleLogin()}>Login</button>
-            </div>
-
-            <div>{isLoading ? "Loading..." : isLoggedIn ? "LoggedIn" : "Not LoggedIn"}</div>
+            <div>{isLoading ? "Loading..." : isLoggedIn ? `${email}` : "Not LoggedIn - Login to update data"}</div>
 
             <div>
                 <button onClick={handleUpdateDB}>Update DB</button>
@@ -136,9 +137,13 @@ export const AdminPage: React.FC = () => {
                     value={firstProjectName} onChange={(e) => setFirstProjectName(e.target.value)} />
             </InputWithHeader>
 
-            <div>
+            {isLoggedIn && <div>
                 <button onClick={handleSignOut}>Sign Out</button>
-            </div>
+            </div>}
+
+            {!isLoggedIn && <div>
+                <button onClick={handleSignIn}>Sign In</button>
+            </div>}
 
             <div>
                 Number of projects in DB: {projects.length}
