@@ -116,6 +116,24 @@ export const AdminPage: React.FC = () => {
     }, []);
 
 
+    const renderLoginOptions = () => {
+        if (isLoading)
+            return (<>Loading...</>);
+        if (isLoggedIn)
+            return (
+                <div style={{ display: "flex" }}>
+                    {email}
+                    <button onClick={handleSignOut}>Sign Out</button>
+                </div>
+            );
+        return (
+            <div style={{ display: "flex", }}>
+                Please sign in:
+                <button onClick={handleSignIn}>Sign In</button>
+            </div>
+        );
+    }
+
     return (
         <Wrapper>
 
@@ -125,7 +143,9 @@ export const AdminPage: React.FC = () => {
                 onClose={() => { setIsLoginDialogOPen(false) }}
             />
 
-            <div>{isLoading ? "Loading..." : isLoggedIn ? `${email}` : "Not LoggedIn - Login to update data"}</div>
+            <div>
+                {renderLoginOptions()}
+            </div>
 
             <div>
                 <button onClick={handleUpdateDB}>Update DB</button>
@@ -137,13 +157,13 @@ export const AdminPage: React.FC = () => {
                     value={firstProjectName} onChange={(e) => setFirstProjectName(e.target.value)} />
             </InputWithHeader>
 
-            {isLoggedIn && <div>
-                <button onClick={handleSignOut}>Sign Out</button>
+            {/* {isLoggedIn && <div>
+
             </div>}
 
             {!isLoggedIn && <div>
                 <button onClick={handleSignIn}>Sign In</button>
-            </div>}
+            </div>} */}
 
             <div>
                 Number of projects in DB: {projects.length}

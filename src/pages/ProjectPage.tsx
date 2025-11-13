@@ -65,7 +65,7 @@ export const ProjectPage: React.FC = () => {
                 setError(getExceptionString(err));
             }
         })();
-    }, [projectId]);
+    }, [db, projectId]);
 
     if (!projectId) return <ErrorText>❌ can not load project {projectId}</ErrorText>;
     if (error) return <ErrorText>❌ {error}</ErrorText>;
@@ -77,8 +77,8 @@ export const ProjectPage: React.FC = () => {
             <ProjectTitle>{project.projectName}</ProjectTitle>
 
             <ImagesContainer>
-                {project.images?.map((img) => (
-                    <ProjectImage src={img.imageUrl} alt={`Image ${img.imageIndex}`} loading="lazy" />
+                {project.images?.map((img, i) => (
+                    <ProjectImage src={img.imageUrl} alt={`Image ${img.imageIndex}`} loading="lazy" key={i} />
                 ))}
             </ImagesContainer>
         </PageContainer>
