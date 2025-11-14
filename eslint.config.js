@@ -1,26 +1,53 @@
-// For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
-import storybook from "eslint-plugin-storybook";
-
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import tseslint from 'typescript-eslint'
-import { defineConfig, globalIgnores } from 'eslint/config'
+import js from "@eslint/js";
+import globals from "globals";
+import tseslint from "typescript-eslint";
+import pluginReact from "eslint-plugin-react";
+import pluginReactHooks from "eslint-plugin-react-hooks";
+import pluginStorybook from "eslint-plugin-storybook";
+import css from "@eslint/css";
+import { defineConfig } from "eslint/config";
 
 export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      js.configs.recommended,
-      tseslint.configs.recommended,
-      reactHooks.configs['recommended-latest'],
-      reactRefresh.configs.vite,
-    ],
+  { files: ["**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"], 
     languageOptions: {
-      ecmaVersion: 2020,
+      parser: tseslint.parser, // Let ESLint understand TypeScript
+      parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+        ecmaFeatures: { jsx: true },
+      },
       globals: globals.browser,
     },
+    plugins: {
+      react: pluginReact,
+      "react-hooks": pluginReactHooks,
+      "@typescript-eslint": tseslint.plugin,
+      storybook: pluginStorybook,   // ⭐ Enable Storybook plugin
+    },
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.recommended,
+      pluginReact.configs.flat.recommended,
+      pluginStorybook.configs["flat/recommended"], // ⭐ Enable Storybook rules
+    ],
+    rules: {
+      // ✅ React Hooks
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn",
+
+      // ✅ TypeScript hygiene
+      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+
+      // ✅ Optional style improvements
+      "react/react-in-jsx-scope": "off", // Not needed in React 17+
+      "react/prop-types": "off",         // Not needed with TypeScript
+    },
+    settings: {
+      react: { version: "detect" },
+    },
   },
-])
+  { files: ["**/*.css"], 
+    plugins: { css }, 
+    language: "css/css", 
+    extends: ["css/recommended"] },
+]);

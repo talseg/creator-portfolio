@@ -1,7 +1,7 @@
 {
   "name": "creator-portfolio",
   "private": true,
-  "version": "0.0.8",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -16,6 +16,10 @@
     "pc-sync-main": "pwsh ./scripts/sync-main.ps1"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.5",
+    "@mui/material": "^7.3.5",
     "firebase": "^12.5.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

@@ -96,7 +96,7 @@ export const ProjectGallery: React.FC = () => {
       }
     }
     loadProjects();
-  }, []);
+  }, [database]);
 
   if (error) return (
     <ErrorText>Error Loading Projects: {error}</ErrorText>
