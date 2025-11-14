@@ -33,6 +33,7 @@ export const AdminPage: React.FC = () => {
     const [isLoginDialogOPen, setIsLoginDialogOPen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
     const [email, setEmail] = useState<string | null>(null);
+    const [hasError, setHasError] = useState(false);
 
     const database: DatabaseType = FirebaseDb;
 
@@ -48,6 +49,7 @@ export const AdminPage: React.FC = () => {
             }
             else {
                 setIsLoginDialogOPen(true);
+                setHasError(false);
             }
         });
         return () => unsubscribe();
@@ -58,9 +60,11 @@ export const AdminPage: React.FC = () => {
             await signInWithEmailAndPassword(auth, email, password);
             setIsLoggedIn(true);
             setIsLoginDialogOPen(false);
+            setHasError(false);
         }
         catch (e) {
             setIsLoggedIn(false);
+            setHasError(true);
         }
     }
 
@@ -91,11 +95,11 @@ export const AdminPage: React.FC = () => {
             logException(e, "Can not log out");
             throw e;
         }
-
     }
 
     const handleSignIn = async () => {
         setIsLoginDialogOPen(true);
+        setHasError(false);
     }
 
     useEffect(() => {
@@ -121,14 +125,18 @@ export const AdminPage: React.FC = () => {
             return (<>Loading...</>);
         if (isLoggedIn)
             return (
-                <div style={{ display: "flex" }}>
-                    {email}
+                <div style={{ display: "flex", alignItems: "center" }}>
+                    <div style={{ marginRight: "14px" }}>
+                        {email}
+                    </div>
                     <button onClick={handleSignOut}>Sign Out</button>
                 </div>
             );
         return (
-            <div style={{ display: "flex", }}>
-                Please sign in:
+            <div style={{ display: "flex", alignItems: "center" }}>
+                <div style={{ marginRight: "14px" }}>
+                    Please sign in:
+                </div>
                 <button onClick={handleSignIn}>Sign In</button>
             </div>
         );
@@ -140,6 +148,7 @@ export const AdminPage: React.FC = () => {
             <EmailPasswordDialog
                 open={isLoginDialogOPen}
                 onSubmit={handleSubmit}
+                hasError={hasError}
                 onClose={() => { setIsLoginDialogOPen(false) }}
             />
 
@@ -156,14 +165,6 @@ export const AdminPage: React.FC = () => {
                 <input
                     value={firstProjectName} onChange={(e) => setFirstProjectName(e.target.value)} />
             </InputWithHeader>
-
-            {/* {isLoggedIn && <div>
-
-            </div>}
-
-            {!isLoggedIn && <div>
-                <button onClick={handleSignIn}>Sign In</button>
-            </div>} */}
 
             <div>
                 Number of projects in DB: {projects.length}
