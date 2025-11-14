@@ -3,10 +3,30 @@ import { useParams } from "react-router-dom";
 import { FirebaseDb } from "../database/FirebaseDb";
 import { getExceptionString, logException } from "../utilities/exceptionUtils";
 import styled from "styled-components";
-import type { DatabaseType, Project, Image } from "../database/dbInterfaces";
-import { Box, CircularProgress } from "@mui/material";
+import type { DatabaseType, Project } from "../database/dbInterfaces";
+import { CircularProgress } from "@mui/material";
 
-const PageContainer = styled.div`
+
+const PageWrapper = styled.div`
+  display: grid;
+  width: 100vw;
+  height: 100vh;
+  padding: 0 0;
+`;
+
+const StyledSpinner = styled(CircularProgress)`
+  grid-row: 1;
+  grid-column: 1;
+  align-self: center;
+  justify-self: center;
+`;
+
+const DataWrapper = styled.div`
+  grid-row: 1;
+  grid-column: 1;
+  align-self: start;
+  justify-self: start;
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -54,20 +74,11 @@ const ErrorText = styled.div`
   color: red;
 `;
 
-export const CircularIndeterminate = () => {
-  return (
-    <Box sx={{ display: 'flex' }}>
-      <CircularProgress />
-    </Box>
-  );
-}
-
 export const ProjectPage: React.FC = () => {
 
   const { projectId } = useParams<{ projectId: string }>();
   const [project, setProject] = useState<Project | null>(null);
   const [error, setError] = useState<string | null>(null);
-  // const [loadedImages, setLoadedImages] = useState(new Set<string>());
   const [numLoadedImages, setNumLoadedImages] = useState(0)
   const db: DatabaseType = FirebaseDb;
 
@@ -82,58 +93,31 @@ export const ProjectPage: React.FC = () => {
         setError(getExceptionString(err));
       }
     })();
-
-
-
-
   }, [db, projectId]);
 
   const onImageLoaded = (): void => {
     setNumLoadedImages(v => v + 1);
-    // console.log(`onImageLoaded index: ${image.imageIndex} numLoadedImages: ${loadedImages.size + 1} of ${project?.images?.length}`);
-
-
-    // setLoadedImages(prev => {
-    //   console.log("******************************");
-    //   console.log("set BEFORE size:", loadedImages.size);
-    //   const updated = new Set(prev);
-    //   updated.add(image.imageUrl);
-    //   console.log(`set AFTER: size: ${updated.size} `);
-    //   console.log("******************************");
-
-    //   return updated;
-    // });
   }
 
-  if (!projectId) return <ErrorText>❌ can not load project {projectId}</ErrorText>;
+  if (!projectId) return <ErrorText>❌ Wrong project ID: {projectId}</ErrorText>;
   if (error) return <ErrorText>❌ {error}</ErrorText>;
-  //if (!project) return <LoadingText>⏳ Loading…</LoadingText>;
-  if (!project) {
-    console.log("waiting for project");
-    //return CircularIndeterminate();
-    // return <LoadingText>⏳ Waiting for project loading…</LoadingText>;
-  }
 
   const allLoaded = Boolean(project && numLoadedImages === project.images?.length);
 
   return (
 
-    <PageContainer>
-
-      {!allLoaded && CircularIndeterminate()}
+    <PageWrapper>
 
       {project &&
-        <TitleWrapper $visible={allLoaded}>
-          <ProjectTitle>{project.projectName}</ProjectTitle>
-        </TitleWrapper>
-      }
+        <DataWrapper>
 
-      {project &&
-        <ImagesContainer>
-          {project.images?.map(
-            (img, i) => {
+          <TitleWrapper $visible={allLoaded}>
+            <ProjectTitle>{project.projectName}</ProjectTitle>
+          </TitleWrapper>
 
-              return (
+          <ImagesContainer>
+            {project.images?.map(
+              (img, i) =>
                 <div key={i}>
                   <ProjectImage
                     $visible={allLoaded}
@@ -142,13 +126,15 @@ export const ProjectPage: React.FC = () => {
                       onImageLoaded();
                       console.log(`Got error for image number ${i}`)
                     }} />
-                </div>);
-            }
+                </div>
+            )}
+          </ImagesContainer>
+        </DataWrapper>
+      }
 
-          )}
-        </ImagesContainer>}
+      {!allLoaded && <StyledSpinner />}
 
-    </PageContainer>
+    </PageWrapper>
   );
 
 }
