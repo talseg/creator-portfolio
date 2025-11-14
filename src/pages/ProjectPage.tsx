@@ -14,6 +14,11 @@ const PageContainer = styled.div`
   min-height: 100vh;
 `;
 
+const TitleWrapper = styled.div<{ $visible: boolean }>`
+  opacity: ${props => (props.$visible ? 1 : 0)};
+  transition: opacity 2.5s ease;
+`;
+
 const ProjectTitle = styled.h1`
   font-size: 2rem;
   font-weight: 700;
@@ -112,32 +117,36 @@ export const ProjectPage: React.FC = () => {
   const allLoaded = Boolean(project && numLoadedImages === project.images?.length);
 
   return (
-    
+
     <PageContainer>
 
       {!allLoaded && CircularIndeterminate()}
 
-      {project && project.projectName && allLoaded && <ProjectTitle>{project.projectName}</ProjectTitle>}
+      {project && project.projectName &&
+        <TitleWrapper $visible={allLoaded}>
+          <ProjectTitle>{project.projectName}</ProjectTitle>
+        </TitleWrapper>
+      }
 
-      {project && 
-      <ImagesContainer>
-        {project.images?.map(
-          (img, i) => {
+      {project &&
+        <ImagesContainer>
+          {project.images?.map(
+            (img, i) => {
 
-            return (
-              <div key={i}>
-                <ProjectImage
-                  $visible={allLoaded}
-                  src={img.imageUrl} alt={`Image ${img.imageIndex}`} key={i}
-                  onLoad={() => onImageLoaded()} onError={() => {
-                    onImageLoaded();
-                    console.log(`Got error for image number ${i}`)
-                  }} />
-              </div>);
-          }
+              return (
+                <div key={i}>
+                  <ProjectImage
+                    $visible={allLoaded}
+                    src={img.imageUrl} alt={`Image ${img.imageIndex}`} key={i}
+                    onLoad={() => onImageLoaded()} onError={() => {
+                      onImageLoaded();
+                      console.log(`Got error for image number ${i}`)
+                    }} />
+                </div>);
+            }
 
-        )}
-      </ImagesContainer>}
+          )}
+        </ImagesContainer>}
 
     </PageContainer>
   );
