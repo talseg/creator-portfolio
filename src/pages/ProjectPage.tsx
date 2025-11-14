@@ -11,7 +11,6 @@ const PageWrapper = styled.div`
   display: grid;
   width: 100vw;
   height: 100vh;
-  padding: 0 0;
 `;
 
 const StyledSpinner = styled(CircularProgress)`
@@ -43,6 +42,8 @@ const ProjectTitle = styled.h1`
   font-size: 2rem;
   font-weight: 700;
   color: #222;
+  max-width: 33rem;
+  text-align: center;
 `;
 
 const ImagesContainer = styled.div`
@@ -116,17 +117,14 @@ export const ProjectPage: React.FC = () => {
           </TitleWrapper>
 
           <ImagesContainer>
-            {project.images?.map(
-              (img, i) =>
-                <div key={i}>
-                  <ProjectImage
-                    $visible={allLoaded}
-                    src={img.imageUrl} alt={`Image ${img.imageIndex}`} key={i}
-                    onLoad={() => onImageLoaded()} onError={() => {
-                      onImageLoaded();
-                      console.log(`Got error for image number ${i}`)
-                    }} />
-                </div>
+            {project.images?.map((img, i) =>
+              <ProjectImage
+                $visible={allLoaded}
+                src={img.imageUrl} alt={`Image ${img.imageIndex}`} key={i}
+                onLoad={() => onImageLoaded()} onError={() => {
+                  onImageLoaded();
+                  console.log(`Got error for image number ${i}`)
+                }} />
             )}
           </ImagesContainer>
         </DataWrapper>
