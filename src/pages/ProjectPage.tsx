@@ -122,7 +122,7 @@ export const ProjectPage: React.FC = () => {
 
       {!allLoaded && CircularIndeterminate()}
 
-      {project && project.projectName &&
+      {project &&
         <TitleWrapper $visible={allLoaded}>
           <ProjectTitle>{project.projectName}</ProjectTitle>
         </TitleWrapper>
