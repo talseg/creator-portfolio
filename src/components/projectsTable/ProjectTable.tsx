@@ -5,19 +5,12 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import React from "react";
 
-
-export interface ProjectTableProps {
-    projects: Project[];
-    setProjects: (projects: Project[]) => void;
-}
-
-
-interface ImageRowProps {
+interface ImageTableRowProps {
     images: Image[];
     open: boolean;
 }
 
-const ImageRow: React.FC<ImageRowProps> = ({ images, open }) => {
+export const ImagesTableRow: React.FC<ImageTableRowProps> = ({ images, open }) => {
 
     return (
         <TableRow>
@@ -50,7 +43,6 @@ const ImageRow: React.FC<ImageRowProps> = ({ images, open }) => {
                                 </TableBody>
                             }
                         </Table>
-
                     </Box>
                 </Collapse>
             </TableCell>
@@ -59,10 +51,31 @@ const ImageRow: React.FC<ImageRowProps> = ({ images, open }) => {
 }
 
 
+interface ProjectRowProps {
+    project: Project;
+    imageRowOpen: boolean;
+    setImageRowOpen: (open: boolean) => void;
+}
 
+const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen, setImageRowOpen }) => {
+    return (
+        <TableRow key={project.id}>
 
+            {/** Images Expander button */}
+            <TableCell>
+                <IconButton aria-label="expand row" size="small"
+                    onClick={() =>
+                        setImageRowOpen(!imageRowOpen)
+                    }>
+                    {imageRowOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                </IconButton>
+            </TableCell>
 
-
+            <TableCell>{project.projectName}</TableCell>
+            <TableCell>{project.projectIndex}</TableCell>
+        </TableRow>
+    );
+}
 
 interface RowProps {
     project: Project;
@@ -70,29 +83,18 @@ interface RowProps {
 
 const Row: React.FC<RowProps> = ({ project }) => {
     const [open, setOpen] = useState(false);
-
     return (
         <React.Fragment>
-            <TableRow key={project.id}>
-                <TableCell>
-                    <IconButton
-                        aria-label="expand row"
-                        size="small"
-                        onClick={() => setOpen(!open)}
-                    >
-                        {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                    </IconButton>
-                </TableCell>
-                <TableCell>{project.projectName}</TableCell>
-                <TableCell>{project.projectIndex}</TableCell>
-            </TableRow>
-
-            {project.images && <ImageRow images={project.images} key={0} open={open} />}
-
+            <ProjectRow project={project} imageRowOpen={open} setImageRowOpen={setOpen} />
+            {project.images && <ImagesTableRow images={project.images} key={0} open={open} />}
         </React.Fragment>
     );
 }
 
+export interface ProjectTableProps {
+    projects: Project[];
+    setProjects: (projects: Project[]) => void;
+}
 
 export const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
     return (
@@ -104,7 +106,8 @@ export const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
                 <Table sx={{ maxWidth: 650 }} aria-label="collapsible table">
                     <TableHead>
                         <TableRow>
-                            <TableCell />   {/* Expander */}
+                            {/** Expander Placeholder */}
+                            <TableCell />
                             <TableCell>Project Name</TableCell>
                             <TableCell>Project Index</TableCell>
                         </TableRow>

@@ -6,7 +6,7 @@ export interface ImageTableProps {
     setImages: (projects: Image[]) => void;
 }
 
-export const ImageTable: React.FC<ImageTableProps> = ({images}) => {
+export const ImageTable: React.FC<ImageTableProps> = ({ images }) => {
     return (
         <>
             <h2>
