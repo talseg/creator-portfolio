@@ -5,6 +5,28 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import React from "react";
 
+interface ImageTableProps {
+    images: Image[];
+}
+
+export const ImageTable: React.FC<ImageTableProps> = ({ images }) =>
+    <Table size="small" aria-label="images">
+        <TableHead>
+            <TableRow>
+                <TableCell>Image Index</TableCell>
+                <TableCell>Image Url</TableCell>
+            </TableRow>
+        </TableHead>
+        <TableBody>
+            {images.map((image, i) => (
+                <TableRow key={`image-${i}`}>
+                    <TableCell component="th" scope="row">{image.imageIndex}</TableCell>
+                    <TableCell>{image.imageUrl}</TableCell>
+                </TableRow>
+            ))}
+        </TableBody>
+    </Table>
+
 interface ImageTableRowProps {
     images: Image[];
     open: boolean;
@@ -21,6 +43,8 @@ export const ImagesTableRow: React.FC<ImageTableRowProps> = ({ images, open }) =
                         <Typography variant="h6" gutterBottom component="div">
                             Project Images
                         </Typography>
+
+                        {/* <ImageTable images={images} /> */}
 
                         <Table size="small" aria-label="images">
                             <TableHead>
@@ -77,14 +101,32 @@ const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen, setImage
     );
 }
 
+interface RowProps {
+    project: Project;
+}
+
+const Row: React.FC<RowProps> = ({ project }) => {
+    const [showImages, setShowImages] = useState(false);
+
+    return (
+        <React.Fragment>
+
+            <ProjectRow project={project} imageRowOpen={showImages} setImageRowOpen={setShowImages} />
+
+            {/* Expanding Project Images */}
+            {project.images && <ImagesTableRow images={project.images} key={0} open={showImages} />}
+
+        </React.Fragment>
+    );
+}
+
 export interface ProjectTableProps {
     projects: Project[];
     setProjects: (projects: Project[]) => void;
 }
 
-export const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
-    const [open, setOpen] = useState(false);
 
+export const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
     return (
         <>
             <h2>
@@ -102,15 +144,8 @@ export const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
                     </TableHead>
                     <TableBody>
                         {
-                            projects.map((project, i) => (
-                                <React.Fragment key={`project-fragment-${i}`}>
-
-                                    <ProjectRow project={project} imageRowOpen={open} setImageRowOpen={setOpen} />
-                                    
-                                    {/* Expanding Project Images */}
-                                    {project.images && <ImagesTableRow images={project.images} key={0} open={open} />}
-
-                                </React.Fragment>
+                            projects.map((project, index) => (
+                                <Row project={project} key={`row-project-${index}`} />
                             ))
                         }
                     </TableBody>
