@@ -1,5 +1,5 @@
 import { Box, Collapse, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
-import type { Project } from "../../database/dbInterfaces";
+import type { Project, Image } from "../../database/dbInterfaces";
 import { useState } from "react";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -10,6 +10,59 @@ export interface ProjectTableProps {
     projects: Project[];
     setProjects: (projects: Project[]) => void;
 }
+
+
+interface ImageRowProps {
+    images: Image[];
+    open: boolean;
+}
+
+const ImageRow: React.FC<ImageRowProps> = ({ images, open }) => {
+
+    return (
+        <TableRow>
+            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                <Collapse in={open} timeout="auto" unmountOnExit>
+                    <Box sx={{ margin: 1 }}>
+
+                        <Typography variant="h6" gutterBottom component="div">
+                            Image
+                        </Typography>
+
+                        <Table size="small" aria-label="images">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Image Index</TableCell>
+                                    <TableCell>Image Url</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            {
+                                images &&
+                                <TableBody>
+                                    {images.map((image, i) => (
+                                        <TableRow key={`image-${i}`}>
+                                            <TableCell component="th" scope="row">
+                                                {image.imageIndex}
+                                            </TableCell>
+                                            <TableCell>{image.imageUrl}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            }
+                        </Table>
+
+                    </Box>
+                </Collapse>
+            </TableCell>
+        </TableRow>
+    );
+}
+
+
+
+
+
+
 
 interface RowProps {
     project: Project;
@@ -33,48 +86,12 @@ const Row: React.FC<RowProps> = ({ project }) => {
                 <TableCell>{project.projectName}</TableCell>
                 <TableCell>{project.projectIndex}</TableCell>
             </TableRow>
-            <TableRow>
-                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                    <Collapse in={open} timeout="auto" unmountOnExit>
-                        <Box sx={{ margin: 1 }}>
 
-                            <Typography variant="h6" gutterBottom component="div">
-                                Image
-                            </Typography>
+            {project.images && <ImageRow images={project.images} key={0} open={open} />}
 
-                            <Table size="small" aria-label="images">
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>Image Index</TableCell>
-                                        <TableCell>Image Url</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                {
-                                    project.images &&
-                                    <TableBody>
-                                        {project.images.map((image, i) => (
-                                            <TableRow key={`image-${i}`}>
-                                                <TableCell component="th" scope="row">
-                                                    {image.imageIndex}
-                                                </TableCell>
-                                                <TableCell>{image.imageUrl}</TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                }
-                            </Table>
-
-                        </Box>
-                    </Collapse>
-                </TableCell>
-            </TableRow>
         </React.Fragment>
-
     );
-
 }
-
-
 
 
 export const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
