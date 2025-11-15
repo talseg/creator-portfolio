@@ -19,7 +19,7 @@ export const ImagesTableRow: React.FC<ImageTableRowProps> = ({ images, open }) =
                     <Box sx={{ margin: 1 }}>
 
                         <Typography variant="h6" gutterBottom component="div">
-                            Image
+                            Project Images
                         </Typography>
 
                         <Table size="small" aria-label="images">
@@ -77,26 +77,14 @@ const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen, setImage
     );
 }
 
-interface RowProps {
-    project: Project;
-}
-
-const Row: React.FC<RowProps> = ({ project }) => {
-    const [open, setOpen] = useState(false);
-    return (
-        <React.Fragment>
-            <ProjectRow project={project} imageRowOpen={open} setImageRowOpen={setOpen} />
-            {project.images && <ImagesTableRow images={project.images} key={0} open={open} />}
-        </React.Fragment>
-    );
-}
-
 export interface ProjectTableProps {
     projects: Project[];
     setProjects: (projects: Project[]) => void;
 }
 
 export const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
+    const [open, setOpen] = useState(false);
+
     return (
         <>
             <h2>
@@ -114,8 +102,15 @@ export const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
                     </TableHead>
                     <TableBody>
                         {
-                            projects.map((proj, i) => (
-                                <Row project={proj} key={`project-${i}`} />
+                            projects.map((project, i) => (
+                                <React.Fragment key={`project-fragment-${i}`}>
+
+                                    <ProjectRow project={project} imageRowOpen={open} setImageRowOpen={setOpen} />
+                                    
+                                    {/* Expanding Project Images */}
+                                    {project.images && <ImagesTableRow images={project.images} key={0} open={open} />}
+
+                                </React.Fragment>
                             ))
                         }
                     </TableBody>

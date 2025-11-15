@@ -1,5 +1,5 @@
 import type { StoryObj } from '@storybook/react-vite';
-import type { Project, Image } from '../../database/dbInterfaces';
+import type { Image } from '../../database/dbInterfaces';
 import { useState } from 'react';
 import { ImageTable } from './ImageTable';
 
