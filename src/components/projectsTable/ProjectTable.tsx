@@ -20,7 +20,7 @@ const Row: React.FC<RowProps> = ({ project }) => {
 
     return (
         <React.Fragment>
-            <TableRow key={project.projectIndex}>
+            <TableRow key={project.id}>
                 <TableCell>
                     <IconButton
                         aria-label="expand row"
