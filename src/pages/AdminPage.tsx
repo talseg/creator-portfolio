@@ -7,7 +7,7 @@ import { FirebaseDb } from "../database/FirebaseDb";
 import type { DatabaseType, Project } from "../database/dbInterfaces";
 
 import { getExceptionString, logException } from "../utilities/exceptionUtils";
-import { EmailPasswordDialog } from "../components/projectGallery/userPassword/EmailPasswordDialog";
+import { EmailPasswordDialog } from "../components/userPassword/EmailPasswordDialog";
 import styled from "styled-components";
 
 const Wrapper = styled.div`
