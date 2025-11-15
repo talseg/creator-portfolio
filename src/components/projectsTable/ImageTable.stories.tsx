@@ -2,6 +2,7 @@ import type { StoryObj } from '@storybook/react-vite';
 import type { Image } from '../../database/dbInterfaces';
 import { useState } from 'react';
 import { ImageTable } from './ImageTable';
+import { Paper, TableContainer } from '@mui/material';
 
 const getImageUrl = (index: number) => {
   switch (index) {
@@ -31,7 +32,9 @@ const ImageTableTester: React.FC = () => {
   const [images, setImages] = useState<Image[]>(createImages(4));
 
   return (
-    <ImageTable images={images} setImages={setImages} />
+    <TableContainer component={Paper} sx={{ maxWidth: 550 }}>
+      <ImageTable images={images} />
+    </TableContainer>
   );
   
 }

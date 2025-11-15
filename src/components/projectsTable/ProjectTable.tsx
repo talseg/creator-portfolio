@@ -1,31 +1,10 @@
 import { Box, Collapse, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import type { Project, Image } from "../../database/dbInterfaces";
 import { useState } from "react";
+import { ImageTable } from "./ImageTable";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import React from "react";
-
-interface ImageTableProps {
-    images: Image[];
-}
-
-export const ImageTable: React.FC<ImageTableProps> = ({ images }) =>
-    <Table size="small" aria-label="images">
-        <TableHead>
-            <TableRow>
-                <TableCell>Image Index</TableCell>
-                <TableCell>Image Url</TableCell>
-            </TableRow>
-        </TableHead>
-        <TableBody>
-            {images.map((image, i) => (
-                <TableRow key={`image-${i}`}>
-                    <TableCell component="th" scope="row">{image.imageIndex}</TableCell>
-                    <TableCell>{image.imageUrl}</TableCell>
-                </TableRow>
-            ))}
-        </TableBody>
-    </Table>
 
 interface ImageTableRowProps {
     images: Image[];
@@ -44,29 +23,8 @@ export const ImagesTableRow: React.FC<ImageTableRowProps> = ({ images, open }) =
                             Project Images
                         </Typography>
 
-                        {/* <ImageTable images={images} /> */}
-
-                        <Table size="small" aria-label="images">
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>Image Index</TableCell>
-                                    <TableCell>Image Url</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            {
-                                images &&
-                                <TableBody>
-                                    {images.map((image, i) => (
-                                        <TableRow key={`image-${i}`}>
-                                            <TableCell component="th" scope="row">
-                                                {image.imageIndex}
-                                            </TableCell>
-                                            <TableCell>{image.imageUrl}</TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            }
-                        </Table>
+                        <ImageTable images={images} />
+                        
                     </Box>
                 </Collapse>
             </TableCell>
@@ -105,7 +63,7 @@ interface RowProps {
     project: Project;
 }
 
-const Row: React.FC<RowProps> = ({ project }) => {
+const ProjectWithImagesRow: React.FC<RowProps> = ({ project }) => {
     const [showImages, setShowImages] = useState(false);
 
     return (
@@ -145,7 +103,7 @@ export const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
                     <TableBody>
                         {
                             projects.map((project, index) => (
-                                <Row project={project} key={`row-project-${index}`} />
+                                <ProjectWithImagesRow project={project} key={`row-project-${index}`} />
                             ))
                         }
                     </TableBody>
