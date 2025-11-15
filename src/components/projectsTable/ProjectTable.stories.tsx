@@ -1,5 +1,5 @@
 import type { StoryObj } from '@storybook/react-vite';
-import type { Project } from '../../database/dbInterfaces';
+import type { Project, Image } from '../../database/dbInterfaces';
 import { useState } from 'react';
 import { ProjectTable } from './ProjectTable';
 
@@ -15,13 +15,38 @@ const getName = (index: number) => {
   }
 }
 
+
+
+const getImageUrl = (index: number) => {
+  switch (index) {
+    default:
+      return `Image ${index} url`;
+  }
+}
+
+const createMocImageData = (index: number): Image => {
+  return {
+    imageIndex: index,
+    imageUrl: getImageUrl(index)
+  }
+} 
+
+const createImages = (numProjects: number): Image[] => {
+  const images: Image[] = []
+  for (let index = 0; index < numProjects; index++) {
+    images.push(createMocImageData(index));
+  }
+  return images;
+}
+
 const createMockProjectData = (index: number): Project => {
   return {
     id: `project-${index}`,
     projectName: getName(index),
     header: "header " + index,
     projectImageUrl: "url " + index,
-    projectIndex: index
+    projectIndex: index,
+    images: createImages(4)
   }
 } 
 

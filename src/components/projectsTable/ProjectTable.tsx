@@ -1,4 +1,4 @@
-import { Box, Collapse, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { Box, Collapse, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import type { Project } from "../../database/dbInterfaces";
 import { useState } from "react";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -36,7 +36,35 @@ const Row: React.FC<RowProps> = ({ project }) => {
             <TableRow>
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
-                        <Box sx={{ margin: 1 }}>Image Data</Box>
+                        <Box sx={{ margin: 1 }}>
+
+                            <Typography variant="h6" gutterBottom component="div">
+                                Image
+                            </Typography>
+
+                            <Table size="small" aria-label="images">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Image Index</TableCell>
+                                        <TableCell>Image Url</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                {
+                                    project.images &&
+                                    <TableBody>
+                                        {project.images.map((image, i) => (
+                                            <TableRow key={`image-${i}`}>
+                                                <TableCell component="th" scope="row">
+                                                    {image.imageIndex}
+                                                </TableCell>
+                                                <TableCell>{image.imageUrl}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                }
+                            </Table>
+
+                        </Box>
                     </Collapse>
                 </TableCell>
             </TableRow>
