@@ -29,7 +29,7 @@ const createImages = (numProjects: number): Image[] => {
 
 const ImageTableTester: React.FC = () => {
 
-  const [images, setImages] = useState<Image[]>(createImages(4));
+  const [images] = useState<Image[]>(createImages(4));
 
   return (
     <TableContainer component={Paper} sx={{ maxWidth: 550 }}>
