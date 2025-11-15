@@ -171,10 +171,7 @@ export const AdminPage: React.FC = () => {
                         const newProjectsData = await database.fetchProjectsWithImages();
                         const newProjects = [...newProjectsData];
                         setProjects(newProjects);
-                    }
-
-
-                    } />
+                    }} />
             </InputWithHeader>
 
             <div>
