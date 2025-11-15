@@ -168,9 +168,6 @@ export const AdminPage: React.FC = () => {
                 <input
                     value={firstProjectName} onChange={async (e) => {
                         setFirstProjectName(e.target.value);
-                        const newProjectsData = await database.fetchProjectsWithImages();
-                        const newProjects = [...newProjectsData];
-                        setProjects(newProjects);
                     }} />
             </InputWithHeader>
 
