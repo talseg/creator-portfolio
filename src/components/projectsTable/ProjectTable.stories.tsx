@@ -8,7 +8,7 @@ const getName = (index: number) => {
     case 0:
       return "Visual Communication Graduates Exhibition";
       break;
-    case 2:
+    case 1:
       return "Sheet Magazine";
     default:
       return `Project Name ${index}`;
