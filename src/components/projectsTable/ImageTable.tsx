@@ -1,5 +1,6 @@
 import { Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 import type { Image } from "../../database/dbInterfaces";
+import ImageSnapshot from "../imageSnapshot/ImageSnapshot";
 
 
 interface ImageTableProps {
@@ -11,14 +12,16 @@ export const ImageTable: React.FC<ImageTableProps> = ({ images }) =>
         <TableHead>
             <TableRow>
                 <TableCell>Image Index</TableCell>
-                <TableCell>Image Url</TableCell>
+                <TableCell>Image</TableCell>
             </TableRow>
         </TableHead>
         <TableBody>
             {images.map((image, i) => (
                 <TableRow key={`image-${i}`}>
                     <TableCell component="th" scope="row">{image.imageIndex}</TableCell>
-                    <TableCell>{image.imageUrl}</TableCell>
+                    <TableCell>
+                        <ImageSnapshot src={image.imageUrl} alt={`image-${i}`}/>
+                    </TableCell>
                 </TableRow>
             ))}
         </TableBody>

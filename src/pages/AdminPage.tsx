@@ -81,7 +81,7 @@ export const AdminPage: React.FC = () => {
             setIsLoginDialogOPen(false);
             setHasError(false);
         }
-        catch (e) {
+        catch (_) {
             setIsLoggedIn(false);
             setHasError(true);
         }
@@ -159,6 +159,8 @@ export const AdminPage: React.FC = () => {
                 {renderLoginOptions()}
             </div>
 
+            {projects && <ProjectTable projects={projects} setProjects={setProjects} />}
+
             <div>
                 <button onClick={handleUpdateDB}>Update DB</button>
             </div>
@@ -175,7 +177,6 @@ export const AdminPage: React.FC = () => {
                 Number of projects in DB: {projects.length}
             </div>
 
-            {projects && <ProjectTable projects={projects} setProjects={setProjects} />}
 
         </Wrapper>
     )
