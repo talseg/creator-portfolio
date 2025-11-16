@@ -7,8 +7,9 @@ import { FirebaseDb } from "../database/FirebaseDb";
 import type { DatabaseType, Project } from "../database/dbInterfaces";
 
 import { getExceptionString, logException } from "../utilities/exceptionUtils";
-import { EmailPasswordDialog } from "../components/projectGallery/userPassword/EmailPasswordDialog";
+import { EmailPasswordDialog } from "../components/userPassword/EmailPasswordDialog";
 import styled from "styled-components";
+import { ProjectTable } from "../components/projectsTable/ProjectTable";
 
 const Wrapper = styled.div`
     padding: 2rem;
@@ -34,8 +35,26 @@ export const AdminPage: React.FC = () => {
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
     const [email, setEmail] = useState<string | null>(null);
     const [hasError, setHasError] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const database: DatabaseType = FirebaseDb;
+
+    useEffect(() => {
+        const loadProjects = async () => {
+            try {
+                const projectsData = await database.fetchProjectsWithImages();
+                setProjects(projectsData);
+                setIsLoading(false);
+                setFirstProjectName(projectsData[0]?.projectName);
+            } catch (err) {
+                logException(err);
+                setError(getExceptionString(err));
+            }
+        }
+        loadProjects();
+    }, [database]);
+
+
 
     useEffect(() => {
         // 🔹 Track login state reliably
@@ -102,24 +121,6 @@ export const AdminPage: React.FC = () => {
         setHasError(false);
     }
 
-    useEffect(() => {
-
-        const loadProjects = async () => {
-            try {
-                const projectsData = await database.fetchProjects();
-                setProjects(projectsData);
-                setFirstProjectName(projectsData[0]?.projectName);
-            } catch (err) {
-                logException(err);
-                // ToDo - remove, just for first dev
-                alert(getExceptionString(err))
-            }
-        }
-        loadProjects();
-
-    }, []);
-
-
     const renderLoginOptions = () => {
         if (isLoading)
             return (<>Loading...</>);
@@ -142,6 +143,8 @@ export const AdminPage: React.FC = () => {
         );
     }
 
+    if (error) return <>Projects Load Error</>
+
     return (
         <Wrapper>
 
@@ -163,12 +166,16 @@ export const AdminPage: React.FC = () => {
             <InputWithHeader>
                 <TextHeader>First Project Name: </TextHeader>
                 <input
-                    value={firstProjectName} onChange={(e) => setFirstProjectName(e.target.value)} />
+                    value={firstProjectName} onChange={async (e) => {
+                        setFirstProjectName(e.target.value);
+                    }} />
             </InputWithHeader>
 
             <div>
                 Number of projects in DB: {projects.length}
             </div>
+
+            {projects && <ProjectTable projects={projects} setProjects={setProjects} />}
 
         </Wrapper>
     )

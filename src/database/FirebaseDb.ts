@@ -36,7 +36,22 @@ export const fetchProjectById = async (id: string): Promise<Project> => {
     return projectWithImages;
 }
 
+const fetchFirebaseProjectsWithImages = async (): Promise<Project[]> => {
+    const projects = await fetchFirebaseProjects();
+    const fullProjects: Project[] = [];
+
+    for (let index = 0; index < projects.length; index++) {
+        if (!projects[index]) break;
+        const projectId = projects[index]?.id;
+        if (!projectId) break;
+        const projectWithImages = await fetchProjectById(projectId);
+        fullProjects.push(projectWithImages);
+    }
+    return fullProjects;
+}
+
 export const FirebaseDb: DatabaseType = {
     fetchProjects: fetchFirebaseProjects,
-    fetchProjectById: fetchProjectById
+    fetchProjectById: fetchProjectById,
+    fetchProjectsWithImages: fetchFirebaseProjectsWithImages
 }
