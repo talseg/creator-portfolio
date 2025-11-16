@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ImageTable } from "./ImageTable";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import ImageSnapshot from "../imageSnapshot/ImageSnapshot";
 import React from "react";
 
 interface ImageTableRowProps {
@@ -24,7 +25,7 @@ export const ImagesTableRow: React.FC<ImageTableRowProps> = ({ images, open }) =
                         </Typography>
 
                         <ImageTable images={images} />
-                        
+
                     </Box>
                 </Collapse>
             </TableCell>
@@ -55,6 +56,9 @@ const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen, setImage
 
             <TableCell>{project.projectName}</TableCell>
             <TableCell>{project.projectIndex}</TableCell>
+            <TableCell>
+                <ImageSnapshot src={project.projectImageUrl} alt={`project-${project.projectName}`}/>
+            </TableCell>
         </TableRow>
     );
 }
@@ -86,18 +90,16 @@ export interface ProjectTableProps {
 
 export const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
     return (
-        <>
-            <h2>
-                Project Table
-            </h2>
-            <TableContainer component={Paper} sx={{ maxWidth: 550 }}>
-                <Table sx={{ maxWidth: 650 }} aria-label="collapsible table">
+        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+            <TableContainer component={Paper} sx={{ maxWidth: 550, maxHeight: "85vh" }}>
+                <Table stickyHeader aria-label="collapsible table sticky table">
                     <TableHead>
                         <TableRow>
                             {/** Expander Placeholder */}
-                            <TableCell />
+                            <TableCell>Images</TableCell>
                             <TableCell>Project Name</TableCell>
                             <TableCell>Project Index</TableCell>
+                            <TableCell align="center">Image</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -109,6 +111,6 @@ export const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
                     </TableBody>
                 </Table>
             </TableContainer>
-        </>
+        </Paper>
     )
 }
