@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { FirebaseDb } from "../database/FirebaseDb";
 import { getExceptionString, logException } from "../utilities/exceptionUtils";
 import styled from "styled-components";
-import type { DatabaseType, Project } from "../database/dbInterfaces";
+import type { Project } from "../database/dbInterfaces";
 import { CircularProgress } from "@mui/material";
 
 
@@ -81,7 +81,7 @@ export const ProjectPage: React.FC = () => {
   const [project, setProject] = useState<Project | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [numLoadedImages, setNumLoadedImages] = useState(0)
-  const db: DatabaseType = FirebaseDb;
+  const db = FirebaseDb;
 
   useEffect(() => {
     if (!projectId) return;

@@ -10,9 +10,10 @@ import React from "react";
 interface ImageTableRowProps {
     images: Image[];
     open: boolean;
+    projectId: string;
 }
 
-export const ImagesTableRow: React.FC<ImageTableRowProps> = ({ images, open }) => {
+export const ImagesTableRow: React.FC<ImageTableRowProps> = ({ images, open, projectId }) => {
 
     return (
         <TableRow>
@@ -24,7 +25,7 @@ export const ImagesTableRow: React.FC<ImageTableRowProps> = ({ images, open }) =
                             Project Images
                         </Typography>
 
-                        <ImageTable images={images} />
+                        <ImageTable images={images} projectId={projectId}/>
 
                     </Box>
                 </Collapse>
@@ -57,7 +58,12 @@ const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen, setImage
             <TableCell>{project.projectName}</TableCell>
             <TableCell>{project.projectIndex}</TableCell>
             <TableCell>
-                <ImageSnapshot src={project.projectImageUrl} alt={`project-${project.projectName}`}/>
+                <ImageSnapshot src={project.projectImageUrl} alt={`project-${project.projectName}`} />
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <button
+                        onClick={handleAddImage}
+                    >+</button>
+                </div>
             </TableCell>
         </TableRow>
     );
@@ -76,11 +82,16 @@ const ProjectWithImagesRow: React.FC<RowProps> = ({ project }) => {
             <ProjectRow project={project} imageRowOpen={showImages} setImageRowOpen={setShowImages} />
 
             {/* Expanding Project Images */}
-            {project.images && <ImagesTableRow images={project.images} key={0} open={showImages} />}
+            {project.images && <ImagesTableRow images={project.images} key={0} open={showImages} projectId={project.id}/>}
 
         </React.Fragment>
     );
 }
+
+const handleAddImage = () => {
+
+}
+
 
 export interface ProjectTableProps {
     projects: Project[];

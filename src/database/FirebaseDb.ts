@@ -1,6 +1,7 @@
-import { collection, doc, getDoc, getDocs, orderBy, query, updateDoc, WriteBatch, writeBatch } from "firebase/firestore";
-import { db } from "./firebaseConfig";
+import { collection, CollectionReference, doc, getDoc, getDocs, orderBy, query, setDoc, WriteBatch, writeBatch, type DocumentData } from "firebase/firestore";
+import { db, storage } from "./firebaseConfig";
 import type { Project, Image } from "./dbInterfaces";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 // ToDo - Move to MobX
 const fetchFirebaseProjects = async (): Promise<Project[]> => {
@@ -52,7 +53,7 @@ const fetchFirebaseProjectsWithImages = async (): Promise<Project[]> => {
 
 const addProjectToBatch = (project: Project, batch: WriteBatch): void => {
   const { id, ...data } = project;
-  delete data.images; 
+  delete data.images;
   const projectRef = doc(db, "projects", id);
   batch.update(projectRef, data);
 };
@@ -72,13 +73,50 @@ const updateProjects = async (projects: Project[]): Promise<void> => {
   await batch.commit();
 }
 
+const uploadToStorage = async (projectId: string, imageFile: File): Promise<string> => {
+  const filename = imageFile.name;
+  const imageStorageRef = ref(storage, `projects/${projectId}/images/${filename}`);
+  await uploadBytes(imageStorageRef, imageFile);
+  return await getDownloadURL(imageStorageRef);
+}
+
+const getProjectImages = async (imagesColRef: CollectionReference<DocumentData, DocumentData>
+): Promise<Image[]> => {
+  //const imagesColRef = collection(db, "projects", projectId, "images");
+  const imagesSnap = await getDocs(imagesColRef);
+  const images = imagesSnap.docs
+    .map(d => ({ id: d.id, ...(d.data() as Omit<Image, "id">) }))
+    .sort((a, b) => a.imageIndex - b.imageIndex);
+  return images;
+}
+
+const getNextImageIndex = (images: Image[]): number => {
+  if (images.length === 0) return 1;
+  const lastImage = images[images.length - 1];
+  return lastImage!.imageIndex + 1;
+}
+
+const addImageToProject = async (projectId: string, imageFile: File): Promise<void> => {
+  const url = await uploadToStorage(projectId, imageFile);
+  const imagesColRef = collection(db, "projects", projectId, "images");
+  const images = await getProjectImages(imagesColRef);
+  const newImage: Omit<Image, "id"> = {
+    imageUrl: url,
+    imageIndex: getNextImageIndex(images)
+  };
+  const newDocRef = doc(imagesColRef); // auto-id
+  await setDoc(newDocRef, newImage);
+}
+
+
+
 interface DatabaseType {
   fetchProjects: () => Promise<Project[]>;
   fetchProjectById: (id: string) => Promise<Project>;
   fetchProjectsWithImages: () => Promise<Project[]>;
   updateProject: (project: Project) => Promise<void>;
   updateProjects: (project: Project[]) => Promise<void>;
-
+  addImageToProject: (projectId: string, imageFile: File) => Promise<void>;
 }
 
 export const FirebaseDb: DatabaseType = {
@@ -86,5 +124,6 @@ export const FirebaseDb: DatabaseType = {
   fetchProjectById: fetchProjectById,
   fetchProjectsWithImages: fetchFirebaseProjectsWithImages,
   updateProjects: updateProjects,
-  updateProject: updateProject
+  updateProject: updateProject,
+  addImageToProject: addImageToProject
 }
