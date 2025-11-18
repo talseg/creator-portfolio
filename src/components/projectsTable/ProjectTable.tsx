@@ -90,8 +90,8 @@ export interface ProjectTableProps {
 
 export const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
     return (
-        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-            <TableContainer component={Paper} sx={{ maxWidth: 550, maxHeight: "85vh" }}>
+        <Paper sx={{ width: '100%', overflow: 'hidden', maxWidth: "80vw" }}>
+            <TableContainer component={Paper} sx={{ maxHeight: "80vh" }}>
                 <Table stickyHeader aria-label="collapsible table sticky table">
                     <TableHead>
                         <TableRow>

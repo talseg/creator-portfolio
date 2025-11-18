@@ -11,10 +11,3 @@ export interface Project {
     projectIndex: number;
     images?: Image[];
 }
-
-
-export interface DatabaseType {
-    fetchProjects : () =>  Promise<Project[]>;
-    fetchProjectById: (id: string) => Promise<Project>;
-    fetchProjectsWithImages: () =>  Promise<Project[]>;
-}

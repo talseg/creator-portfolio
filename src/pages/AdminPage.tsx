@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react"
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
-
 import { doc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../database/firebaseConfig";
-import { FirebaseDb } from "../database/FirebaseDb";
-import type { DatabaseType, Project } from "../database/dbInterfaces";
-
+import type { Project } from "../database/dbInterfaces";
 import { getExceptionString, logException } from "../utilities/exceptionUtils";
 import { EmailPasswordDialog } from "../components/userPassword/EmailPasswordDialog";
-import styled from "styled-components";
 import { ProjectTable } from "../components/projectsTable/ProjectTable";
+import { FirebaseDb } from "../database/FirebaseDb";
+import styled from "styled-components";
+
 
 const Wrapper = styled.div`
     padding: 2rem;
@@ -37,12 +36,10 @@ export const AdminPage: React.FC = () => {
     const [hasError, setHasError] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const database: DatabaseType = FirebaseDb;
-
     useEffect(() => {
         const loadProjects = async () => {
             try {
-                const projectsData = await database.fetchProjectsWithImages();
+                const projectsData = await FirebaseDb.fetchProjectsWithImages();
                 setProjects(projectsData);
                 setIsLoading(false);
                 setFirstProjectName(projectsData[0]?.projectName);
@@ -52,7 +49,7 @@ export const AdminPage: React.FC = () => {
             }
         }
         loadProjects();
-    }, [database]);
+    }, []);
 
 
 
@@ -62,7 +59,6 @@ export const AdminPage: React.FC = () => {
             setIsLoading(false);
 
             if (user) {
-                console.log(user);
                 setIsLoggedIn(true);
                 setEmail(user?.email);
             }
@@ -101,6 +97,11 @@ export const AdminPage: React.FC = () => {
         }
     }
 
+    const handleUpdateAllProjects = async () => {
+        console.log("calling update all projects");
+        await FirebaseDb.updateProjects(projects);
+    }
+
     const handleSignOut = async () => {
         try {
             if (window.confirm("Are you sure you want to sign out?")) {
@@ -108,7 +109,6 @@ export const AdminPage: React.FC = () => {
                 await signOut(auth);
                 setIsLoggedIn(false);
             }
-
         }
         catch (e) {
             logException(e, "Can not log out");
@@ -155,8 +155,9 @@ export const AdminPage: React.FC = () => {
                 onClose={() => { setIsLoginDialogOPen(false) }}
             />
 
-            <div>
+            <div style={{ display: "flex", gap:"1rem"}}>
                 {renderLoginOptions()}
+                <button onClick={handleUpdateAllProjects}>Save</button>
             </div>
 
             {projects && <ProjectTable projects={projects} setProjects={setProjects} />}
@@ -168,9 +169,15 @@ export const AdminPage: React.FC = () => {
             <InputWithHeader>
                 <TextHeader>First Project Name: </TextHeader>
                 <input
-                    value={firstProjectName} onChange={async (e) => {
-                        setFirstProjectName(e.target.value);
-                    }} />
+                    value={firstProjectName} 
+                    onChange={async (e) => {
+                        const newProjectName = e.target.value;
+                        setFirstProjectName(newProjectName);
+                        if (projects && projects[0]) {
+                            projects[0].projectName = newProjectName;
+                        }
+                    }} 
+                    />
             </InputWithHeader>
 
             <div>
