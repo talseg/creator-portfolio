@@ -6,8 +6,8 @@ import type { Project } from "../database/dbInterfaces";
 import { getExceptionString, logException } from "../utilities/exceptionUtils";
 import { EmailPasswordDialog } from "../components/userPassword/EmailPasswordDialog";
 import { ProjectTable } from "../components/projectsTable/ProjectTable";
-import { FirebaseDb } from "../database/FirebaseDb";
 import styled from "styled-components";
+import { fetchProjectsWithImages, updateProjects } from "../database/FirebaseDb";
 
 
 const Wrapper = styled.div`
@@ -39,7 +39,7 @@ export const AdminPage: React.FC = () => {
     useEffect(() => {
         const loadProjects = async () => {
             try {
-                const projectsData = await FirebaseDb.fetchProjectsWithImages();
+                const projectsData = await fetchProjectsWithImages();
                 setProjects(projectsData);
                 setIsLoading(false);
                 setFirstProjectName(projectsData[0]?.projectName);
@@ -77,6 +77,7 @@ export const AdminPage: React.FC = () => {
             setIsLoginDialogOPen(false);
             setHasError(false);
         }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         catch (_) {
             setIsLoggedIn(false);
             setHasError(true);
@@ -99,7 +100,7 @@ export const AdminPage: React.FC = () => {
 
     const handleUpdateAllProjects = async () => {
         console.log("calling update all projects");
-        await FirebaseDb.updateProjects(projects);
+        await updateProjects(projects);
     }
 
     const handleSignOut = async () => {

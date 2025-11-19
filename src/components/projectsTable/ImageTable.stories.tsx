@@ -7,16 +7,17 @@ import { Paper, TableContainer } from '@mui/material';
 const getImageUrl = (index: number) => {
   switch (index) {
     default:
-      return `Image ${index} url`;
+      return `Image ${index + 1} url`;
   }
 }
 
 const createMocImageData = (index: number): Image => {
   return {
     imageIndex: index,
-    imageUrl: getImageUrl(index)
+    imageUrl: getImageUrl(index),
+    id: 'mock-image-id-${index}',
   }
-} 
+}
 
 const createImages = (numProjects: number): Image[] => {
   const images: Image[] = []
@@ -33,10 +34,10 @@ const ImageTableTester: React.FC = () => {
 
   return (
     <TableContainer component={Paper} sx={{ maxWidth: 550 }}>
-      <ImageTable images={images} />
+      <ImageTable images={images} projectId={'mock project id'} />
     </TableContainer>
   );
-  
+
 }
 
 

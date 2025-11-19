@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { FirebaseDb } from "../database/FirebaseDb";
+//import { FirebaseDb } from "../database/FirebaseDb";
 import { getExceptionString, logException } from "../utilities/exceptionUtils";
 import styled from "styled-components";
 import type { Project } from "../database/dbInterfaces";
 import { CircularProgress } from "@mui/material";
+import { fetchProjectById } from "../database/FirebaseDb";
 
 
 const PageWrapper = styled.div`
@@ -81,20 +82,20 @@ export const ProjectPage: React.FC = () => {
   const [project, setProject] = useState<Project | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [numLoadedImages, setNumLoadedImages] = useState(0)
-  const db = FirebaseDb;
 
   useEffect(() => {
     if (!projectId) return;
     (async () => {
       try {
-        const project = await db.fetchProjectById(projectId);
+        console.log(`calling fetchProjectById(${projectId})`);
+        const project = await fetchProjectById(projectId);
         setProject(project);
       } catch (err) {
         logException(err);
         setError(getExceptionString(err));
       }
     })();
-  }, [db, projectId]);
+  }, [projectId]);
 
   const onImageLoaded = (): void => {
     setNumLoadedImages(v => v + 1);

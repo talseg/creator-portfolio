@@ -4,7 +4,7 @@ import type { Project, Image } from "./dbInterfaces";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 // ToDo - Move to MobX
-const fetchFirebaseProjects = async (): Promise<Project[]> => {
+export const fetchProjects = async (): Promise<Project[]> => {
   const q = query(collection(db, "projects"), orderBy("projectIndex", "asc"));
   const snapshot = await getDocs(q);
 
@@ -17,6 +17,9 @@ const fetchFirebaseProjects = async (): Promise<Project[]> => {
 };
 
 export const fetchProjectById = async (id: string): Promise<Project> => {
+
+  console.log(`In fetchProjectById`);
+
   const docRef = doc(db, "projects", id);
   const snap = await getDoc(docRef);
   if (!snap.exists()) throw new Error("Project not found");
@@ -37,8 +40,8 @@ export const fetchProjectById = async (id: string): Promise<Project> => {
   return projectWithImages;
 }
 
-const fetchFirebaseProjectsWithImages = async (): Promise<Project[]> => {
-  const projects = await fetchFirebaseProjects();
+export const fetchProjectsWithImages = async (): Promise<Project[]> => {
+  const projects = await fetchProjects();
   const fullProjects: Project[] = [];
 
   for (let index = 0; index < projects.length; index++) {
@@ -61,13 +64,13 @@ const addProjectToBatch = (project: Project, batch: WriteBatch): void => {
 const addProjectsToBatch = (projects: Project[], batch: WriteBatch): void =>
   projects.forEach((project) => addProjectToBatch(project, batch));
 
-const updateProject = async (project: Project): Promise<void> => {
+export const updateProject = async (project: Project): Promise<void> => {
   const batch = writeBatch(db);
   addProjectToBatch(project, batch);
   await batch.commit();
 }
 
-const updateProjects = async (projects: Project[]): Promise<void> => {
+export const updateProjects = async (projects: Project[]): Promise<void> => {
   const batch = writeBatch(db);
   addProjectsToBatch(projects, batch);
   await batch.commit();
@@ -96,7 +99,7 @@ const getNextImageIndex = (images: Image[]): number => {
   return lastImage!.imageIndex + 1;
 }
 
-const addImageToProject = async (projectId: string, imageFile: File): Promise<void> => {
+export const addImageToProject = async (projectId: string, imageFile: File): Promise<void> => {
   const url = await uploadToStorage(projectId, imageFile);
   const imagesColRef = collection(db, "projects", projectId, "images");
   const images = await getProjectImages(imagesColRef);
@@ -120,9 +123,9 @@ interface DatabaseType {
 }
 
 export const FirebaseDb: DatabaseType = {
-  fetchProjects: fetchFirebaseProjects,
+  fetchProjects: fetchProjects,
   fetchProjectById: fetchProjectById,
-  fetchProjectsWithImages: fetchFirebaseProjectsWithImages,
+  fetchProjectsWithImages: fetchProjectsWithImages,
   updateProjects: updateProjects,
   updateProject: updateProject,
   addImageToProject: addImageToProject

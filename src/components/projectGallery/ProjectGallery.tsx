@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { FirebaseDb } from "../../database/FirebaseDb";
 import { getExceptionString, logException } from "../../utilities/exceptionUtils";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import type { DatabaseType } from "../../database/dbInterfaces";
+import { fetchProjects } from "../../database/FirebaseDb";
 
 interface Image {
   imageUrl: string;
@@ -82,12 +81,12 @@ export const ProjectGallery: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const database: DatabaseType = FirebaseDb;
 
   useEffect(() => {
     const loadProjects = async () => {
       try {
-        const projectsData = await database.fetchProjects();
+        console.log(`ProjectGallery calling FirebaseDb.fetchProjects`)
+        const projectsData = await fetchProjects();
         setProjects(projectsData);
         setLoading(false);
       } catch (err) {
@@ -96,7 +95,7 @@ export const ProjectGallery: React.FC = () => {
       }
     }
     loadProjects();
-  }, [database]);
+  }, []);
 
   if (error) return (
     <ErrorText>Error Loading Projects: {error}</ErrorText>

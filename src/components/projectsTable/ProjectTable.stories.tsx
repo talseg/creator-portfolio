@@ -26,8 +26,9 @@ const getImageUrl = (index: number) => {
 
 const createMocImageData = (index: number): Image => {
   return {
-    imageIndex: index,
-    imageUrl: getImageUrl(index)
+    imageIndex: index + 1,
+    imageUrl: getImageUrl(index),
+    id: `image-id-${index}`
   }
 } 
 

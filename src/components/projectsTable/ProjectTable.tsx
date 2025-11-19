@@ -82,7 +82,9 @@ const ProjectWithImagesRow: React.FC<RowProps> = ({ project }) => {
             <ProjectRow project={project} imageRowOpen={showImages} setImageRowOpen={setShowImages} />
 
             {/* Expanding Project Images */}
-            {project.images && <ImagesTableRow images={project.images} key={0} open={showImages} projectId={project.id}/>}
+            {project.images && <ImagesTableRow images={project.images}
+            open={showImages} projectId={project.id}
+            />}
 
         </React.Fragment>
     );
