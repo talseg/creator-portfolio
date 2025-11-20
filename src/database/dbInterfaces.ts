@@ -1,4 +1,5 @@
 export interface Image {
+    id: string;
     imageUrl: string;
     imageIndex: number;
 }
@@ -10,11 +11,4 @@ export interface Project {
     projectImageUrl: string;
     projectIndex: number;
     images?: Image[];
-}
-
-
-export interface DatabaseType {
-    fetchProjects : () =>  Promise<Project[]>;
-    fetchProjectById: (id: string) => Promise<Project>;
-    fetchProjectsWithImages: () =>  Promise<Project[]>;
 }
