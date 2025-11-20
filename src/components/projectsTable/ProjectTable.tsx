@@ -59,11 +59,6 @@ const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen, setImage
             <TableCell>{project.projectIndex}</TableCell>
             <TableCell>
                 <ImageSnapshot src={project.projectImageUrl} alt={`project-${project.projectName}`} />
-                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <button
-                        onClick={handleAddImage}
-                    >+</button>
-                </div>
             </TableCell>
         </TableRow>
     );
@@ -89,11 +84,6 @@ const ProjectWithImagesRow: React.FC<RowProps> = ({ project }) => {
         </React.Fragment>
     );
 }
-
-const handleAddImage = () => {
-
-}
-
 
 export interface ProjectTableProps {
     projects: Project[];

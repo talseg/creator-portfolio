@@ -87,7 +87,6 @@ export const ProjectPage: React.FC = () => {
     if (!projectId) return;
     (async () => {
       try {
-        console.log(`calling fetchProjectById(${projectId})`);
         const project = await fetchProjectById(projectId);
         setProject(project);
       } catch (err) {
