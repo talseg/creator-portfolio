@@ -112,21 +112,21 @@ export const addImageToProject = async (projectId: string, imageFile: File): Pro
 }
 
 
+// ToDO - Add these later for Database abstruction
+// interface DatabaseType {
+//   fetchProjects: () => Promise<Project[]>;
+//   fetchProjectById: (id: string) => Promise<Project>;
+//   fetchProjectsWithImages: () => Promise<Project[]>;
+//   updateProject: (project: Project) => Promise<void>;
+//   updateProjects: (project: Project[]) => Promise<void>;
+//   addImageToProject: (projectId: string, imageFile: File) => Promise<void>;
+// }
 
-interface DatabaseType {
-  fetchProjects: () => Promise<Project[]>;
-  fetchProjectById: (id: string) => Promise<Project>;
-  fetchProjectsWithImages: () => Promise<Project[]>;
-  updateProject: (project: Project) => Promise<void>;
-  updateProjects: (project: Project[]) => Promise<void>;
-  addImageToProject: (projectId: string, imageFile: File) => Promise<void>;
-}
-
-export const FirebaseDb: DatabaseType = {
-  fetchProjects: fetchProjects,
-  fetchProjectById: fetchProjectById,
-  fetchProjectsWithImages: fetchProjectsWithImages,
-  updateProjects: updateProjects,
-  updateProject: updateProject,
-  addImageToProject: addImageToProject
-}
+// export const FirebaseDb: DatabaseType = {
+//   fetchProjects: fetchProjects,
+//   fetchProjectById: fetchProjectById,
+//   fetchProjectsWithImages: fetchProjectsWithImages,
+//   updateProjects: updateProjects,
+//   updateProject: updateProject,
+//   addImageToProject: addImageToProject
+// }
