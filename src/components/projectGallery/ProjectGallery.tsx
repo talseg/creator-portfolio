@@ -85,7 +85,6 @@ export const ProjectGallery: React.FC = () => {
   useEffect(() => {
     const loadProjects = async () => {
       try {
-        console.log(`ProjectGallery calling FirebaseDb.fetchProjects`)
         const projectsData = await fetchProjects();
         setProjects(projectsData);
         setLoading(false);
