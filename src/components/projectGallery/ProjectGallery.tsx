@@ -107,7 +107,7 @@ export const ProjectGallery: React.FC = () => {
   return (
     <GalleryContainer>
       {projects.map((project) => (
-        <ProjectCard key={project.id} onClick={() => navigate(`project/${project.id}`)}>
+        <ProjectCard key={project.id} onClick={() => navigate(`/project/${project.id}`)}>
           <ProjectImage src={project.projectImageUrl} alt={project.projectName} />
           <ProjectInfo>
             <ProjectTitle>{project.projectName}</ProjectTitle>
