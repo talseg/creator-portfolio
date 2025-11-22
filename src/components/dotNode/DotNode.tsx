@@ -15,12 +15,15 @@ const LineElement = styled.div`
   background: black;
 `;
 
+const snapOffset = (lineWidth: number, snapToPixels?: boolean) => {
+    return lineWidth === 1 && snapToPixels ? "calc(-50% - 0.5px)" : "-50%";
+}
+
 export const DotNode = styled.div<DotNodeProps>`
   position: relative;
   width: 0;
   height: 0;
 
-  /* DOT (static) */
 /* DOT (static) */
 &::after {
   content: "";
@@ -52,7 +55,7 @@ ${({ lineUp, lineWidth = 1, snapToPixels = true }) =>
       top: calc(50% - ${lineUp}px);
       left: 50%;
       transform: translateX(
-        ${lineWidth === 1 && snapToPixels ? "calc(-50% - 0.5px)" : "-50%"}
+        ${snapOffset(lineWidth, snapToPixels)}
       );
     }
   `}
@@ -70,7 +73,7 @@ ${({ lineLeft, lineWidth = 1, snapToPixels = true }) =>
       left: 50%;
       transform: translate(
         -100%,
-        ${lineWidth === 1 && snapToPixels ? "calc(-50% - 0.5px)" : "-50%"}
+        ${snapOffset(lineWidth, snapToPixels)}
       );
     }
   `}
@@ -88,7 +91,7 @@ ${({ lineRight, lineWidth = 1, snapToPixels = true }) =>
       left: 50%;
       transform: translate(
         0,
-        ${lineWidth === 1 && snapToPixels ? "calc(-50% - 0.5px)" : "-50%"}
+        ${snapOffset(lineWidth, snapToPixels)}
       );
     }
   `}
@@ -105,7 +108,7 @@ ${({ lineDown, lineWidth = 1, snapToPixels = true }) =>
       top: 50%;
       left: 50%;
       transform: translate(
-        ${lineWidth === 1 && snapToPixels ? "calc(-50% - 0.5px)" : "-50%"},
+        ${snapOffset(lineWidth, snapToPixels)},
         0
       );
     }
