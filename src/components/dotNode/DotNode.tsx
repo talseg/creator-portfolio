@@ -25,17 +25,18 @@ const DotCSS = css`
   }
 `;
 
-const UpLineCSS = css`
-  &::before {
-    content: "";
-    position: absolute;
-    background: black;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-  }
-`;
+// const UpLineCSS = css`
+//   &::before {
+//         content: "";
+//         position: absolute;
+//         background: black;
+//         width: ${lineWidth}px;
+//         height: ${lineUp}px;
+//         top: calc(50% - ${lineUp}px);
+//         left: 50%;
+//         transform: translateX(-50%);
+//       }
+// `;
 
 // ----------------------------------------------------------
 // DOWN / LEFT / RIGHT line elements
@@ -54,7 +55,6 @@ export const DotNode = styled.div<DotNodeProps>`
   height: 0;
 
   ${DotCSS}
-  ${UpLineCSS}
 
   ${({ 
     lineUp,
@@ -65,6 +65,18 @@ export const DotNode = styled.div<DotNodeProps>`
     dotSize = 8,
     perceptualCentering
   }) => css`
+
+
+    &::before {
+        content: "";
+        position: absolute;
+        background: black;
+        width: ${lineWidth}px;
+        height: ${lineUp}px;
+        top: calc(50% - ${lineUp}px);
+        left: 50%;
+        transform: translateX(-50%);
+      }
 
     /* ---------------------- DOT SIZE ---------------------- */
     &::after {
@@ -126,10 +138,27 @@ export const DotNode = styled.div<DotNodeProps>`
     `}
 
     /* ---------------------- DOWN LINE --------------------- */
+    /* DEBUG BLUE PIXEL */
+    & .debug-dot {
+      width: 1px;
+      height: 1px;
+      background: blue;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+    }
+
     ${lineDown &&
     css`
       & .down-line {
         width: ${lineWidth}px;
+        height: ${lineDown}px;
+        top: 50%;
+        left: 50%;
+        transform: translateX(-50%);
+      }px;
         height: ${lineDown}px;
         top: 50%;
         left: calc(50% - ${lineWidth / 2}px);
@@ -146,6 +175,10 @@ export const DotNodeWrapper: React.FC<DotNodeProps> = props => {
 
   return (
     <DotNode {...props}>
+      {/* Center debug pixel */}
+      <LineElement className="debug-dot" />
+
+      {/* Lines */}
       {lineLeft && <LineElement className="left-line" />}
       {lineRight && <LineElement className="right-line" />}
       {lineDown && <LineElement className="down-line" />}
