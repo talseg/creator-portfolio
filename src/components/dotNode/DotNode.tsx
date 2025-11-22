@@ -67,7 +67,14 @@ ${({ lineLeft, lineWidth = 1, snapToPixels = true }) =>
     & .left-line {
       position: absolute;
       background: black;
-      width: ${lineLeft}px;
+
+
+      width: ${lineWidth === 1 && snapToPixels
+        ? `calc(${lineLeft}px + 1px)`
+        : `${lineLeft}px`};
+
+
+
       height: ${lineWidth}px;
       top: 50%;
       left: 50%;
