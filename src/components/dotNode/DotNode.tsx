@@ -7,7 +7,6 @@ export interface DotNodeProps {
   lineRight?: number;
   lineWidth?: number;
   dotSize?: number;
-  perceptualCentering?: boolean;
 }
 
 const LineElement = styled.div`
