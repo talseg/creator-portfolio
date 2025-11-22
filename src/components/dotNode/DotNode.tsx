@@ -16,7 +16,7 @@ const LineElement = styled.div`
 `;
 
 const snapOffset = (lineWidth: number, snapToPixels?: boolean) => {
-    return lineWidth === 1 && snapToPixels ? "calc(-50% - 0.5px)" : "-50%";
+  return lineWidth === 1 && snapToPixels ? "calc(-50% - 0.5px)" : "-50%";
 }
 
 export const DotNode = styled.div<DotNodeProps>`
@@ -44,8 +44,8 @@ export const DotNode = styled.div<DotNodeProps>`
 
 /* ---------------------- UP LINE ------------------------ */
 ${({ lineUp, lineWidth = 1, snapToPixels = true }) =>
-  lineUp &&
-  css`
+    Number(lineUp) > 0 &&
+    css`
     &::before {
       content: "";
       position: absolute;
@@ -62,8 +62,8 @@ ${({ lineUp, lineWidth = 1, snapToPixels = true }) =>
 
 /* ---------------------- LEFT LINE ---------------------- */
 ${({ lineLeft, lineWidth = 1, snapToPixels = true }) =>
-  lineLeft &&
-  css`
+    Number(lineLeft) > 0 &&
+    css`
     & .left-line {
       position: absolute;
       background: black;
@@ -80,8 +80,8 @@ ${({ lineLeft, lineWidth = 1, snapToPixels = true }) =>
 
 /* ---------------------- RIGHT LINE -------------------- */
 ${({ lineRight, lineWidth = 1, snapToPixels = true }) =>
-  lineRight &&
-  css`
+    Number(lineRight) > 0 &&
+    css`
     & .right-line {
       position: absolute;
       background: black;
@@ -98,8 +98,8 @@ ${({ lineRight, lineWidth = 1, snapToPixels = true }) =>
 
 /* ---------------------- DOWN LINE --------------------- */
 ${({ lineDown, lineWidth = 1, snapToPixels = true }) =>
-  lineDown &&
-  css`
+    Number(lineDown) > 0 &&
+    css`
     & .down-line {
       position: absolute;
       background: black;
@@ -118,11 +118,16 @@ ${({ lineDown, lineWidth = 1, snapToPixels = true }) =>
 export const DotNodeWrapper: React.FC<DotNodeProps> = props => {
   const { lineLeft, lineRight, lineDown } = props;
 
+  const shouldDraw = (line: number | undefined): boolean => {
+    return Boolean(line && line > 0);
+  }
+
+
   return (
     <DotNode {...props}>
-      {lineLeft && <LineElement className="left-line" />}
-      {lineRight && <LineElement className="right-line" />}
-      {lineDown && <LineElement className="down-line" />}
+      {shouldDraw(lineLeft) && <LineElement className="left-line" />}
+      {shouldDraw(lineRight) && <LineElement className="right-line" />}
+      {shouldDraw(lineDown) && <LineElement className="down-line" />}
     </DotNode>
   );
 };
