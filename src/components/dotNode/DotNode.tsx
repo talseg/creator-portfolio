@@ -7,6 +7,7 @@ export interface DotNodeProps {
   lineRight?: number;
   lineWidth?: number;
   dotSize?: number;
+  snapToPixels?: boolean;
 }
 
 const LineElement = styled.div`
@@ -32,66 +33,77 @@ export const DotNode = styled.div<DotNodeProps>`
     transform: translate(-50%, -50%);
   }
 
-  /* ---------------------- UP LINE ------------------------ */
-  ${({ lineUp, lineWidth = 1 }) =>
-    lineUp &&
-    css`
-      &::before {
-        content: "";
-        position: absolute;
-        background: black;
-        width: ${lineWidth}px;
-        height: ${lineUp}px;
-        top: calc(50% - ${lineUp}px);
-        left: 50%;
-        transform: translateX(-50%);
-      }
-    `}
+/* ---------------------- UP LINE ------------------------ */
+${({ lineUp, lineWidth = 1, snapToPixels }) =>
+  lineUp &&
+  css`
+    &::before {
+      content: "";
+      position: absolute;
+      background: black;
+      width: ${lineWidth}px;
+      height: ${lineUp}px;
+      top: calc(50% - ${lineUp}px);
+      left: 50%;
+      transform: translateX(
+        ${lineWidth === 1 && snapToPixels ? "calc(-50% - 0.5px)" : "-50%"}
+      );
+    }
+  `}
 
-  /* ---------------------- LEFT LINE ---------------------- */
-  ${({ lineLeft, lineWidth = 1 }) =>
-    lineLeft &&
-    css`
-      & .left-line {
-        position: absolute;
-        background: black;
-        width: ${lineLeft}px;
-        height: ${lineWidth}px;
-        top: 50%;
-        left: 50%;
-        transform: translate(-100%, -50%);
-      }
-    `}
+/* ---------------------- LEFT LINE ---------------------- */
+${({ lineLeft, lineWidth = 1, snapToPixels }) =>
+  lineLeft &&
+  css`
+    & .left-line {
+      position: absolute;
+      background: black;
+      width: ${lineLeft}px;
+      height: ${lineWidth}px;
+      top: 50%;
+      left: 50%;
+      transform: translate(
+        -100%,
+        ${lineWidth === 1 && snapToPixels ? "calc(-50% - 0.5px)" : "-50%"}
+      );
+    }
+  `}
 
-  /* ---------------------- RIGHT LINE -------------------- */
-  ${({ lineRight, lineWidth = 1 }) =>
-    lineRight &&
-    css`
-      & .right-line {
-        position: absolute;
-        background: black;
-        width: ${lineRight}px;
-        height: ${lineWidth}px;
-        top: 50%;
-        left: 50%;
-        transform: translate(0, -50%);
-      }
-    `}
+/* ---------------------- RIGHT LINE -------------------- */
+${({ lineRight, lineWidth = 1, snapToPixels }) =>
+  lineRight &&
+  css`
+    & .right-line {
+      position: absolute;
+      background: black;
+      width: ${lineRight}px;
+      height: ${lineWidth}px;
+      top: 50%;
+      left: 50%;
+      transform: translate(
+        0,
+        ${lineWidth === 1 && snapToPixels ? "calc(-50% - 0.5px)" : "-50%"}
+      );
+    }
+  `}
 
-  /* ---------------------- DOWN LINE --------------------- */
-  ${({ lineDown, lineWidth = 1 }) =>
-    lineDown &&
-    css`
-      & .down-line {
-        position: absolute;
-        background: black;
-        width: ${lineWidth}px;
-        height: ${lineDown}px;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, 0);
-      }
-    `}
+/* ---------------------- DOWN LINE --------------------- */
+${({ lineDown, lineWidth = 1, snapToPixels }) =>
+  lineDown &&
+  css`
+    & .down-line {
+      position: absolute;
+      background: black;
+      width: ${lineWidth}px;
+      height: ${lineDown}px;
+      top: 50%;
+      left: 50%;
+      transform: translate(
+        ${lineWidth === 1 && snapToPixels ? "calc(-50% - 0.5px)" : "-50%"},
+        0
+      );
+    }
+  `}
 `;
 
 export const DotNodeWrapper: React.FC<DotNodeProps> = props => {
