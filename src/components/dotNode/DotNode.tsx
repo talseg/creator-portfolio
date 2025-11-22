@@ -51,8 +51,15 @@ ${({ lineUp, lineWidth = 1, snapToPixels = true }) =>
       position: absolute;
       background: black;
       width: ${lineWidth}px;
-      height: ${lineUp}px;
-      top: calc(50% - ${lineUp}px);
+
+      height: ${lineWidth === 1 && snapToPixels
+        ? `calc(${lineUp}px + 1px)`
+        : `${lineUp}px`};
+
+      top: ${lineWidth === 1 && snapToPixels
+        ? `calc(50% - ${lineUp}px - 0.5px)`
+        : `calc(50% - ${lineUp}px)`};
+
       left: 50%;
       transform: translateX(
         ${snapOffset(lineWidth, snapToPixels)}
