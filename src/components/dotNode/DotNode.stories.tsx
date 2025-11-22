@@ -1,11 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { DotNode, DotNodeWrapper, type DotNodeProps } from "./DotNode";
 
-const Tester: React.FC<DotNodeProps> = (args) => {
-    return (
-        <DotNodeWrapper {...args}></DotNodeWrapper>
-    )
-}
+
 
 const meta = {
   title: 'Example/DotNode',
@@ -26,6 +22,7 @@ export const DotNodeWrapperElement: Story = {
         lineLeft: 30,
         lineRight: 40,
         dotSize: 10,
-        lineWidth: 1
+        lineWidth: 1,
+        perceptualCentering: true
     }
 };
