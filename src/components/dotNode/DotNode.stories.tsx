@@ -23,6 +23,6 @@ export const DotNodeWrapperElement: Story = {
         lineRight: 40,
         dotSize: 10,
         lineWidth: 1,
-        perceptualCentering: true
+        snapToPixels: true
     }
 };

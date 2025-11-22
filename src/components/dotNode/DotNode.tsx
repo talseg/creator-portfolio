@@ -21,20 +21,26 @@ export const DotNode = styled.div<DotNodeProps>`
   height: 0;
 
   /* DOT (static) */
-  &::after {
-    content: "";
-    position: absolute;
-    border-radius: 50%;
-    background: black;
-    top: 50%;
-    left: 50%;
-    width: ${({ dotSize }) => dotSize ?? 8}px;
-    height: ${({ dotSize }) => dotSize ?? 8}px;
-    transform: translate(-50%, -50%);
-  }
+/* DOT (static) */
+&::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: black;
+  top: 50%;
+  left: 50%;
+  width: ${({ dotSize }) => dotSize ?? 8}px;
+  height: ${({ dotSize }) => dotSize ?? 8}px;
+
+  ${({ lineWidth = 1, snapToPixels = true }) =>
+    lineWidth === 1 && snapToPixels
+      ? css`transform: translate(calc(-50% - 0.5px), calc(-50% - 0.5px));`
+      : css`transform: translate(-50%, -50%);`}
+}
+
 
 /* ---------------------- UP LINE ------------------------ */
-${({ lineUp, lineWidth = 1, snapToPixels }) =>
+${({ lineUp, lineWidth = 1, snapToPixels = true }) =>
   lineUp &&
   css`
     &::before {
@@ -52,7 +58,7 @@ ${({ lineUp, lineWidth = 1, snapToPixels }) =>
   `}
 
 /* ---------------------- LEFT LINE ---------------------- */
-${({ lineLeft, lineWidth = 1, snapToPixels }) =>
+${({ lineLeft, lineWidth = 1, snapToPixels = true }) =>
   lineLeft &&
   css`
     & .left-line {
@@ -70,7 +76,7 @@ ${({ lineLeft, lineWidth = 1, snapToPixels }) =>
   `}
 
 /* ---------------------- RIGHT LINE -------------------- */
-${({ lineRight, lineWidth = 1, snapToPixels }) =>
+${({ lineRight, lineWidth = 1, snapToPixels = true }) =>
   lineRight &&
   css`
     & .right-line {
@@ -88,7 +94,7 @@ ${({ lineRight, lineWidth = 1, snapToPixels }) =>
   `}
 
 /* ---------------------- DOWN LINE --------------------- */
-${({ lineDown, lineWidth = 1, snapToPixels }) =>
+${({ lineDown, lineWidth = 1, snapToPixels = true }) =>
   lineDown &&
   css`
     & .down-line {
