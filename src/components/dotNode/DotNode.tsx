@@ -19,7 +19,7 @@ const snapOffset = (lineWidth: number, snapToPixels?: boolean) => {
   return lineWidth === 1 && snapToPixels ? "calc(-50% - 0.5px)" : "-50%";
 }
 
-export const DotNode = styled.div<DotNodeProps>`
+const DotNode = styled.div<DotNodeProps>`
   position: relative;
   width: 0;
   height: 0;
