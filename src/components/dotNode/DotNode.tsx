@@ -34,13 +34,11 @@ export const DotNode = styled.div<DotNodeProps>`
   left: 50%;
   width: ${({ dotSize }) => dotSize ?? 8}px;
   height: ${({ dotSize }) => dotSize ?? 8}px;
-
   ${({ lineWidth = 1, snapToPixels = true }) =>
     lineWidth === 1 && snapToPixels
       ? css`transform: translate(calc(-50% - 0.5px), calc(-50% - 0.5px));`
       : css`transform: translate(-50%, -50%);`}
 }
-
 
 /* ---------------------- UP LINE ------------------------ */
 ${({ lineUp, lineWidth = 1, snapToPixels = true }) =>
@@ -51,15 +49,12 @@ ${({ lineUp, lineWidth = 1, snapToPixels = true }) =>
       position: absolute;
       background: black;
       width: ${lineWidth}px;
-
       height: ${lineWidth === 1 && snapToPixels
         ? `calc(${lineUp}px + 1px)`
         : `${lineUp}px`};
-
       top: ${lineWidth === 1 && snapToPixels
         ? `calc(50% - ${lineUp}px - 0.5px)`
         : `calc(50% - ${lineUp}px)`};
-
       left: 50%;
       transform: translateX(
         ${snapOffset(lineWidth, snapToPixels)}
@@ -74,14 +69,9 @@ ${({ lineLeft, lineWidth = 1, snapToPixels = true }) =>
     & .left-line {
       position: absolute;
       background: black;
-
-
       width: ${lineWidth === 1 && snapToPixels
         ? `calc(${lineLeft}px + 1px)`
         : `${lineLeft}px`};
-
-
-
       height: ${lineWidth}px;
       top: 50%;
       left: 50%;
@@ -132,11 +122,8 @@ ${({ lineDown, lineWidth = 1, snapToPixels = true }) =>
 export const DotNodeWrapper: React.FC<DotNodeProps> = props => {
   const { lineLeft, lineRight, lineDown } = props;
 
-  const shouldDraw = (line: number | undefined): boolean => {
-    return Boolean(line && line > 0);
-  }
-
-
+  const shouldDraw = (line: number | undefined): boolean => Boolean(line && line > 0);
+  
   return (
     <DotNode {...props}>
       {shouldDraw(lineLeft) && <LineElement className="left-line" />}
