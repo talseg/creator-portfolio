@@ -13,8 +13,8 @@ function App() {
   return (
     <HashRouter>
       <Routes>
-        <Route path="/user" element={<StartPage />} />
-        <Route path="/" element={<AdminPage />} />
+        <Route path="/" element={<StartPage />} />
+        <Route path="/admin" element={<AdminPage />} />
         <Route path="/project/:projectId" element={<ProjectPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
