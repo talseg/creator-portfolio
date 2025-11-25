@@ -1,7 +1,7 @@
 import './App.css'
 import { AdminPage } from './pages/AdminPage';
 import { ProjectPage } from './pages/ProjectPage';
-import { StartPage } from './pages/StartPage';
+//import { StartPage } from './pages/StartPage';
 import { HashRouter, Routes, Route, useLocation } from "react-router-dom";
 import { StartPage1 } from './pages/StartPage1';
 

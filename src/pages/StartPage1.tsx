@@ -1,6 +1,5 @@
 
 import styled from "styled-components";
-// ToDo - fix this
 import OrSegalSvg from "../assets/orSegal.svg?react";
 
 const WrapperStyled = styled.div`
@@ -83,7 +82,7 @@ const DotStyled = styled.div`
 `;
 
 const OrSvg = styled(OrSegalSvg)`
-  
+  align-self: center;
 `;
 
 export const StartPage1: React.FC = () => {
@@ -92,7 +91,7 @@ export const StartPage1: React.FC = () => {
     <WrapperStyled>
 
       <MainGridStyled>
-        <OrSegalSvg/>
+        <OrSvg/>
         <HeaderBox style={{ background: "#FFFDB4", width: "100%", alignItems: "center", justifyItems: "center" }}>
           <TitleText>Designer</TitleText>
         </HeaderBox>
