@@ -40,36 +40,38 @@ interface ProjectRowProps {
     project: Project;
     imageRowOpen: boolean;
     setImageRowOpen: (open: boolean) => void;
+    onAddProjectImage: (projectId: string) => void;
 }
 
-const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen, setImageRowOpen }) => {
+const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen, setImageRowOpen, onAddProjectImage }) => {
 
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    //const fileInputRef = useRef<HTMLInputElement | null>(null);
     const handleAddProjectImageClick = () => {
 
+        onAddProjectImage(project.id);
         console.log("handleAddImage: causing a click in the ",)
         // cause a click in the hidden input
         // this will trigger the handleFileChange and get the file
-        fileInputRef.current?.click();
+        //fileInputRef.current?.click();
 
     };
 
-    const handleAddImageFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
+    // const handleAddImageFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     const file = event.target.files?.[0];
+    //     if (!file) return;
 
-        await addProjectImage(project.id, file);
-    };
+    //     await addProjectImage(project.id, file);
+    // };
 
     return (
         <>
-            <input
+            {/* <input
                 type="file"
                 accept="image/*"
                 ref={fileInputRef}
                 onChange={handleAddImageFileChange}
                 style={{ display: 'none' }}
-            />
+            /> */}
             <TableRow key={project.id}>
 
 
@@ -100,19 +102,25 @@ const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen, setImage
 
 interface RowProps {
     project: Project;
+    onAddProjectImage: (projectId: string) => void;
 }
 
-const ProjectWithImagesRow: React.FC<RowProps> = ({ project }) => {
+const ProjectWithImagesRow: React.FC<RowProps> = ({ project, onAddProjectImage }) => {
     const [showImages, setShowImages] = useState(false);
 
     return (
         <React.Fragment>
 
-            <ProjectRow project={project} imageRowOpen={showImages} setImageRowOpen={setShowImages} />
+            <ProjectRow project={project}
+                imageRowOpen={showImages}
+                setImageRowOpen={setShowImages}
+                onAddProjectImage={onAddProjectImage} />
 
             {/* Expanding Project Images */}
-            {project.images && <ImagesTableRow images={project.images}
-                open={showImages} projectId={project.id}
+            {project.images && <ImagesTableRow
+                images={project.images}
+                open={showImages}
+                projectId={project.id}
             />}
 
         </React.Fragment>
@@ -122,10 +130,16 @@ const ProjectWithImagesRow: React.FC<RowProps> = ({ project }) => {
 export interface ProjectTableProps {
     projects: Project[];
     setProjects: (projects: Project[]) => void;
+    onAddProjectImage: (projectId: string) => void;
 }
 
 
-export const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
+export const ProjectTable: React.FC<ProjectTableProps> = ({ projects, onAddProjectImage }) => {
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+
+
+
     return (
         <Paper sx={{ width: '100%', overflow: 'hidden', maxWidth: "80vw" }}>
             <TableContainer component={Paper} sx={{ maxHeight: "80vh" }}>
@@ -136,13 +150,19 @@ export const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
                             <TableCell>Images</TableCell>
                             <TableCell>Project Name</TableCell>
                             <TableCell>Project Index</TableCell>
-                            <TableCell align="center">Image</TableCell>
+                            <TableCell align="center">
+                                Image
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {
                             projects.map((project, index) => (
-                                <ProjectWithImagesRow project={project} key={`row-project-${index}`} />
+                                <ProjectWithImagesRow
+                                    project={project}
+                                    key={`row-project-${index}`}
+                                    onAddProjectImage={onAddProjectImage}
+                                />
                             ))
                         }
                     </TableBody>

@@ -169,6 +169,10 @@ export const AdminPage: React.FC = () => {
 
     if (isLoading) return <Wrapper><StyledSpinner /></Wrapper>;
 
+    const handleAddProjectImage = (projectId: string): void =>{
+        /*** TODO Implement the AddProjectImage here */
+    }
+
     return (
         <PageWrapper>
 
@@ -184,7 +188,11 @@ export const AdminPage: React.FC = () => {
                 <button onClick={handleUpdateAllProjects}>Save</button>
             </div>
 
-            {projects && <ProjectTable projects={projects} setProjects={setProjects} />}
+            {projects && <ProjectTable 
+                projects={projects} 
+                setProjects={setProjects} 
+                onAddProjectImage={handleAddProjectImage}
+            />}
 
             <div style={{ display: "flex", gap: "0.5rem" }}>
                 <button onClick={handleUpdateDB}>Update DB</button>

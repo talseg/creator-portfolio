@@ -35,8 +35,6 @@ export const fetchProjects = async (): Promise<Project[]> => {
 
 export const fetchProjectById = async (id: string): Promise<Project> => {
 
-  console.log(`In fetchProjectById`);
-
   const docRef = doc(db, "projects", id);
   const snap = await getDoc(docRef);
   if (!snap.exists()) throw new Error("Project not found");
