@@ -2,7 +2,7 @@ import { Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material"
 import type { Image } from "../../database/dbInterfaces";
 import ImageSnapshot from "../imageSnapshot/ImageSnapshot";
 import { useRef } from "react";
-import { addImageToProject } from "../../database/FirebaseDb";
+import { addImageToProject, addProjectImage } from "../../database/FirebaseDb";
 
 interface ImageTableProps {
     images: Image[];
@@ -12,7 +12,7 @@ interface ImageTableProps {
 export const ImageTable: React.FC<ImageTableProps> = ({ images, projectId }) => {
 
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const handleAddImage = () => { 
+    const handleAddImageClick = () => { 
 
         console.log("handleAddImage: causing a click in the ", )
         // cause a click in the hidden input
@@ -20,7 +20,6 @@ export const ImageTable: React.FC<ImageTableProps> = ({ images, projectId }) => 
         fileInputRef.current?.click();
 
     };
-
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -33,14 +32,9 @@ export const ImageTable: React.FC<ImageTableProps> = ({ images, projectId }) => 
         //setImageUrl(url);
     };
 
-
-
-    {/* Hidden input */ }
-
-
-
     return (
         <>
+            {/* Hidden input for add image*/ }
             <input
                 type="file"
                 accept="image/*"
@@ -55,7 +49,7 @@ export const ImageTable: React.FC<ImageTableProps> = ({ images, projectId }) => 
                         <TableCell>Image Index</TableCell>
                         <TableCell>
                             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                                <button onClick={() => handleAddImage()}>+</button>
+                                <button onClick={() => handleAddImageClick()}>+</button>
                             </div>
                         </TableCell>
                     </TableRow>

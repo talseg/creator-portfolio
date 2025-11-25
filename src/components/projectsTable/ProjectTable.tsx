@@ -1,11 +1,12 @@
 import { Box, Collapse, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import type { Project, Image } from "../../database/dbInterfaces";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ImageTable } from "./ImageTable";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ImageSnapshot from "../imageSnapshot/ImageSnapshot";
 import React from "react";
+import { addProjectImage } from "../../database/FirebaseDb";
 
 interface ImageTableRowProps {
     images: Image[];
@@ -25,7 +26,7 @@ export const ImagesTableRow: React.FC<ImageTableRowProps> = ({ images, open, pro
                             Project Images
                         </Typography>
 
-                        <ImageTable images={images} projectId={projectId}/>
+                        <ImageTable images={images} projectId={projectId} />
 
                     </Box>
                 </Collapse>
@@ -42,25 +43,58 @@ interface ProjectRowProps {
 }
 
 const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen, setImageRowOpen }) => {
+
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const handleAddProjectImageClick = () => {
+
+        console.log("handleAddImage: causing a click in the ",)
+        // cause a click in the hidden input
+        // this will trigger the handleFileChange and get the file
+        fileInputRef.current?.click();
+
+    };
+
+    const handleAddImageFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        await addProjectImage(project.id, file);
+    };
+
     return (
-        <TableRow key={project.id}>
+        <>
+            <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={handleAddImageFileChange}
+                style={{ display: 'none' }}
+            />
+            <TableRow key={project.id}>
 
-            {/** Images Expander button */}
-            <TableCell>
-                <IconButton aria-label="expand row" size="small"
-                    onClick={() =>
-                        setImageRowOpen(!imageRowOpen)
-                    }>
-                    {imageRowOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                </IconButton>
-            </TableCell>
 
-            <TableCell>{project.projectName}</TableCell>
-            <TableCell>{project.projectIndex}</TableCell>
-            <TableCell>
-                <ImageSnapshot src={project.projectImageUrl} alt={`project-${project.projectName}`} />
-            </TableCell>
-        </TableRow>
+                {/** Images Expander button */}
+                <TableCell>
+                    <IconButton aria-label="expand row" size="small"
+                        onClick={() =>
+                            setImageRowOpen(!imageRowOpen)
+                        }>
+                        {imageRowOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                    </IconButton>
+                </TableCell>
+
+                <TableCell>{project.projectName}</TableCell>
+                <TableCell>{project.projectIndex}</TableCell>
+                <TableCell>
+                    {
+                        project.projectImageUrl ?
+                            <ImageSnapshot src={project.projectImageUrl} alt={`project-${project.projectName}`} /> :
+                            <button onClick={() => handleAddProjectImageClick()}>+</button>
+                    }
+
+                </TableCell>
+            </TableRow>
+        </>
     );
 }
 
@@ -78,7 +112,7 @@ const ProjectWithImagesRow: React.FC<RowProps> = ({ project }) => {
 
             {/* Expanding Project Images */}
             {project.images && <ImagesTableRow images={project.images}
-            open={showImages} projectId={project.id}
+                open={showImages} projectId={project.id}
             />}
 
         </React.Fragment>
