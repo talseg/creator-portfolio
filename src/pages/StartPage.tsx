@@ -19,6 +19,8 @@ const NameStyled = styled.div`
   color: #a7a7a7;
 `;
 
+
+
 export const StartPage: React.FC = () => {
 
   //const [imageUrl, setImageUrl] = useState<string | null>(defaultImage);

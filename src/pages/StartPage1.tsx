@@ -81,8 +81,9 @@ const DotStyled = styled.div`
   grid-column: 1;
 `;
 
-const OrSvg = styled(OrSegalSvg)`
+const LogoLinkWrapper = styled.a`
   align-self: center;
+  margin-top: 10px;
 `;
 
 export const StartPage1: React.FC = () => {
@@ -91,7 +92,7 @@ export const StartPage1: React.FC = () => {
     <WrapperStyled>
 
       <MainGridStyled>
-        <OrSvg/>
+        <LogoLinkWrapper href="https://www.orsegal.net"><OrSegalSvg/></LogoLinkWrapper>
         <HeaderBox style={{ background: "#FFFDB4", width: "100%", alignItems: "center", justifyItems: "center" }}>
           <TitleText>Designer</TitleText>
         </HeaderBox>
