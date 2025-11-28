@@ -6,7 +6,6 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ImageSnapshot from "../imageSnapshot/ImageSnapshot";
 import React from "react";
-import { addProjectImage } from "../../database/FirebaseDb";
 
 interface ImageTableRowProps {
     images: Image[];
@@ -135,10 +134,6 @@ export interface ProjectTableProps {
 
 
 export const ProjectTable: React.FC<ProjectTableProps> = ({ projects, onAddProjectImage }) => {
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-
-
 
     return (
         <Paper sx={{ width: '100%', overflow: 'hidden', maxWidth: "80vw" }}>

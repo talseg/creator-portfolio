@@ -2,7 +2,7 @@ import { Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material"
 import type { Image } from "../../database/dbInterfaces";
 import ImageSnapshot from "../imageSnapshot/ImageSnapshot";
 import { useRef } from "react";
-import { addImageToProject, addProjectImage } from "../../database/FirebaseDb";
+import { addImageToProject } from "../../database/FirebaseDb";
 
 interface ImageTableProps {
     images: Image[];
