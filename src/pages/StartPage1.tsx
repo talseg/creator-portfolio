@@ -49,6 +49,12 @@ const LogoBox = styled.div`
   justify-content: center;
   align-items: center;
 `
+const StyledLogo = styled(OrSegalSvg)`
+  width: 100%;
+  height: auto;
+  max-width: 10rem;
+`;
+
 
 const MainGridStyled = styled.div`
   display: grid;
@@ -105,6 +111,7 @@ const MiddleSection = styled.div`
   height: 45rem;
   grid-column: 2 / -1;
   background: white;
+  margin-left: -8rem;
 `;
 
 const MainImage = styled.img`
@@ -204,7 +211,7 @@ export const StartPage1: React.FC = () => {
 
           <HeaderBox>
             <LogoBox>
-              <LogoLinkWrapper href="https://www.orsegal.net"><OrSegalSvg /></LogoLinkWrapper>
+              <LogoLinkWrapper href="https://www.orsegal.net"><StyledLogo /></LogoLinkWrapper>
             </LogoBox>
           </HeaderBox>
 
