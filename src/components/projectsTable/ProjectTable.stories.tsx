@@ -65,7 +65,9 @@ const ProjectTableTester: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>(createProjects(3));
 
   return (
-    <ProjectTable projects={projects} setProjects={setProjects}/>
+    <ProjectTable projects={projects} setProjects={setProjects}
+      onAddProjectImage={() => {}}
+    />
   );
   
 }
