@@ -22,11 +22,6 @@ const TitleText = styled.div`
   letter-spacing: 0.02813rem;
 `;
 
-const VerticalLine = styled.div`
-  border-left: 1px solid black;
-  height: 100%;
-`;
-
 const LogoLinkWrapper = styled.a`
   align-self: center;
   margin-top: 10px;
@@ -40,7 +35,6 @@ const HeaderTextBox = styled.div<{ $color?: string }>`
   justify-content: center;
 `;
 
-
 const LogoBox = styled.div`
   display: flex;
   width: 100%;
@@ -53,7 +47,6 @@ const StyledLogo = styled(OrSegalSvg)`
   height: auto;
   max-width: 10rem;
 `;
-
 
 const MainGridStyled = styled.div`
   display: grid;
@@ -72,7 +65,6 @@ const MainGridStyled = styled.div`
   &::-webkit-scrollbar {
     display: none;             /* Chrome, Safari */
   }
-
 `;
 
 const HeaderRow = styled.div`
@@ -105,7 +97,6 @@ const HorizontalLongLine = styled.div`
 
 const MiddleSection = styled.div`
   display: flex;
-  //justify-content: center;
   width: 100%;
   height: 45rem;
   grid-column: 2 / -1;
@@ -136,6 +127,19 @@ const ProjectImage = styled.img`
   width: 100%;
   object-fit: cover;
   margin-right: 10px;
+`;
+
+const VerticalLine = styled.div`
+  border-left: 1px solid black;
+  height: 100%;
+`;
+
+const SimpleDot = styled.div`
+  width: 5px;
+  height: 5px;
+  background: black;
+  border-radius: 50%;
+  transform: translate(2px, -3px);
 `;
 
 export const StartPage1: React.FC = () => {
@@ -181,9 +185,6 @@ export const StartPage1: React.FC = () => {
       const image = <ProjectImage key={i} src={project.projectImageUrl} alt={project.projectName}></ProjectImage>
       images.push(image);
     }
-
-
-
     return images;
   }
 
@@ -232,10 +233,17 @@ export const StartPage1: React.FC = () => {
             <HeaderTextBox>
               <TitleText>Illustrator</TitleText>
             </HeaderTextBox>
-            <VerticalLine />
           </HeaderBox>
 
           <HorizontalLongLine></HorizontalLongLine>
+          <SimpleDot style={{ 
+            gridColumn: 2,
+            justifySelf: "flex-end"
+          }}></SimpleDot>
+          <SimpleDot style={{ 
+            gridColumn: 3,
+            justifySelf: "flex-end"
+          }}></SimpleDot>
 
         </HeaderRow>
 
@@ -247,7 +255,6 @@ export const StartPage1: React.FC = () => {
           <ImagesContainer>
             {
               renderProjectImages()
-              
             }
           </ImagesContainer>
           <VerticalLine />
@@ -268,7 +275,6 @@ export const StartPage1: React.FC = () => {
               renderProjectImages("reverse")
             }
           </ImagesContainer>
-          <VerticalLine />
         </ImagesColumn>
 
       </MainGridStyled>
