@@ -1,6 +1,6 @@
 import { Box, Collapse, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import type { Project, Image } from "../../database/dbInterfaces";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { ImageTable } from "./ImageTable";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
