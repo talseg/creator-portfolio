@@ -23,8 +23,7 @@ const TitleText = styled.div`
 `;
 
 const VerticalLine = styled.div`
-  width: 1px;
-  background: black;
+  border-left: 1px solid black;
   height: 100%;
 `;
 
