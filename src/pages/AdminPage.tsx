@@ -169,7 +169,7 @@ export const AdminPage: React.FC = () => {
 
     if (isLoading) return <Wrapper><StyledSpinner /></Wrapper>;
 
-    const handleAddProjectImage = (projectId: string): void =>{
+    const handleAddProjectImage = (_: string): void =>{
         /*** TODO Implement the AddProjectImage here */
     }
 
