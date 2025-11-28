@@ -2,6 +2,10 @@
 import styled from "styled-components";
 import OrSegalSvg from "../assets/orSegal.svg?react";
 import myImage from "../images/MainPicture.jpg";
+import { useEffect, useState, type ReactElement } from "react";
+import { fetchProjects } from "../database/FirebaseDb";
+import { logException } from "../utilities/exceptionUtils";
+import type { Project } from "../database/dbInterfaces";
 
 
 const WrapperStyled = styled.div`
@@ -9,8 +13,6 @@ const WrapperStyled = styled.div`
   min-height: 100vh;
   min-width: 100vw;
 `;
-
-
 
 const TitleText = styled.div`
   font-family: EditorSans;
@@ -20,26 +22,10 @@ const TitleText = styled.div`
   letter-spacing: 0.02813rem;
 `;
 
-
-
 const VerticalLine = styled.div`
   width: 1px;
   background: black;
   height: 100%;
-`;
-
-
-const SimpleDot = styled.div`
-  width: 0.4rem;
-  height: 0.4rem;
-  background: black;
-  border-radius: 50%;
-  z-index: 10;
-  top: 4.45rem;
-  position: sticky;
-  /* margin-bottom: -0.3rem; */
-  margin-top: -100px;
-  margin-right: -0.15rem;
 `;
 
 const LogoLinkWrapper = styled.a`
@@ -71,6 +57,17 @@ const MainGridStyled = styled.div`
   grid-template-columns: 1fr 1fr 1fr 1fr;
   grid-template-rows: 4.625rem auto;
   justify-items: center;
+
+  height: 100vh;
+  overflow-y: auto;
+
+    /* hide scrollbars */
+  scrollbar-width: none;       /* Firefox */
+  -ms-overflow-style: none;    /* old Edge */
+  &::-webkit-scrollbar {
+    display: none;             /* Chrome, Safari */
+  }
+
 `;
 
 const HeaderRow = styled.div`
@@ -102,24 +99,101 @@ const HorizontalLongLine = styled.div`
 `;
 
 const MiddleSection = styled.div`
+  display: flex;
+  //justify-content: center;
   width: 100%;
-  height: 30rem;
-  grid-column: 1 / -1;
-  background: #dd5b5bb8;
+  height: 45rem;
+  grid-column: 2 / -1;
+  background: white;
 `;
 
 const MainImage = styled.img`
-  /* width: 100%;
-  height: 200px; */
   object-fit: cover;
-  grid-column: 1 / -1;
   justify-content: center;
+`;
+
+const ImagesContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;;
+`;
+
+const ImagesColumn = styled.div<{ $column: number }>`
+  grid-row: 3;
+  grid-column: ${({ $column }) => $column};
+  display: flex;
+  width: 100%;
+`
+
+const ProjectImage = styled.img`
+  width: 100%;
+  object-fit: cover;
+  margin-right: 10px;
 `;
 
 export const StartPage1: React.FC = () => {
 
+  const [projects, setProjects] = useState<Project[]>([]);
 
- 
+  useEffect(() => {
+    const original = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = original;
+    };
+  }, []);
+
+
+  const renderProjectImages = (option?: "reverse" | "alternate") => {
+
+    const images: ReactElement[] = [];
+
+    if (option === "reverse") {
+      for (let i = projects.length - 1; i >= 0; i--) {
+        const project = projects[i];
+        if (!project) break;
+        const image = <ProjectImage key={i} src={project.projectImageUrl} alt={project.projectName}></ProjectImage>
+        images.push(image);
+      }
+      return images;
+    }
+    if (option === "alternate") {
+      for (let i = 0; i < projects.length; i++) {
+        if (i % 2 === 1) continue; 
+        const project = projects[i];
+        if (!project) break;
+        const image = <ProjectImage key={i} src={project.projectImageUrl} alt={project.projectName}></ProjectImage>
+        images.push(image);
+      }
+      return images;
+    }
+
+    for (let i = 0; i < projects.length; i++) {
+      const project = projects[i];
+      if (!project) break;
+      const image = <ProjectImage key={i} src={project.projectImageUrl} alt={project.projectName}></ProjectImage>
+      images.push(image);
+    }
+
+
+
+    return images;
+  }
+
+
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        const projectsData = await fetchProjects();
+        setProjects(projectsData);
+        console.log(`num projects: `, projectsData.length);
+      } catch (err) {
+        logException(err);
+      }
+    }
+    loadProjects();
+  }, []);
 
   return (
     <WrapperStyled>
@@ -163,78 +237,33 @@ export const StartPage1: React.FC = () => {
           <MainImage src={myImage}></MainImage>
         </MiddleSection>
 
-
-        {/* Grid Header Start */}
-
-
-        {/* <HeaderBox>
-          <LogoBox>
-            <LogoLinkWrapper href="https://www.orsegal.net"><OrSegalSvg /></LogoLinkWrapper>
-          </LogoBox>
-        </HeaderBox> */}
-
-
-
-
-
-        {/* <HeaderBox>
-          <HeaderTextBox>
-            <TitleText>Illustrator</TitleText>
-          </HeaderTextBox>
+        <ImagesColumn $column={2}>
+          <ImagesContainer>
+            {
+              renderProjectImages()
+              
+            }
+          </ImagesContainer>
           <VerticalLine />
-        </HeaderBox> */}
+        </ImagesColumn>
 
-        {/* <SimpleDot style={{ gridColumn: 2, justifySelf: "flex-end" }} /> */}
+        <ImagesColumn $column={3}>
+          <ImagesContainer>
+            {
+              renderProjectImages("alternate")
+            }
+          </ImagesContainer>
+          <VerticalLine />
+        </ImagesColumn>
 
-        {/* <SimpleDot style={{ gridColumn: 3, justifySelf: "flex-end" }} /> */}
-
-        {/* <HorizontalLongLine></HorizontalLongLine> */}
-
-
-        {/* <div style={{
-          display: "flex", width: "100%", height: "100px", backgroundColor: "#cbcbcb",
-          gridColumnStart: 1, gridColumnEnd: 5, marginTop: -3, gridRow: 3
-
-        }} /> */}
-
-        {/* <div style={{
-          display: "flex", height: "500px", width: "100%", backgroundColor: "#5eb5cd",
-          gridColumn: 2, marginTop: -3, gridRow: 4,
-          border: "7px solid #ff2a00"
-
-        }} /> */}
-
-        {/* Grid Header End */}
-
-        {/* <div style={{
-          display: "flex", height: "800px", width: "100%", backgroundColor: "#cbcbcb",
-          gridColumn: 2, marginTop: -3, gridRow: 3
-
-        }} />
-
-
-        {/* <div style={{
-          display: "flex", height: "800px", width: "100%", backgroundColor: "#cbcbcb",
-          gridColumn: 2, marginTop: -3, gridRow: 3
-
-        }} />
-
-        <div style={{
-          display: "flex", height: "800px", width: "100%", backgroundColor: "#cbcbcb",
-          gridColumn: 2, marginTop: -3, gridRow: 3
-
-        }} /> */}
-
-        {/* <div style={{
-          display: "flex", height: "900px", width: "100%", backgroundColor: "#c0e3c8",
-          gridColumn: 3, marginTop: -3, gridRow: 3
-
-        }} />
-        <div style={{
-          display: "flex", height: "1200px", width: "100%", backgroundColor: "#d7c8c8",
-          gridColumn: 4, marginTop: -3
-
-        }} /> */}
+        <ImagesColumn $column={4}>
+          <ImagesContainer>
+            {
+              renderProjectImages("reverse")
+            }
+          </ImagesContainer>
+          <VerticalLine />
+        </ImagesColumn>
 
       </MainGridStyled>
 
