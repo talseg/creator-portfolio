@@ -1,9 +1,26 @@
-import { collection, CollectionReference, doc, getDoc, getDocs, orderBy, query, setDoc, WriteBatch, writeBatch, type DocumentData } from "firebase/firestore";
+import { collection, CollectionReference, doc, getDoc, getDocs, orderBy, query, setDoc, updateDoc, WriteBatch, writeBatch, type DocumentData } from "firebase/firestore";
 import { db, storage } from "./firebaseConfig";
 import type { Project, Image } from "./dbInterfaces";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 // ToDo - Move to MobX
+
+export const addNewProjectByName = async (projectName: string, projectIndex: number): Promise<Project> => {
+  const docRef = doc(collection(db, "projects"));
+  const newProject = {
+    id: docRef.id,
+    projectName: projectName,
+    header: "",
+    projectImageUrl: "",
+    projectIndex: projectIndex, // or 0, depending on your ordering logic
+    images: [],
+  };
+  await setDoc(docRef, newProject);
+  return newProject;
+} 
+
+
+
 export const fetchProjects = async (): Promise<Project[]> => {
   const q = query(collection(db, "projects"), orderBy("projectIndex", "asc"));
   const snapshot = await getDocs(q);
@@ -17,8 +34,6 @@ export const fetchProjects = async (): Promise<Project[]> => {
 };
 
 export const fetchProjectById = async (id: string): Promise<Project> => {
-
-  console.log(`In fetchProjectById`);
 
   const docRef = doc(db, "projects", id);
   const snap = await getDoc(docRef);
@@ -109,6 +124,25 @@ export const addImageToProject = async (projectId: string, imageFile: File): Pro
   };
   const newDocRef = doc(imagesColRef); // auto-id
   await setDoc(newDocRef, newImage);
+}
+
+export const addProjectImage = async (projectId: string, projectImageFile: File): Promise<void> => {
+  
+  // Upload to Storage
+  const storagePath = `projects/${projectId}/projectImage/main_${Date.now()}_${projectImageFile.name}`;
+  const storageRef = ref(storage, storagePath);
+  await uploadBytes(storageRef, projectImageFile);
+  const downloadUrl = await getDownloadURL(storageRef);
+
+  console.log("added image: ", storagePath);
+
+  // Update the DB with the Url
+  const projectRef = doc(db, "projects", projectId);
+
+  console.log(`update projectRef: ${projectId} url: ${projectRef}`);
+  await updateDoc(projectRef, {
+    projectImageUrl: downloadUrl
+  });
 }
 
 

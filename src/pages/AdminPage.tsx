@@ -7,10 +7,25 @@ import { getExceptionString, logException } from "../utilities/exceptionUtils";
 import { EmailPasswordDialog } from "../components/userPassword/EmailPasswordDialog";
 import { ProjectTable } from "../components/projectsTable/ProjectTable";
 import styled from "styled-components";
-import { fetchProjectsWithImages, updateProjects } from "../database/FirebaseDb";
-
+import { addNewProjectByName, fetchProjectsWithImages, updateProjects } from "../database/FirebaseDb";
+import { CircularProgress } from "@mui/material";
 
 const Wrapper = styled.div`
+    display: grid;
+    width: 100vw;
+    height: 100vh;
+`;
+
+const StyledSpinner = styled(CircularProgress)`
+  grid-row: 1;
+  grid-column: 1;
+  align-self: center;
+  justify-self: center;
+`;
+
+const PageWrapper = styled.div`
+    grid-row: 1;
+    grid-column: 1;
     padding: 2rem;
     display: flex;
     flex-direction: column;
@@ -35,10 +50,12 @@ export const AdminPage: React.FC = () => {
     const [email, setEmail] = useState<string | null>(null);
     const [hasError, setHasError] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [projectName, setProjectName] = useState("");
 
     useEffect(() => {
         const loadProjects = async () => {
             try {
+                setIsLoading(true);
                 const projectsData = await fetchProjectsWithImages();
                 setProjects(projectsData);
                 setIsLoading(false);
@@ -56,8 +73,6 @@ export const AdminPage: React.FC = () => {
     useEffect(() => {
         // 🔹 Track login state reliably
         const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setIsLoading(false);
-
             if (user) {
                 setIsLoggedIn(true);
                 setEmail(user?.email);
@@ -144,10 +159,22 @@ export const AdminPage: React.FC = () => {
         );
     }
 
+    const getLastProjectIndex = (): number => {
+        if (!projects || projects.length === 0)
+            return 1;
+        return projects[projects.length - 1]!.projectIndex;
+    }
+
     if (error) return <>Projects Load Error</>
 
+    if (isLoading) return <Wrapper><StyledSpinner /></Wrapper>;
+
+    const handleAddProjectImage = (_: string): void =>{
+        /*** TODO Implement the AddProjectImage here */
+    }
+
     return (
-        <Wrapper>
+        <PageWrapper>
 
             <EmailPasswordDialog
                 open={isLoginDialogOPen}
@@ -156,29 +183,58 @@ export const AdminPage: React.FC = () => {
                 onClose={() => { setIsLoginDialogOPen(false) }}
             />
 
-            <div style={{ display: "flex", gap:"1rem"}}>
+            <div style={{ display: "flex", gap: "1rem" }}>
                 {renderLoginOptions()}
                 <button onClick={handleUpdateAllProjects}>Save</button>
             </div>
 
-            {projects && <ProjectTable projects={projects} setProjects={setProjects} />}
+            {projects && <ProjectTable 
+                projects={projects} 
+                setProjects={setProjects} 
+                onAddProjectImage={handleAddProjectImage}
+            />}
 
-            <div>
+            <div style={{ display: "flex", gap: "0.5rem" }}>
                 <button onClick={handleUpdateDB}>Update DB</button>
+                <button onClick={async () => {
+                    if (!projectName) {
+                        alert("please update project name before adding it");
+                        return;
+                    }
+                    await addNewProjectByName(projectName, getLastProjectIndex() + 1);
+                    setIsLoading(true);
+                    const newProjects = await fetchProjectsWithImages();
+                    setProjects([...newProjects]);
+                    setIsLoading(false);
+                }}>Add Project</button>
+
             </div>
+
+            <InputWithHeader>
+                <TextHeader>New project name:</TextHeader>
+                <input
+                    value={projectName}
+                    onChange={async (e) => {
+                        const projectName = e.target.value;
+                        setProjectName(projectName);
+
+                    }}
+                />
+            </InputWithHeader>
+
 
             <InputWithHeader>
                 <TextHeader>First Project Name: </TextHeader>
                 <input
-                    value={firstProjectName} 
+                    value={firstProjectName}
                     onChange={async (e) => {
                         const newProjectName = e.target.value;
                         setFirstProjectName(newProjectName);
                         if (projects && projects[0]) {
                             projects[0].projectName = newProjectName;
                         }
-                    }} 
-                    />
+                    }}
+                />
             </InputWithHeader>
 
             <div>
@@ -186,6 +242,6 @@ export const AdminPage: React.FC = () => {
             </div>
 
 
-        </Wrapper>
+        </PageWrapper>
     )
 }
