@@ -181,7 +181,7 @@ const SimpleDot = styled.div`
     return images;
   }
 
-type scrollAreaType = undefined | "middle" | "designer" | "artist" | "illustrator";
+type scrollAreaType = undefined | "all" | "designer" | "artist" | "illustrator";
 
 export const StartPage1: React.FC = () => {
 
@@ -191,6 +191,7 @@ export const StartPage1: React.FC = () => {
   const [scrollValue1, set1scrollValue1] = useState(0);
   const [scrollValue2, set1scrollValue2] = useState(0);
   const [scrollValue3, set1scrollValue3] = useState(0);
+  const [shouldUpdateImages, setShouldUpdateImage] = useState(false);
 
   const middledRef = useRef<HTMLDivElement>(null);
   const image1Ref = useRef<HTMLDivElement>(null);
@@ -208,6 +209,28 @@ export const StartPage1: React.FC = () => {
 
 useEffect(() => {
 
+
+  // const getAreaToScroll = (scrollAmount: number): scrollAreaType => {
+
+  //   const newMainScrollValue = mainScrollValue - scrollAmount;
+  //   if (newMainScrollValue <= -408) {
+  //     //setMainScrollValue(-408);
+  //     return undefined;
+  //   }
+  //   else if (newMainScrollValue > 0) {
+  //     return undefined;
+  //   }
+  //   else {
+  //     //setMainScrollValue(0);
+  //     return("all");
+  //   }
+
+
+  //   return undefined;
+  // }
+
+
+
   const updateTransforms = () => {
     if (!middledRef.current || !image1Ref.current || 
       !image2Ref.current || !image3Ref.current) return;
@@ -215,11 +238,10 @@ useEffect(() => {
     //const gridRef = mainGridRef as unknown as HTMLDivElement
     
     middledRef.current.style.transform = `translateY(${mainScrollValue}px)`;
-    image1Ref.current.style.transform = `translateY(${mainScrollValue}px)`;
-    image2Ref.current.style.transform = `translateY(${mainScrollValue}px)`;
-    image3Ref.current.style.transform = `translateY(${mainScrollValue}px)`;
+    image1Ref.current.style.transform = `translateY(${mainScrollValue + scrollValue1}px)`;
+    image2Ref.current.style.transform = `translateY(${mainScrollValue + scrollValue2}px)`;
+    image3Ref.current.style.transform = `translateY(${mainScrollValue + scrollValue3}px)`;
   }
-
 
   function onWheel(e: WheelEvent) {
     e.preventDefault();
@@ -228,22 +250,27 @@ useEffect(() => {
     //console.log(`scrollValue : `, scrollAmount);
     //console.log(`mainScrollValue : `, mainScrollValue);
     const newMainScrollValue = mainScrollValue - scrollAmount;
-    console.log(`newMainScrollValue : `, mainScrollValue);
+    //console.log(`newMainScrollValue : `, mainScrollValue);
+
+    //const areaToScroll = getAreaToScroll(scrollAmount);
+    //console.log(`areaToScroll: `, areaToScroll);
+
+    console.log("newMainScrollValue:", newMainScrollValue);
 
     if (newMainScrollValue < -408) {
       setMainScrollValue(-408);
-      //console.log(`scrollAmount was more then : -408 keeping it -408`);
-      //set1scrollValue1((value) => value - scrollAmount);
-      //set1scrollValue2(scrollValue2 - scrollAmount);
-      //set1scrollValue3(scrollValue3 - scrollAmount);
-
+      
+      if (newMainScrollValue <= -508) {
+        console.log("now we should update images");
+        setShouldUpdateImage(true);
+      }
     }
     else if (newMainScrollValue > 0) {
       setMainScrollValue(0);
     }
     else {
       setMainScrollValue((value) => value - scrollAmount);
-      //console.log(`scrollAmount after fix : `, newMainScrollValue);
+      setShouldUpdateImage(false);
     }
     updateTransforms();
   }
@@ -251,7 +278,7 @@ useEffect(() => {
   window.addEventListener("wheel", onWheel, { passive: false });
   return () => window.removeEventListener("wheel", onWheel);
   
-}, [mainScrollValue]);
+}, [mainScrollValue, scrollValue1, scrollValue2, scrollValue3]);
 
 
   useEffect(() => {
@@ -269,7 +296,7 @@ useEffect(() => {
 
   const switchToScrollArea = (area: scrollAreaType): void => {
     setScrollArea(area);
-    console.log(`switched to scroll area: ${area}`);
+    //console.log(`switched to scroll area: ${area}`);
   }
 
   return (
@@ -317,8 +344,11 @@ useEffect(() => {
 
         </HeaderRow>
 
+          { shouldUpdateImages && <div >{scrollArea}</div>}
+
+
         <MiddleSection ref={middledRef}
-          onMouseEnter={() => switchToScrollArea("middle")}
+          onMouseEnter={() => switchToScrollArea("all")}
           onMouseLeave={() => switchToScrollArea(undefined)}
         >
           <MainImage src={myImage}></MainImage>
