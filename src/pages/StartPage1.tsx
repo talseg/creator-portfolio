@@ -228,28 +228,44 @@ export const StartPage1: React.FC = () => {
       e.preventDefault();
       if (!middledRef.current) return;
       const scrollAmount = e.deltaY;
-      //console.log(`scrollValue : `, scrollAmount);
-      //console.log(`mainScrollValue : `, mainScrollValue);
       const newMainScrollValue = mainScrollValue - scrollAmount;
-      //console.log(`newMainScrollValue : `, mainScrollValue);
-
-      //const areaToScroll = getAreaToScroll(scrollAmount);
-      //console.log(`areaToScroll: `, areaToScroll);
-
-      console.log("shouldUpdateImages:", shouldUpdateImages);
 
       if (shouldUpdateImages && scrollArea) {
         //
         switch (scrollArea) {
           case "designer":
-            //console.log(`scrollValue1:${scrollValue1} set1scrollValue1-scrollAmount:${scrollValue1 - scrollAmount}`)
+
+            if (scrollValue1 - scrollAmount > 0) 
+            {
+              set1scrollValue1(0);
+              setShouldUpdateImages(false);
+              setMainScrollValue((value) => value - scrollAmount);
+              break;
+            }
             set1scrollValue1((value) => value - scrollAmount);
             break;
           case "artist":
-            console.log("set1scrollValue2:", scrollValue2 - scrollAmount);
+
+            if (scrollValue2 - scrollAmount > 0) 
+            {
+              set1scrollValue2(0);
+              setShouldUpdateImages(false);
+              setMainScrollValue((value) => value - scrollAmount);
+              break;
+            }
+
+
             set1scrollValue2((value) => value - scrollAmount);
             break;
           case "illustrator":
+
+            if (scrollValue3 - scrollAmount > 0) 
+            {
+              set1scrollValue3(0);
+              setShouldUpdateImages(false);
+              setMainScrollValue((value) => value - scrollAmount);
+              break;
+            }
             console.log("set1scrollValue2:", scrollValue3 - scrollAmount);
             set1scrollValue3((value) => value - scrollAmount);
             break;
