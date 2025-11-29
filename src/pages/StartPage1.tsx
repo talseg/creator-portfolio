@@ -104,6 +104,7 @@ const MiddleSection = styled.div`
   grid-column: 2 / -1;
   background: white;
   margin-left: -8rem;
+  z-index: 10;
 `;
 
 const MainImage = styled.img`
@@ -239,10 +240,9 @@ export const StartPage1: React.FC = () => {
 
       if (shouldUpdateImages && scrollArea) {
         //
-        console.log("now we are in shouldUpdateImages we are supposed to update image rows scrollArea: ");
         switch (scrollArea) {
           case "designer":
-            console.log("set1scrollValue1:", scrollValue1 - scrollAmount);
+            //console.log(`scrollValue1:${scrollValue1} set1scrollValue1-scrollAmount:${scrollValue1 - scrollAmount}`)
             set1scrollValue1((value) => value - scrollAmount);
             break;
           case "artist":
