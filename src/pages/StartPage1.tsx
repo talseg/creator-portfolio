@@ -6,7 +6,6 @@ import { useEffect, useRef, useState, type ReactElement } from "react";
 import { fetchProjects } from "../database/FirebaseDb";
 import { logException } from "../utilities/exceptionUtils";
 import type { Project } from "../database/dbInterfaces";
-import { imageListClasses } from "@mui/material";
 
 
 const WrapperStyled = styled.div`
@@ -147,32 +146,13 @@ const SimpleDot = styled.div`
 
 
 
-  const renderProjectImages = (projects: Project[], option?: "reverse" | "alternate") => {
+const renderProjectImages = (projects: Project[], option?: "reverse" | "alternate") => {
 
-    const images: ReactElement[] = [];
+  const images: ReactElement[] = [];
 
 
-    if (option === "reverse") {
-      for (let i = projects.length - 1; i >= 0; i--) {
-        const project = projects[i];
-        if (!project) break;
-        const image = <ProjectImage key={i} src={project.projectImageUrl} alt={project.projectName}></ProjectImage>
-        images.push(image);
-      }
-      return images;
-    }
-    if (option === "alternate") {
-      for (let i = 0; i < projects.length; i++) {
-        if (i % 2 === 1) continue;
-        const project = projects[i];
-        if (!project) break;
-        const image = <ProjectImage key={i} src={project.projectImageUrl} alt={project.projectName}></ProjectImage>
-        images.push(image);
-      }
-      return images;
-    }
-
-    for (let i = 0; i < projects.length; i++) {
+  if (option === "reverse") {
+    for (let i = projects.length - 1; i >= 0; i--) {
       const project = projects[i];
       if (!project) break;
       const image = <ProjectImage key={i} src={project.projectImageUrl} alt={project.projectName}></ProjectImage>
@@ -180,6 +160,25 @@ const SimpleDot = styled.div`
     }
     return images;
   }
+  if (option === "alternate") {
+    for (let i = 0; i < projects.length; i++) {
+      if (i % 2 === 1) continue;
+      const project = projects[i];
+      if (!project) break;
+      const image = <ProjectImage key={i} src={project.projectImageUrl} alt={project.projectName}></ProjectImage>
+      images.push(image);
+    }
+    return images;
+  }
+
+  for (let i = 0; i < projects.length; i++) {
+    const project = projects[i];
+    if (!project) break;
+    const image = <ProjectImage key={i} src={project.projectImageUrl} alt={project.projectName}></ProjectImage>
+    images.push(image);
+  }
+  return images;
+}
 
 type scrollAreaType = undefined | "all" | "designer" | "artist" | "illustrator";
 
@@ -207,66 +206,75 @@ export const StartPage1: React.FC = () => {
   }, []);
 
 
-useEffect(() => {
+  useEffect(() => {
 
 
 
 
-  const updateTransforms = () => {
-    if (!middledRef.current || !image1Ref.current || 
-      !image2Ref.current || !image3Ref.current) return;
+    const updateTransforms = () => {
+      if (!middledRef.current || !image1Ref.current ||
+        !image2Ref.current || !image3Ref.current) return;
 
-    //const gridRef = mainGridRef as unknown as HTMLDivElement
-    
-    middledRef.current.style.transform = `translateY(${mainScrollValue}px)`;
-    image1Ref.current.style.transform = `translateY(${mainScrollValue + scrollValue1}px)`;
-    image2Ref.current.style.transform = `translateY(${mainScrollValue + scrollValue2}px)`;
-    image3Ref.current.style.transform = `translateY(${mainScrollValue + scrollValue3}px)`;
-  }
+      //const gridRef = mainGridRef as unknown as HTMLDivElement
 
-  function onWheel(e: WheelEvent) {
-    e.preventDefault();
-    if (!middledRef.current) return;
-    const scrollAmount = e.deltaY;
-    //console.log(`scrollValue : `, scrollAmount);
-    //console.log(`mainScrollValue : `, mainScrollValue);
-    const newMainScrollValue = mainScrollValue - scrollAmount;
-    //console.log(`newMainScrollValue : `, mainScrollValue);
+      middledRef.current.style.transform = `translateY(${mainScrollValue}px)`;
+      image1Ref.current.style.transform = `translateY(${mainScrollValue + scrollValue1}px)`;
+      image2Ref.current.style.transform = `translateY(${mainScrollValue + scrollValue2}px)`;
+      image3Ref.current.style.transform = `translateY(${mainScrollValue + scrollValue3}px)`;
+    }
 
-    //const areaToScroll = getAreaToScroll(scrollAmount);
-    //console.log(`areaToScroll: `, areaToScroll);
+    function onWheel(e: WheelEvent) {
+      e.preventDefault();
+      if (!middledRef.current) return;
+      const scrollAmount = e.deltaY;
+      //console.log(`scrollValue : `, scrollAmount);
+      //console.log(`mainScrollValue : `, mainScrollValue);
+      const newMainScrollValue = mainScrollValue - scrollAmount;
+      //console.log(`newMainScrollValue : `, mainScrollValue);
 
-    console.log("shouldUpdateImages:", shouldUpdateImages);
+      //const areaToScroll = getAreaToScroll(scrollAmount);
+      //console.log(`areaToScroll: `, areaToScroll);
 
-    if (shouldUpdateImages && scrollArea) {
-      //
-      console.log("now we are in shouldUpdateImages we are supposed to update image rows");
-      switch (scrollArea) {
-        case "designer":
+      console.log("shouldUpdateImages:", shouldUpdateImages);
+
+      if (shouldUpdateImages && scrollArea) {
+        //
+        console.log("now we are in shouldUpdateImages we are supposed to update image rows scrollArea: ");
+        switch (scrollArea) {
+          case "designer":
+            console.log("set1scrollValue1:", scrollValue1 - scrollAmount);
+            set1scrollValue1((value) => value - scrollAmount);
+            break;
+          case "artist":
+            console.log("set1scrollValue2:", scrollValue2 - scrollAmount);
+            set1scrollValue2((value) => value - scrollAmount);
+            break;
+          case "illustrator":
+            console.log("set1scrollValue2:", scrollValue3 - scrollAmount);
+            set1scrollValue3((value) => value - scrollAmount);
+            break;
+        }
 
 
       }
+      else if (newMainScrollValue < -408) {
+        setMainScrollValue(-408);
+        setShouldUpdateImages(true);
+      }
+      else if (newMainScrollValue > 0) {
+        setMainScrollValue(0);
+      }
+      else {
+        setMainScrollValue((value) => value - scrollAmount);
+        setShouldUpdateImages(false);
+      }
+      updateTransforms();
+    }
 
+    window.addEventListener("wheel", onWheel, { passive: false });
+    return () => window.removeEventListener("wheel", onWheel);
 
-    }
-    else if (newMainScrollValue < -408) {
-      setMainScrollValue(-408);
-      setShouldUpdateImages(true);
-    }
-    else if (newMainScrollValue > 0) {
-      setMainScrollValue(0);
-    }
-    else {
-      setMainScrollValue((value) => value - scrollAmount);
-      setShouldUpdateImages(false);
-    }
-    updateTransforms();
-  }
-
-  window.addEventListener("wheel", onWheel, { passive: false });
-  return () => window.removeEventListener("wheel", onWheel);
-  
-}, [mainScrollValue, scrollArea, scrollValue1, scrollValue2, scrollValue3, shouldUpdateImages]);
+  }, [mainScrollValue, scrollArea, scrollValue1, scrollValue2, scrollValue3, shouldUpdateImages]);
 
 
   useEffect(() => {
@@ -332,7 +340,7 @@ useEffect(() => {
 
         </HeaderRow>
 
-          { shouldUpdateImages && <div >{scrollArea}</div>}
+        {shouldUpdateImages && <div >{scrollArea}</div>}
 
 
         <MiddleSection ref={middledRef}
