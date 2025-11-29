@@ -210,25 +210,6 @@ export const StartPage1: React.FC = () => {
 useEffect(() => {
 
 
-  // const getAreaToScroll = (scrollAmount: number): scrollAreaType => {
-
-  //   const newMainScrollValue = mainScrollValue - scrollAmount;
-  //   if (newMainScrollValue <= -408) {
-  //     //setMainScrollValue(-408);
-  //     return undefined;
-  //   }
-  //   else if (newMainScrollValue > 0) {
-  //     return undefined;
-  //   }
-  //   else {
-  //     //setMainScrollValue(0);
-  //     return("all");
-  //   }
-
-
-  //   return undefined;
-  // }
-
 
 
   const updateTransforms = () => {
@@ -261,7 +242,8 @@ useEffect(() => {
       //
       console.log("now we are in shouldUpdateImages we are supposed to update image rows");
       switch (scrollArea) {
-        case "artist":
+        case "designer":
+
 
       }
 
