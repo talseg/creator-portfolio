@@ -105,6 +105,7 @@ const MiddleSection = styled.div`
   background: white;
   margin-left: -8rem;
   z-index: 10;
+  justify-self: self-end;
 `;
 
 const MainImage = styled.img`
