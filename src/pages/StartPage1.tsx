@@ -191,7 +191,7 @@ export const StartPage1: React.FC = () => {
   const [scrollValue1, set1scrollValue1] = useState(0);
   const [scrollValue2, set1scrollValue2] = useState(0);
   const [scrollValue3, set1scrollValue3] = useState(0);
-  const [shouldUpdateImages, setShouldUpdateImage] = useState(false);
+  const [shouldUpdateImages, setShouldUpdateImages] = useState(false);
 
   const middledRef = useRef<HTMLDivElement>(null);
   const image1Ref = useRef<HTMLDivElement>(null);
@@ -255,22 +255,28 @@ useEffect(() => {
     //const areaToScroll = getAreaToScroll(scrollAmount);
     //console.log(`areaToScroll: `, areaToScroll);
 
-    console.log("newMainScrollValue:", newMainScrollValue);
+    console.log("shouldUpdateImages:", shouldUpdateImages);
 
-    if (newMainScrollValue < -408) {
-      setMainScrollValue(-408);
-      
-      if (newMainScrollValue <= -508) {
-        console.log("now we should update images");
-        setShouldUpdateImage(true);
+    if (shouldUpdateImages && scrollArea) {
+      //
+      console.log("now we are in shouldUpdateImages we are supposed to update image rows");
+      switch (scrollArea) {
+        case "artist":
+
       }
+
+
+    }
+    else if (newMainScrollValue < -408) {
+      setMainScrollValue(-408);
+      setShouldUpdateImages(true);
     }
     else if (newMainScrollValue > 0) {
       setMainScrollValue(0);
     }
     else {
       setMainScrollValue((value) => value - scrollAmount);
-      setShouldUpdateImage(false);
+      setShouldUpdateImages(false);
     }
     updateTransforms();
   }
@@ -278,7 +284,7 @@ useEffect(() => {
   window.addEventListener("wheel", onWheel, { passive: false });
   return () => window.removeEventListener("wheel", onWheel);
   
-}, [mainScrollValue, scrollValue1, scrollValue2, scrollValue3]);
+}, [mainScrollValue, scrollArea, scrollValue1, scrollValue2, scrollValue3, shouldUpdateImages]);
 
 
   useEffect(() => {
