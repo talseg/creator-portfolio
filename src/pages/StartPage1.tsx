@@ -79,7 +79,7 @@ const HeaderRow = styled.div`
   top: 0;
   z-index: 20;
   width: 100%;
-  height: 100%;
+  height: calc(100% + 5px);
 `;
 
 const HeaderBox = styled.div`
