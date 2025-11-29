@@ -2,7 +2,7 @@
 import styled from "styled-components";
 import OrSegalSvg from "../assets/orSegal.svg?react";
 import myImage from "../images/MainPicture.jpg";
-import { useEffect, useState, type ReactElement } from "react";
+import { useEffect, useRef, useState, type ReactElement } from "react";
 import { fetchProjects } from "../database/FirebaseDb";
 import { logException } from "../utilities/exceptionUtils";
 import type { Project } from "../database/dbInterfaces";
@@ -53,11 +53,13 @@ const MainGridStyled = styled.div`
   font-size: 20px;
   width: 100%;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-template-rows: 4.625rem auto;
+  grid-template-rows: 4.625rem auto auto;
   justify-items: center;
 
+  overflow: hidden;
   height: 100vh;
-  overflow-y: auto;
+  position: relative;
+
 
     /* hide scrollbars */
   scrollbar-width: none;       /* Firefox */
@@ -77,7 +79,7 @@ const HeaderRow = styled.div`
   top: 0;
   z-index: 20;
   width: 100%;
-  height: 100%;
+  height: calc(100% + 5px);
 `;
 
 const HeaderBox = styled.div`
@@ -98,10 +100,12 @@ const HorizontalLongLine = styled.div`
 const MiddleSection = styled.div`
   display: flex;
   width: 100%;
-  height: 45rem;
+  height: 25rem;
   grid-column: 2 / -1;
   background: white;
   margin-left: -8rem;
+  z-index: 10;
+  justify-self: self-end;
 `;
 
 const MainImage = styled.img`
@@ -142,9 +146,58 @@ const SimpleDot = styled.div`
   transform: translate(2px, -3px);
 `;
 
+
+
+const renderProjectImages = (projects: Project[], option?: "reverse" | "alternate") => {
+
+  const images: ReactElement[] = [];
+
+
+  if (option === "reverse") {
+    for (let i = projects.length - 1; i >= 0; i--) {
+      const project = projects[i];
+      if (!project) break;
+      const image = <ProjectImage key={i} src={project.projectImageUrl} alt={project.projectName}></ProjectImage>
+      images.push(image);
+    }
+    return images;
+  }
+  if (option === "alternate") {
+    for (let i = 0; i < projects.length; i++) {
+      if (i % 2 === 1) continue;
+      const project = projects[i];
+      if (!project) break;
+      const image = <ProjectImage key={i} src={project.projectImageUrl} alt={project.projectName}></ProjectImage>
+      images.push(image);
+    }
+    return images;
+  }
+
+  for (let i = 0; i < projects.length; i++) {
+    const project = projects[i];
+    if (!project) break;
+    const image = <ProjectImage key={i} src={project.projectImageUrl} alt={project.projectName}></ProjectImage>
+    images.push(image);
+  }
+  return images;
+}
+
+type scrollAreaType = undefined | "all" | "designer" | "artist" | "illustrator";
+
 export const StartPage1: React.FC = () => {
 
   const [projects, setProjects] = useState<Project[]>([]);
+  const [scrollArea, setScrollArea] = useState<scrollAreaType>(undefined);
+  const [mainScrollValue, setMainScrollValue] = useState<number>(0);
+  const [scrollValue1, set1scrollValue1] = useState(0);
+  const [scrollValue2, set1scrollValue2] = useState(0);
+  const [scrollValue3, set1scrollValue3] = useState(0);
+  const [shouldUpdateImages, setShouldUpdateImages] = useState(false);
+
+  const middledRef = useRef<HTMLDivElement>(null);
+  const image1Ref = useRef<HTMLDivElement>(null);
+  const image2Ref = useRef<HTMLDivElement>(null);
+  const image3Ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const original = document.body.style.overflow;
@@ -155,38 +208,92 @@ export const StartPage1: React.FC = () => {
   }, []);
 
 
-  const renderProjectImages = (option?: "reverse" | "alternate") => {
+  useEffect(() => {
 
-    const images: ReactElement[] = [];
 
-    if (option === "reverse") {
-      for (let i = projects.length - 1; i >= 0; i--) {
-        const project = projects[i];
-        if (!project) break;
-        const image = <ProjectImage key={i} src={project.projectImageUrl} alt={project.projectName}></ProjectImage>
-        images.push(image);
+
+
+    const updateTransforms = () => {
+      if (!middledRef.current || !image1Ref.current ||
+        !image2Ref.current || !image3Ref.current) return;
+
+      //const gridRef = mainGridRef as unknown as HTMLDivElement
+
+      middledRef.current.style.transform = `translateY(${mainScrollValue}px)`;
+      image1Ref.current.style.transform = `translateY(${mainScrollValue + scrollValue1}px)`;
+      image2Ref.current.style.transform = `translateY(${mainScrollValue + scrollValue2}px)`;
+      image3Ref.current.style.transform = `translateY(${mainScrollValue + scrollValue3}px)`;
+    }
+
+    function onWheel(e: WheelEvent) {
+      e.preventDefault();
+      if (!middledRef.current) return;
+      const scrollAmount = e.deltaY;
+      const newMainScrollValue = mainScrollValue - scrollAmount;
+
+      if (shouldUpdateImages && scrollArea) {
+        //
+        switch (scrollArea) {
+          case "designer":
+
+            if (scrollValue1 - scrollAmount > 0) 
+            {
+              set1scrollValue1(0);
+              setShouldUpdateImages(false);
+              setMainScrollValue((value) => value - scrollAmount);
+              break;
+            }
+              
+
+            //console.log(`scrollValue1:${scrollValue1} set1scrollValue1-scrollAmount:${scrollValue1 - scrollAmount}`)
+            set1scrollValue1((value) => value - scrollAmount);
+            break;
+          case "artist":
+
+            if (scrollValue2 - scrollAmount > 0) 
+            {
+              set1scrollValue2(0);
+              setShouldUpdateImages(false);
+              setMainScrollValue((value) => value - scrollAmount);
+              break;
+            }
+
+
+            set1scrollValue2((value) => value - scrollAmount);
+            break;
+          case "illustrator":
+
+            if (scrollValue3 - scrollAmount > 0) 
+            {
+              set1scrollValue3(0);
+              setShouldUpdateImages(false);
+              setMainScrollValue((value) => value - scrollAmount);
+              break;
+            }
+            set1scrollValue3((value) => value - scrollAmount);
+            break;
+        }
+
+
       }
-      return images;
-    }
-    if (option === "alternate") {
-      for (let i = 0; i < projects.length; i++) {
-        if (i % 2 === 1) continue; 
-        const project = projects[i];
-        if (!project) break;
-        const image = <ProjectImage key={i} src={project.projectImageUrl} alt={project.projectName}></ProjectImage>
-        images.push(image);
+      else if (newMainScrollValue < -408) {
+        setMainScrollValue(-408);
+        setShouldUpdateImages(true);
       }
-      return images;
+      else if (newMainScrollValue > 0) {
+        setMainScrollValue(0);
+      }
+      else {
+        setMainScrollValue((value) => value - scrollAmount);
+        setShouldUpdateImages(false);
+      }
+      updateTransforms();
     }
 
-    for (let i = 0; i < projects.length; i++) {
-      const project = projects[i];
-      if (!project) break;
-      const image = <ProjectImage key={i} src={project.projectImageUrl} alt={project.projectName}></ProjectImage>
-      images.push(image);
-    }
-    return images;
-  }
+    window.addEventListener("wheel", onWheel, { passive: false });
+    return () => window.removeEventListener("wheel", onWheel);
+
+  }, [mainScrollValue, scrollArea, scrollValue1, scrollValue2, scrollValue3, shouldUpdateImages]);
 
 
   useEffect(() => {
@@ -202,10 +309,15 @@ export const StartPage1: React.FC = () => {
     loadProjects();
   }, []);
 
+  const switchToScrollArea = (area: scrollAreaType): void => {
+    setScrollArea(area);
+    //console.log(`switched to scroll area: ${area}`);
+  }
+
   return (
     <WrapperStyled>
 
-      <MainGridStyled>
+      <MainGridStyled >
 
         <HeaderRow>
 
@@ -236,43 +348,61 @@ export const StartPage1: React.FC = () => {
           </HeaderBox>
 
           <HorizontalLongLine></HorizontalLongLine>
-          <SimpleDot style={{ 
+          <SimpleDot style={{
             gridColumn: 2,
             justifySelf: "flex-end"
           }}></SimpleDot>
-          <SimpleDot style={{ 
+          <SimpleDot style={{
             gridColumn: 3,
             justifySelf: "flex-end"
           }}></SimpleDot>
 
         </HeaderRow>
 
-        <MiddleSection>
+        {shouldUpdateImages && <div >{scrollArea}</div>}
+
+
+        <MiddleSection ref={middledRef}
+          onMouseEnter={() => switchToScrollArea("all")}
+          onMouseLeave={() => switchToScrollArea(undefined)}
+        >
           <MainImage src={myImage}></MainImage>
         </MiddleSection>
 
-        <ImagesColumn $column={2}>
+        <ImagesColumn ref={image1Ref}
+          $column={2}
+          onMouseEnter={() => switchToScrollArea("designer")}
+          onMouseLeave={() => switchToScrollArea(undefined)}
+        >
           <ImagesContainer>
             {
-              renderProjectImages()
+              renderProjectImages(projects)
             }
           </ImagesContainer>
           <VerticalLine />
         </ImagesColumn>
 
-        <ImagesColumn $column={3}>
+        <ImagesColumn ref={image2Ref}
+          $column={3}
+          onMouseEnter={() => switchToScrollArea("artist")}
+          onMouseLeave={() => switchToScrollArea(undefined)}
+        >
           <ImagesContainer>
             {
-              renderProjectImages("alternate")
+              renderProjectImages(projects, "alternate")
             }
           </ImagesContainer>
           <VerticalLine />
         </ImagesColumn>
 
-        <ImagesColumn $column={4}>
+        <ImagesColumn ref={image3Ref}
+          $column={4}
+          onMouseEnter={() => switchToScrollArea("illustrator")}
+          onMouseLeave={() => switchToScrollArea(undefined)}
+        >
           <ImagesContainer>
             {
-              renderProjectImages("reverse")
+              renderProjectImages(projects, "reverse")
             }
           </ImagesContainer>
         </ImagesColumn>
