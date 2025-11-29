@@ -269,7 +269,6 @@ export const StartPage1: React.FC = () => {
               setMainScrollValue((value) => value - scrollAmount);
               break;
             }
-            console.log("set1scrollValue2:", scrollValue3 - scrollAmount);
             set1scrollValue3((value) => value - scrollAmount);
             break;
         }
