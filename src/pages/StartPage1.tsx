@@ -242,6 +242,9 @@ export const StartPage1: React.FC = () => {
               setMainScrollValue((value) => value - scrollAmount);
               break;
             }
+              
+
+            //console.log(`scrollValue1:${scrollValue1} set1scrollValue1-scrollAmount:${scrollValue1 - scrollAmount}`)
             set1scrollValue1((value) => value - scrollAmount);
             break;
           case "artist":
