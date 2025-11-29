@@ -2,10 +2,11 @@
 import styled from "styled-components";
 import OrSegalSvg from "../assets/orSegal.svg?react";
 import myImage from "../images/MainPicture.jpg";
-import { useEffect, useState, type ReactElement } from "react";
+import { useEffect, useRef, useState, type ReactElement } from "react";
 import { fetchProjects } from "../database/FirebaseDb";
 import { logException } from "../utilities/exceptionUtils";
 import type { Project } from "../database/dbInterfaces";
+import { imageListClasses } from "@mui/material";
 
 
 const WrapperStyled = styled.div`
@@ -53,11 +54,13 @@ const MainGridStyled = styled.div`
   font-size: 20px;
   width: 100%;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-template-rows: 4.625rem auto;
+  grid-template-rows: 4.625rem auto auto;
   justify-items: center;
 
+  overflow: hidden;
   height: 100vh;
-  overflow-y: auto;
+  position: relative;
+
 
     /* hide scrollbars */
   scrollbar-width: none;       /* Firefox */
@@ -98,7 +101,7 @@ const HorizontalLongLine = styled.div`
 const MiddleSection = styled.div`
   display: flex;
   width: 100%;
-  height: 45rem;
+  height: 25rem;
   grid-column: 2 / -1;
   background: white;
   margin-left: -8rem;
@@ -142,22 +145,12 @@ const SimpleDot = styled.div`
   transform: translate(2px, -3px);
 `;
 
-export const StartPage1: React.FC = () => {
-
-  const [projects, setProjects] = useState<Project[]>([]);
-
-  useEffect(() => {
-    const original = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = original;
-    };
-  }, []);
 
 
-  const renderProjectImages = (option?: "reverse" | "alternate") => {
+  const renderProjectImages = (projects: Project[], option?: "reverse" | "alternate") => {
 
     const images: ReactElement[] = [];
+
 
     if (option === "reverse") {
       for (let i = projects.length - 1; i >= 0; i--) {
@@ -170,7 +163,7 @@ export const StartPage1: React.FC = () => {
     }
     if (option === "alternate") {
       for (let i = 0; i < projects.length; i++) {
-        if (i % 2 === 1) continue; 
+        if (i % 2 === 1) continue;
         const project = projects[i];
         if (!project) break;
         const image = <ProjectImage key={i} src={project.projectImageUrl} alt={project.projectName}></ProjectImage>
@@ -188,6 +181,74 @@ export const StartPage1: React.FC = () => {
     return images;
   }
 
+type scrollAreaType = undefined | "middle" | "designer" | "artist" | "illustrator";
+
+export const StartPage1: React.FC = () => {
+
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [scrollArea, setScrollArea] = useState<scrollAreaType>(undefined);
+  const [mainScrollValue, setMainScrollValue] = useState<number>(0);
+  const [scrollValue1, set1scrollValue1] = useState(0);
+  const [scrollValue2, set1scrollValue2] = useState(0);
+  const [scrollValue3, set1scrollValue3] = useState(0);
+
+  const middledRef = useRef<HTMLDivElement>(null);
+  const image1Ref = useRef<HTMLDivElement>(null);
+  const image2Ref = useRef<HTMLDivElement>(null);
+  const image3Ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const original = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = original;
+    };
+  }, []);
+
+
+useEffect(() => {
+
+  const updateTransforms = () => {
+    if (!middledRef.current || !image1Ref.current || 
+      !image2Ref.current || !image3Ref.current) return;
+
+    //const gridRef = mainGridRef as unknown as HTMLDivElement
+    
+    middledRef.current.style.transform = `translateY(${mainScrollValue}px)`;
+    image1Ref.current.style.transform = `translateY(${mainScrollValue}px)`;
+    image2Ref.current.style.transform = `translateY(${mainScrollValue}px)`;
+    image3Ref.current.style.transform = `translateY(${mainScrollValue}px)`;
+  }
+
+
+  function onWheel(e: WheelEvent) {
+    e.preventDefault();
+    if (!middledRef.current) return;
+    const scrollAmount = e.deltaY;
+    console.log(`scrollValue : `, scrollAmount);
+    console.log(`mainScrollValue : `, mainScrollValue);
+    const newMainScrollValue = mainScrollValue - scrollAmount;
+    
+    if (newMainScrollValue < -408) {
+      setMainScrollValue(-408);
+      //console.log(`scrollAmount was more then : -408 keeping it -408`);
+      //set1scrollValue1((value) => value - scrollAmount);
+      //set1scrollValue2(scrollValue2 - scrollAmount);
+      //set1scrollValue3(scrollValue3 - scrollAmount);
+
+    }
+    else {
+      setMainScrollValue((newMainScrollValue));
+      console.log(`scrollAmount after fix : `, newMainScrollValue);
+    }
+    updateTransforms();
+  }
+
+  window.addEventListener("wheel", onWheel, { passive: false });
+  return () => window.removeEventListener("wheel", onWheel);
+  
+}, [mainScrollValue]);
+
 
   useEffect(() => {
     const loadProjects = async () => {
@@ -202,10 +263,15 @@ export const StartPage1: React.FC = () => {
     loadProjects();
   }, []);
 
+  const switchToScrollArea = (area: scrollAreaType): void => {
+    setScrollArea(area);
+    console.log(`switched to scroll area: ${area}`);
+  }
+
   return (
     <WrapperStyled>
 
-      <MainGridStyled>
+      <MainGridStyled >
 
         <HeaderRow>
 
@@ -236,43 +302,58 @@ export const StartPage1: React.FC = () => {
           </HeaderBox>
 
           <HorizontalLongLine></HorizontalLongLine>
-          <SimpleDot style={{ 
+          <SimpleDot style={{
             gridColumn: 2,
             justifySelf: "flex-end"
           }}></SimpleDot>
-          <SimpleDot style={{ 
+          <SimpleDot style={{
             gridColumn: 3,
             justifySelf: "flex-end"
           }}></SimpleDot>
 
         </HeaderRow>
 
-        <MiddleSection>
+        <MiddleSection ref={middledRef}
+          onMouseEnter={() => switchToScrollArea("middle")}
+          onMouseLeave={() => switchToScrollArea(undefined)}
+        >
           <MainImage src={myImage}></MainImage>
         </MiddleSection>
 
-        <ImagesColumn $column={2}>
+        <ImagesColumn ref={image1Ref}
+          $column={2}
+          onMouseEnter={() => switchToScrollArea("designer")}
+          onMouseLeave={() => switchToScrollArea(undefined)}
+        >
           <ImagesContainer>
             {
-              renderProjectImages()
+              renderProjectImages(projects)
             }
           </ImagesContainer>
           <VerticalLine />
         </ImagesColumn>
 
-        <ImagesColumn $column={3}>
+        <ImagesColumn ref={image2Ref}
+          $column={3}
+          onMouseEnter={() => switchToScrollArea("artist")}
+          onMouseLeave={() => switchToScrollArea(undefined)}
+        >
           <ImagesContainer>
             {
-              renderProjectImages("alternate")
+              renderProjectImages(projects, "alternate")
             }
           </ImagesContainer>
           <VerticalLine />
         </ImagesColumn>
 
-        <ImagesColumn $column={4}>
+        <ImagesColumn ref={image3Ref}
+          $column={4}
+          onMouseEnter={() => switchToScrollArea("illustrator")}
+          onMouseLeave={() => switchToScrollArea(undefined)}
+        >
           <ImagesContainer>
             {
-              renderProjectImages("reverse")
+              renderProjectImages(projects, "reverse")
             }
           </ImagesContainer>
         </ImagesColumn>
