@@ -225,10 +225,11 @@ useEffect(() => {
     e.preventDefault();
     if (!middledRef.current) return;
     const scrollAmount = e.deltaY;
-    console.log(`scrollValue : `, scrollAmount);
-    console.log(`mainScrollValue : `, mainScrollValue);
+    //console.log(`scrollValue : `, scrollAmount);
+    //console.log(`mainScrollValue : `, mainScrollValue);
     const newMainScrollValue = mainScrollValue - scrollAmount;
-    
+    console.log(`newMainScrollValue : `, mainScrollValue);
+
     if (newMainScrollValue < -408) {
       setMainScrollValue(-408);
       //console.log(`scrollAmount was more then : -408 keeping it -408`);
@@ -237,9 +238,12 @@ useEffect(() => {
       //set1scrollValue3(scrollValue3 - scrollAmount);
 
     }
+    else if (newMainScrollValue > 0) {
+      setMainScrollValue(0);
+    }
     else {
-      setMainScrollValue((newMainScrollValue));
-      console.log(`scrollAmount after fix : `, newMainScrollValue);
+      setMainScrollValue((value) => value - scrollAmount);
+      //console.log(`scrollAmount after fix : `, newMainScrollValue);
     }
     updateTransforms();
   }
