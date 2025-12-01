@@ -209,18 +209,6 @@ export const StartPage1: React.FC = () => {
 
   useEffect(() => {
 
-    const updateTransforms = () => {
-      if (!middledRef.current) return;
-      middledRef.current.style.transform = `translateY(${mainScrollValue}px)`;
-
-      const imageRefs = [imageRef1, imageRef2, imageRef3];
-      imageRefs.forEach((ref, index) => {
-        if (!ref.current) return;
-        if (scrollValues[index] === undefined) return; // satisfy typescript 
-        ref.current.style.transform = `translateY(${mainScrollValue + scrollValues[index]}px)`;
-      });
-    }
-
     function onWheel(e: WheelEvent) {
       e.preventDefault();
       if (!middledRef.current) return;
@@ -270,7 +258,6 @@ export const StartPage1: React.FC = () => {
         setMainScrollValue(v => v - delta);
         setShouldUpdateImages(false);
       }
-      updateTransforms();
     }
 
     window.addEventListener("wheel", onWheel, { passive: false });
@@ -291,6 +278,25 @@ export const StartPage1: React.FC = () => {
     }
     loadProjects();
   }, []);
+
+
+  useEffect(() => {
+
+    const updateTransforms = () => {
+      if (!middledRef.current) return;
+      middledRef.current.style.transform = `translateY(${mainScrollValue}px)`;
+
+      const imageRefs = [imageRef1, imageRef2, imageRef3];
+      imageRefs.forEach((ref, index) => {
+        if (!ref.current) return;
+        if (scrollValues[index] === undefined) return; // satisfy typescript 
+        ref.current.style.transform = `translateY(${mainScrollValue + scrollValues[index]}px)`;
+      });
+    }
+    updateTransforms();
+
+  }, [mainScrollValue, scrollValues])
+
 
   const switchToScrollArea = (area: ScrollAreaType): void => {
     setScrollArea(area);
