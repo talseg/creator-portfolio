@@ -216,7 +216,7 @@ export const StartPage1: React.FC = () => {
       const imageRefs = [imageRef1, imageRef2, imageRef3];
       imageRefs.forEach((ref, index) => {
         if (!ref.current) return;
-        if (!scrollValues || scrollValues[index] === undefined) return;
+        if (scrollValues[index] === undefined) return; // satisfy typescript 
         ref.current.style.transform = `translateY(${mainScrollValue + scrollValues[index]}px)`;
       });
     }
@@ -226,6 +226,7 @@ export const StartPage1: React.FC = () => {
       if (!middledRef.current) return;
       const delta = e.deltaY;
       const newMain = mainScrollValue - delta;
+      console.log(newMain);
 
       // In one of the three scroll areas and in scroll area mode
       // (the top is fully collapsed)
@@ -253,16 +254,19 @@ export const StartPage1: React.FC = () => {
           });
         }
       }
-      // scroll passsed the middle section collapsed
+      // scroll passsed the middle section entering scroll image mode
       else if (newMain < -408) {
+        console.log("Images are at the top");
         setMainScrollValue(-408);
         setShouldUpdateImages(true);
       }
       // all page scrolled to the top
       else if (newMain > 0) {
+        console.log("all page scrolled to the top");
         setMainScrollValue(0);
       }
       else {
+        console.log("scrolling the middle section");
         setMainScrollValue(v => v - delta);
         setShouldUpdateImages(false);
       }
