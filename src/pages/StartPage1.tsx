@@ -198,6 +198,7 @@ export const StartPage1: React.FC = () => {
   const imageRef1 = useRef<HTMLDivElement>(null);
   const imageRef2 = useRef<HTMLDivElement>(null);
   const imageRef3 = useRef<HTMLDivElement>(null);
+  const imageRefs = useRef([imageRef1, imageRef2, imageRef3]);
 
   useEffect(() => {
     const original = document.body.style.overflow;
@@ -286,8 +287,7 @@ export const StartPage1: React.FC = () => {
       if (!middledRef.current) return;
       middledRef.current.style.transform = `translateY(${mainScrollValue}px)`;
 
-      const imageRefs = [imageRef1, imageRef2, imageRef3];
-      imageRefs.forEach((ref, index) => {
+      imageRefs.current.forEach((ref, index) => {
         if (!ref.current) return;
         if (scrollValues[index] === undefined) return; // satisfy typescript 
         ref.current.style.transform = `translateY(${mainScrollValue + scrollValues[index]}px)`;
