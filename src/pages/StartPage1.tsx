@@ -182,22 +182,22 @@ const renderProjectImages = (projects: Project[], option?: "reverse" | "alternat
   return images;
 }
 
-type scrollAreaType = undefined | "all" | "designer" | "artist" | "illustrator";
+type ScrollAreaType = undefined | "all" | 1 | 2 | 3;
 
 export const StartPage1: React.FC = () => {
 
   const [projects, setProjects] = useState<Project[]>([]);
-  const [scrollArea, setScrollArea] = useState<scrollAreaType>(undefined);
+  const [scrollArea, setScrollArea] = useState<ScrollAreaType>(undefined);
   const [mainScrollValue, setMainScrollValue] = useState<number>(0);
-  const [scrollValue1, set1scrollValue1] = useState(0);
-  const [scrollValue2, set1scrollValue2] = useState(0);
-  const [scrollValue3, set1scrollValue3] = useState(0);
+  const [scrollValues, setScrollValues] = useState<number[]>([0, 0, 0]);
+
   const [shouldUpdateImages, setShouldUpdateImages] = useState(false);
 
   const middledRef = useRef<HTMLDivElement>(null);
-  const image1Ref = useRef<HTMLDivElement>(null);
-  const image2Ref = useRef<HTMLDivElement>(null);
-  const image3Ref = useRef<HTMLDivElement>(null);
+
+  const imageRef1 = useRef<HTMLDivElement>(null);
+  const imageRef2 = useRef<HTMLDivElement>(null);
+  const imageRef3 = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const original = document.body.style.overflow;
@@ -207,84 +207,63 @@ export const StartPage1: React.FC = () => {
     };
   }, []);
 
-
   useEffect(() => {
 
-
-
-
     const updateTransforms = () => {
-      if (!middledRef.current || !image1Ref.current ||
-        !image2Ref.current || !image3Ref.current) return;
-
-      //const gridRef = mainGridRef as unknown as HTMLDivElement
-
+      if (!middledRef.current) return;
       middledRef.current.style.transform = `translateY(${mainScrollValue}px)`;
-      image1Ref.current.style.transform = `translateY(${mainScrollValue + scrollValue1}px)`;
-      image2Ref.current.style.transform = `translateY(${mainScrollValue + scrollValue2}px)`;
-      image3Ref.current.style.transform = `translateY(${mainScrollValue + scrollValue3}px)`;
+
+      const imageRefs = [imageRef1, imageRef2, imageRef3];
+      imageRefs.forEach((ref, index) => {
+        if (!ref.current) return;
+        if (!scrollValues || scrollValues[index] === undefined) return;
+        ref.current.style.transform = `translateY(${mainScrollValue + scrollValues[index]}px)`;
+      });
     }
 
     function onWheel(e: WheelEvent) {
       e.preventDefault();
       if (!middledRef.current) return;
-      const scrollAmount = e.deltaY;
-      const newMainScrollValue = mainScrollValue - scrollAmount;
+      const delta = e.deltaY;
+      const newMain = mainScrollValue - delta;
 
-      if (shouldUpdateImages && scrollArea) {
-        //
-        switch (scrollArea) {
-          case "designer":
+      // In one of the three scroll areas and in scroll area mode
+      // (the top is fully collapsed)
+      if (shouldUpdateImages && scrollArea && scrollArea !== "all") {
+        const index = scrollArea - 1; // 1→0, 2→1, 3→2
+        const current = scrollValues[index] ?? 0;
+        const newValue = current - delta;
 
-            if (scrollValue1 - scrollAmount > 0) 
-            {
-              set1scrollValue1(0);
-              setShouldUpdateImages(false);
-              setMainScrollValue((value) => value - scrollAmount);
-              break;
-            }
-              
-
-            //console.log(`scrollValue1:${scrollValue1} set1scrollValue1-scrollAmount:${scrollValue1 - scrollAmount}`)
-            set1scrollValue1((value) => value - scrollAmount);
-            break;
-          case "artist":
-
-            if (scrollValue2 - scrollAmount > 0) 
-            {
-              set1scrollValue2(0);
-              setShouldUpdateImages(false);
-              setMainScrollValue((value) => value - scrollAmount);
-              break;
-            }
-
-
-            set1scrollValue2((value) => value - scrollAmount);
-            break;
-          case "illustrator":
-
-            if (scrollValue3 - scrollAmount > 0) 
-            {
-              set1scrollValue3(0);
-              setShouldUpdateImages(false);
-              setMainScrollValue((value) => value - scrollAmount);
-              break;
-            }
-            set1scrollValue3((value) => value - scrollAmount);
-            break;
+        // Reached the limit → freeze child, resume main scroll
+        if (newValue > 0) {
+          setScrollValues(prev => {
+            const copy = [...prev];
+            copy[index] = 0;
+            return copy;
+          });
+          setShouldUpdateImages(false);
+          setMainScrollValue(v => v - delta);
         }
-
-
+        else {
+          // Continue scrolling the inner column
+          setScrollValues(prev => {
+            const copy = [...prev];
+            copy[index] = newValue;
+            return copy;
+          });
+        }
       }
-      else if (newMainScrollValue < -408) {
+      // scroll passsed the middle section collapsed
+      else if (newMain < -408) {
         setMainScrollValue(-408);
         setShouldUpdateImages(true);
       }
-      else if (newMainScrollValue > 0) {
+      // all page scrolled to the top
+      else if (newMain > 0) {
         setMainScrollValue(0);
       }
       else {
-        setMainScrollValue((value) => value - scrollAmount);
+        setMainScrollValue(v => v - delta);
         setShouldUpdateImages(false);
       }
       updateTransforms();
@@ -293,7 +272,7 @@ export const StartPage1: React.FC = () => {
     window.addEventListener("wheel", onWheel, { passive: false });
     return () => window.removeEventListener("wheel", onWheel);
 
-  }, [mainScrollValue, scrollArea, scrollValue1, scrollValue2, scrollValue3, shouldUpdateImages]);
+  }, [mainScrollValue, scrollArea, scrollValues, shouldUpdateImages]);
 
 
   useEffect(() => {
@@ -309,9 +288,8 @@ export const StartPage1: React.FC = () => {
     loadProjects();
   }, []);
 
-  const switchToScrollArea = (area: scrollAreaType): void => {
+  const switchToScrollArea = (area: ScrollAreaType): void => {
     setScrollArea(area);
-    //console.log(`switched to scroll area: ${area}`);
   }
 
   return (
@@ -369,9 +347,9 @@ export const StartPage1: React.FC = () => {
           <MainImage src={myImage}></MainImage>
         </MiddleSection>
 
-        <ImagesColumn ref={image1Ref}
+        <ImagesColumn ref={imageRef1}
           $column={2}
-          onMouseEnter={() => switchToScrollArea("designer")}
+          onMouseEnter={() => switchToScrollArea(1)}
           onMouseLeave={() => switchToScrollArea(undefined)}
         >
           <ImagesContainer>
@@ -382,9 +360,9 @@ export const StartPage1: React.FC = () => {
           <VerticalLine />
         </ImagesColumn>
 
-        <ImagesColumn ref={image2Ref}
+        <ImagesColumn ref={imageRef2}
           $column={3}
-          onMouseEnter={() => switchToScrollArea("artist")}
+          onMouseEnter={() => switchToScrollArea(2)}
           onMouseLeave={() => switchToScrollArea(undefined)}
         >
           <ImagesContainer>
@@ -395,9 +373,9 @@ export const StartPage1: React.FC = () => {
           <VerticalLine />
         </ImagesColumn>
 
-        <ImagesColumn ref={image3Ref}
+        <ImagesColumn ref={imageRef3}
           $column={4}
-          onMouseEnter={() => switchToScrollArea("illustrator")}
+          onMouseEnter={() => switchToScrollArea(3)}
           onMouseLeave={() => switchToScrollArea(undefined)}
         >
           <ImagesContainer>
