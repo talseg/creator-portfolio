@@ -1,4 +1,3 @@
-
 import styled from "styled-components";
 import OrSegalSvg from "../assets/orSegal.svg?react";
 import myImage from "../images/MainPicture.jpg";
@@ -6,7 +5,7 @@ import { useEffect, useRef, useState, type ReactElement } from "react";
 import { fetchProjects } from "../database/FirebaseDb";
 import { logException } from "../utilities/exceptionUtils";
 import type { Project } from "../database/dbInterfaces";
-
+import { useImageScrolling } from "../utilities/useImageScrolling";
 
 const WrapperStyled = styled.div`
   display: flex;
@@ -60,7 +59,6 @@ const MainGridStyled = styled.div`
   height: 100vh;
   position: relative;
 
-
     /* hide scrollbars */
   scrollbar-width: none;       /* Firefox */
   -ms-overflow-style: none;    /* old Edge */
@@ -97,10 +95,11 @@ const HorizontalLongLine = styled.div`
   grid-column: 1 / -1;
 `;
 
+const MIDDLE_SECTION_REM_HEIGHT = 30;
 const MiddleSection = styled.div`
   display: flex;
   width: 100%;
-  height: 25rem;
+  height: ${MIDDLE_SECTION_REM_HEIGHT}rem;
   grid-column: 2 / -1;
   background: white;
   margin-left: -8rem;
@@ -146,8 +145,6 @@ const SimpleDot = styled.div`
   transform: translate(2px, -3px);
 `;
 
-
-
 const renderProjectImages = (projects: Project[], option?: "reverse" | "alternate") => {
 
   const images: ReactElement[] = [];
@@ -182,90 +179,22 @@ const renderProjectImages = (projects: Project[], option?: "reverse" | "alternat
   return images;
 }
 
-type ScrollAreaType = undefined | "all" | 1 | 2 | 3;
-
 export const StartPage1: React.FC = () => {
 
   const [projects, setProjects] = useState<Project[]>([]);
-  const [scrollArea, setScrollArea] = useState<ScrollAreaType>(undefined);
-  const [mainScrollValue, setMainScrollValue] = useState<number>(0);
-  const [scrollValues, setScrollValues] = useState<number[]>([0, 0, 0]);
-
-  const [shouldUpdateImages, setShouldUpdateImages] = useState(false);
-
   const middledRef = useRef<HTMLDivElement>(null);
-
   const imageRef1 = useRef<HTMLDivElement>(null);
   const imageRef2 = useRef<HTMLDivElement>(null);
   const imageRef3 = useRef<HTMLDivElement>(null);
   const imageRefs = useRef([imageRef1, imageRef2, imageRef3]);
 
-  useEffect(() => {
-    const original = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = original;
-    };
-  }, []);
-
-  useEffect(() => {
-
-    function onWheel(e: WheelEvent) {
-      e.preventDefault();
-      if (!middledRef.current) return;
-      const delta = e.deltaY;
-      const newMain = mainScrollValue - delta;
-      console.log(newMain);
-
-      // In one of the three scroll areas and in scroll area mode
-      // (the top is fully collapsed)
-      if (shouldUpdateImages && scrollArea && scrollArea !== "all") {
-        const index = scrollArea - 1; // 1→0, 2→1, 3→2
-        const current = scrollValues[index] ?? 0;
-        const newValue = current - delta;
-
-        // Reached the limit → freeze child, resume main scroll
-        if (newValue > 0) {
-          setScrollValues(prev => {
-            const copy = [...prev];
-            copy[index] = 0;
-            return copy;
-          });
-          setShouldUpdateImages(false);
-          setMainScrollValue(v => v - delta);
-        }
-        else {
-          // Continue scrolling the inner column
-          setScrollValues(prev => {
-            const copy = [...prev];
-            copy[index] = newValue;
-            return copy;
-          });
-        }
-      }
-      // scroll passsed the middle section entering scroll image mode
-      else if (newMain < -408) {
-        console.log("Images are at the top");
-        setMainScrollValue(-408);
-        setShouldUpdateImages(true);
-      }
-      // all page scrolled to the top
-      else if (newMain > 0) {
-        console.log("all page scrolled to the top");
-        setMainScrollValue(0);
-      }
-      else {
-        console.log("scrolling the middle section");
-        setMainScrollValue(v => v - delta);
-        setShouldUpdateImages(false);
-      }
+  const { onMouseEnter, onMouseLeave } = useImageScrolling(
+    {
+      imageRefs,
+      middledRef,
+      middleSectionHeight: MIDDLE_SECTION_REM_HEIGHT
     }
-
-    window.addEventListener("wheel", onWheel, { passive: false });
-    return () => window.removeEventListener("wheel", onWheel);
-
-  }, [mainScrollValue, scrollArea, scrollValues, shouldUpdateImages]);
-
+  );
 
   useEffect(() => {
     const loadProjects = async () => {
@@ -280,27 +209,6 @@ export const StartPage1: React.FC = () => {
     loadProjects();
   }, []);
 
-
-  useEffect(() => {
-
-    const updateTransforms = () => {
-      if (!middledRef.current) return;
-      middledRef.current.style.transform = `translateY(${mainScrollValue}px)`;
-
-      imageRefs.current.forEach((ref, index) => {
-        if (!ref.current) return;
-        if (scrollValues[index] === undefined) return; // satisfy typescript 
-        ref.current.style.transform = `translateY(${mainScrollValue + scrollValues[index]}px)`;
-      });
-    }
-    updateTransforms();
-
-  }, [mainScrollValue, scrollValues])
-
-
-  const switchToScrollArea = (area: ScrollAreaType): void => {
-    setScrollArea(area);
-  }
 
   return (
     <WrapperStyled>
@@ -347,20 +255,17 @@ export const StartPage1: React.FC = () => {
 
         </HeaderRow>
 
-        {shouldUpdateImages && <div >{scrollArea}</div>}
-
-
         <MiddleSection ref={middledRef}
-          onMouseEnter={() => switchToScrollArea("all")}
-          onMouseLeave={() => switchToScrollArea(undefined)}
+          onMouseEnter={() => onMouseEnter("all")}
+          onMouseLeave={() => onMouseLeave()}
         >
           <MainImage src={myImage}></MainImage>
         </MiddleSection>
 
         <ImagesColumn ref={imageRef1}
           $column={2}
-          onMouseEnter={() => switchToScrollArea(1)}
-          onMouseLeave={() => switchToScrollArea(undefined)}
+          onMouseEnter={() => onMouseEnter(1)}
+          onMouseLeave={() => onMouseLeave()}
         >
           <ImagesContainer>
             {
@@ -372,8 +277,8 @@ export const StartPage1: React.FC = () => {
 
         <ImagesColumn ref={imageRef2}
           $column={3}
-          onMouseEnter={() => switchToScrollArea(2)}
-          onMouseLeave={() => switchToScrollArea(undefined)}
+          onMouseEnter={() => onMouseEnter(2)}
+          onMouseLeave={() => onMouseLeave()}
         >
           <ImagesContainer>
             {
@@ -385,8 +290,8 @@ export const StartPage1: React.FC = () => {
 
         <ImagesColumn ref={imageRef3}
           $column={4}
-          onMouseEnter={() => switchToScrollArea(3)}
-          onMouseLeave={() => switchToScrollArea(undefined)}
+          onMouseEnter={() => onMouseEnter(3)}
+          onMouseLeave={() => onMouseLeave()}
         >
           <ImagesContainer>
             {
