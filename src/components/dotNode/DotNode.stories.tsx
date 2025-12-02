@@ -20,7 +20,7 @@ const DotNodeTester: React.FC<DotNodeProps> = (args: DotNodeProps) => {
 }
 
 const meta = {
-  title: 'Example/DotNode',
+  title: 'Components',
   component: DotNodeTester,
   parameters: {
     // layout: 'centered',

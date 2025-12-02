@@ -19,7 +19,7 @@ const DotNodeSvgTester: React.FC<DotNodeSvgProps> = ( args: DotNodeSvgProps ) =>
 }
 
 const meta = {
-  title: 'Example/DotNodeSvg',
+  title: 'Components',
   component: DotNodeSvgTester,
   parameters: {
   layout: 'centered',

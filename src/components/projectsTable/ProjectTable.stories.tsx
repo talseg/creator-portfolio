@@ -75,7 +75,7 @@ const ProjectTableTester: React.FC = () => {
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 const meta = {
-  title: 'Components/ProjectTableTester',
+  title: 'Components',
   component: ProjectTableTester,
 } //satisfies Meta<typeof EmailPasswordDialogTester>;
 

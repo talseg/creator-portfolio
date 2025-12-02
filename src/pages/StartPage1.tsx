@@ -6,19 +6,13 @@ import { fetchProjects } from "../database/FirebaseDb";
 import { logException } from "../utilities/exceptionUtils";
 import type { Project } from "../database/dbInterfaces";
 import { useImageScrolling } from "../utilities/useImageScrolling";
+import LabelText from "../components/text/LabelText";
+
 
 const WrapperStyled = styled.div`
   display: flex;
   min-height: 100vh;
   min-width: 100vw;
-`;
-
-const TitleText = styled.div`
-  font-family: EditorSans;
-  font-size: 0.9375rem;
-  font-style: italic;
-  font-weight: bold;
-  letter-spacing: 0.02813rem;
 `;
 
 const LogoLinkWrapper = styled.a`
@@ -225,21 +219,21 @@ export const StartPage1: React.FC = () => {
 
           <HeaderBox>
             <HeaderTextBox style={{ background: "#FFFDB4" }}>
-              <TitleText>Designer</TitleText>
+              <LabelText>Designer</LabelText>
             </HeaderTextBox>
             <VerticalLine />
           </HeaderBox>
 
           <HeaderBox>
             <HeaderTextBox>
-              <TitleText>Artist</TitleText>
+              <LabelText>Artist</LabelText>
             </HeaderTextBox>
             <VerticalLine />
           </HeaderBox>
 
           <HeaderBox>
             <HeaderTextBox>
-              <TitleText>Illustrator</TitleText>
+              <LabelText>Illustrator</LabelText>
             </HeaderTextBox>
           </HeaderBox>
 
