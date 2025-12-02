@@ -8,7 +8,6 @@ import type { Project } from "../database/dbInterfaces";
 import { useImageScrolling } from "../utilities/useImageScrolling";
 import LabelText from "../components/text/LabelText";
 
-
 const WrapperStyled = styled.div`
   display: flex;
   min-height: 100vh;
