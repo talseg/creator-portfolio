@@ -37,7 +37,7 @@ const DotSvgTester: React.FC<DotSvgProps> = (args: DotSvgProps) => {
 }
 
 const meta = {
-  title: 'Components/DotSvg',
+  title: 'Components',
   component: DotSvgTester,
   parameters: {
     layout: 'centered',
