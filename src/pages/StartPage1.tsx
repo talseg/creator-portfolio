@@ -256,7 +256,7 @@ export const StartPage1: React.FC = () => {
         </HeaderRow>
 
         <MiddleSection ref={middledRef}
-          onMouseEnter={() => onMouseEnter("all")}
+          onMouseEnter={() => onMouseEnter("middle")}
           onMouseLeave={() => onMouseLeave()}
         >
           <MainImage src={myImage}></MainImage>
