@@ -110,7 +110,6 @@ const ImagesContainer = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 10px;;
 `;
 
 const ImagesColumn = styled.div<{ $column: number }>`
@@ -167,7 +166,6 @@ const renderProjectImages = (projects: Project[], option?: "reverse" | "alternat
   for (let i = 0; i < projects.length; i++) {
     const project = projects[i];
     if (!project) break;
-    if (i === 0) console.log(project.projectImageUrl);
     const image = <ProjectImage key={i} project={project}></ProjectImage>
     images.push(image);
   }
@@ -267,7 +265,7 @@ export const StartPage1: React.FC = () => {
               renderProjectImages(projects)
             }
           </ImagesContainer>
-          <VerticalLine />
+          {/* <VerticalLine /> */}
         </ImagesColumn>
 
         <ImagesColumn ref={imageRef2}
@@ -280,7 +278,7 @@ export const StartPage1: React.FC = () => {
               renderProjectImages(projects, "alternate")
             }
           </ImagesContainer>
-          <VerticalLine />
+          {/* <VerticalLine /> */}
         </ImagesColumn>
 
         <ImagesColumn ref={imageRef3}
