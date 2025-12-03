@@ -95,7 +95,7 @@ const MiddleSection = styled.div`
   width: 100%;
   height: ${MIDDLE_SECTION_REM_HEIGHT}rem;
   grid-column: 2 / -1;
-  background: linear-gradient(180deg, #96BFC5 0%, #FFF 80rem);
+  background: linear-gradient(180deg, #96BFC5 -3rem, #FFF 78rem);
   margin-left: -8rem;
   z-index: 10;
   justify-self: self-end;
