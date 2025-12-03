@@ -1,12 +1,13 @@
 import styled from "styled-components";
 import OrSegalSvg from "../assets/orSegal.svg?react";
-import myImage from "../images/MainPicture.jpg";
+import myImage from "../images/MainPicture.png";
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import { fetchProjects } from "../database/FirebaseDb";
 import { logException } from "../utilities/exceptionUtils";
 import type { Project } from "../database/dbInterfaces";
 import { useImageScrolling } from "../utilities/useImageScrolling";
-import LabelText from "../components/text/LabelText";
+import LabelText from "../components/labeltext/LabelText";
+import ProjectImage from "../components/projectImage/ProjectImage";
 
 const WrapperStyled = styled.div`
   display: flex;
@@ -94,7 +95,7 @@ const MiddleSection = styled.div`
   width: 100%;
   height: ${MIDDLE_SECTION_REM_HEIGHT}rem;
   grid-column: 2 / -1;
-  background: white;
+  background: linear-gradient(180deg, #96BFC5 -3rem, #FFF 78rem);
   margin-left: -8rem;
   z-index: 10;
   justify-self: self-end;
@@ -109,7 +110,6 @@ const ImagesContainer = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 10px;;
 `;
 
 const ImagesColumn = styled.div<{ $column: number }>`
@@ -119,11 +119,11 @@ const ImagesColumn = styled.div<{ $column: number }>`
   width: 100%;
 `
 
-const ProjectImage = styled.img`
-  width: 100%;
-  object-fit: cover;
-  margin-right: 10px;
-`;
+// const ProjectImage = styled.img`
+//   width: 100%;
+//   object-fit: cover;
+//   margin-right: 10px;
+// `;
 
 const VerticalLine = styled.div`
   border-left: 1px solid black;
@@ -147,7 +147,7 @@ const renderProjectImages = (projects: Project[], option?: "reverse" | "alternat
     for (let i = projects.length - 1; i >= 0; i--) {
       const project = projects[i];
       if (!project) break;
-      const image = <ProjectImage key={i} src={project.projectImageUrl} alt={project.projectName}></ProjectImage>
+      const image = <ProjectImage project={project}></ProjectImage>
       images.push(image);
     }
     return images;
@@ -157,7 +157,7 @@ const renderProjectImages = (projects: Project[], option?: "reverse" | "alternat
       if (i % 2 === 1) continue;
       const project = projects[i];
       if (!project) break;
-      const image = <ProjectImage key={i} src={project.projectImageUrl} alt={project.projectName}></ProjectImage>
+      const image = <ProjectImage key={i} project={project}></ProjectImage>
       images.push(image);
     }
     return images;
@@ -166,7 +166,7 @@ const renderProjectImages = (projects: Project[], option?: "reverse" | "alternat
   for (let i = 0; i < projects.length; i++) {
     const project = projects[i];
     if (!project) break;
-    const image = <ProjectImage key={i} src={project.projectImageUrl} alt={project.projectName}></ProjectImage>
+    const image = <ProjectImage key={i} project={project}></ProjectImage>
     images.push(image);
   }
   return images;
@@ -206,7 +206,7 @@ export const StartPage1: React.FC = () => {
   return (
     <WrapperStyled>
 
-      <MainGridStyled >
+      <MainGridStyled className="main-page-grid" >
 
         <HeaderRow>
 
@@ -265,7 +265,7 @@ export const StartPage1: React.FC = () => {
               renderProjectImages(projects)
             }
           </ImagesContainer>
-          <VerticalLine />
+          {/* <VerticalLine /> */}
         </ImagesColumn>
 
         <ImagesColumn ref={imageRef2}
@@ -278,7 +278,7 @@ export const StartPage1: React.FC = () => {
               renderProjectImages(projects, "alternate")
             }
           </ImagesContainer>
-          <VerticalLine />
+          {/* <VerticalLine /> */}
         </ImagesColumn>
 
         <ImagesColumn ref={imageRef3}
