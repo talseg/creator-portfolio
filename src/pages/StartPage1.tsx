@@ -6,7 +6,8 @@ import { fetchProjects } from "../database/FirebaseDb";
 import { logException } from "../utilities/exceptionUtils";
 import type { Project } from "../database/dbInterfaces";
 import { useImageScrolling } from "../utilities/useImageScrolling";
-import LabelText from "../components/text/LabelText";
+import LabelText from "../components/labeltext/LabelText";
+import ProjectImage from "../components/projectImage/ProjectImage";
 
 const WrapperStyled = styled.div`
   display: flex;
@@ -119,11 +120,11 @@ const ImagesColumn = styled.div<{ $column: number }>`
   width: 100%;
 `
 
-const ProjectImage = styled.img`
-  width: 100%;
-  object-fit: cover;
-  margin-right: 10px;
-`;
+// const ProjectImage = styled.img`
+//   width: 100%;
+//   object-fit: cover;
+//   margin-right: 10px;
+// `;
 
 const VerticalLine = styled.div`
   border-left: 1px solid black;
@@ -147,7 +148,7 @@ const renderProjectImages = (projects: Project[], option?: "reverse" | "alternat
     for (let i = projects.length - 1; i >= 0; i--) {
       const project = projects[i];
       if (!project) break;
-      const image = <ProjectImage key={i} src={project.projectImageUrl} alt={project.projectName}></ProjectImage>
+      const image = <ProjectImage project={project}></ProjectImage>
       images.push(image);
     }
     return images;
@@ -157,7 +158,7 @@ const renderProjectImages = (projects: Project[], option?: "reverse" | "alternat
       if (i % 2 === 1) continue;
       const project = projects[i];
       if (!project) break;
-      const image = <ProjectImage key={i} src={project.projectImageUrl} alt={project.projectName}></ProjectImage>
+      const image = <ProjectImage key={i} project={project}></ProjectImage>
       images.push(image);
     }
     return images;
@@ -166,7 +167,8 @@ const renderProjectImages = (projects: Project[], option?: "reverse" | "alternat
   for (let i = 0; i < projects.length; i++) {
     const project = projects[i];
     if (!project) break;
-    const image = <ProjectImage key={i} src={project.projectImageUrl} alt={project.projectName}></ProjectImage>
+    if (i === 0) console.log(project.projectImageUrl);
+    const image = <ProjectImage key={i} project={project}></ProjectImage>
     images.push(image);
   }
   return images;
