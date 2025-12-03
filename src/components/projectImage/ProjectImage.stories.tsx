@@ -19,7 +19,7 @@ const ImageColumn = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
-    background-color: red;
+    background-color: #ffffff00;
     grid-row: 2;
     grid-column: 2;
 `
@@ -49,17 +49,14 @@ const ProjectImageTester: React.FC<{ project: Project }> = ({ project }) => {
 }
 
 
-// More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 const meta = {
     title: 'Components',
     component: ProjectImageTester,
-} //satisfies Meta<typeof EmailPasswordDialogTester>;
+}
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-
-// More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const ProjectImageElement: Story = {
     args: {
         project: createMockProject()
