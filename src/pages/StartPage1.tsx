@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import OrSegalSvg from "../assets/orSegal.svg?react";
-import myImage from "../images/MainPicture.jpg";
+import myImage from "../images/MainPicture.png";
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import { fetchProjects } from "../database/FirebaseDb";
 import { logException } from "../utilities/exceptionUtils";
