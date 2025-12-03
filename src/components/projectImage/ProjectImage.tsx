@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import type { Project } from "../../database/dbInterfaces";
 import LabelText from "../labeltext/LabelText";
+import { useNavigate } from "react-router-dom";
 
 const TOP_GAP = 0;
 const IMAG_HEIGHT = 70;
@@ -65,9 +66,10 @@ const VerticalLine = styled.div`
 const ProjectImage: React.FC<{ project: Project }> = ({ project }) => {
 
   // console.log(project);
+  const navigate = useNavigate();
 
   return (
-    <ColumnWrapper>
+    <ColumnWrapper onClick={() => navigate(`/project/${project.id}`)}>
       <Wrapper>
         <ImageWrapper><ImageStyled src={project.projectImageUrl} /></ImageWrapper>
         <ProjectNameWrapper>
