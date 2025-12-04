@@ -151,6 +151,14 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
         if (!middledRef.current) return;
         middledRef.current.style.transform = `translateY(${mainScrollValue}px)`;
 
+        const getRemOffsetByScrollValue = (scrollValue: number) : number => {
+          return ((-31/466.666666) * scrollValue - 3);
+        }
+        const remOffset = getRemOffsetByScrollValue(mainScrollValue);
+    
+        middledRef.current.style.background = 
+          `linear-gradient(180deg, #96BFC5 ${remOffset}rem, #FFF 78rem)`;
+
         imageRefs.current.forEach((ref, index) => {
             if (!ref.current) return;
             const val = scrollValues[index];
