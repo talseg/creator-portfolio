@@ -169,8 +169,9 @@ export const AdminPage: React.FC = () => {
 
     if (isLoading) return <Wrapper><StyledSpinner /></Wrapper>;
 
-    const handleAddProjectImage = (_: string): void =>{
+    const handleAddProjectImage = (projectId: string): void =>{
         /*** TODO Implement the AddProjectImage here */
+        console.log("Admin Page Add Project image", projectId);
     }
 
     return (

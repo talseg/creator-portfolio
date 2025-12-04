@@ -2,6 +2,7 @@ import styled from "styled-components";
 import type { Project } from "../../database/dbInterfaces";
 import LabelText from "../labeltext/LabelText";
 import { useNavigate } from "react-router-dom";
+import errorImage from "../../images/cats.png";
 
 const TOP_GAP = 0;
 const IMAG_HEIGHT = 70;
@@ -68,10 +69,11 @@ const ProjectImage: React.FC<{ project: Project }> = ({ project }) => {
   // console.log(project);
   const navigate = useNavigate();
 
+  const url = project.projectImageUrl ? project.projectImageUrl : errorImage;
   return (
     <ColumnWrapper onClick={() => navigate(`/project/${project.id}`)}>
       <Wrapper>
-        <ImageWrapper><ImageStyled src={project.projectImageUrl} /></ImageWrapper>
+        <ImageWrapper><ImageStyled src={url} /></ImageWrapper>
         <ProjectNameWrapper>
 
           <LabelText fontSize="1vw">

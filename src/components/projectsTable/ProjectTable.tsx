@@ -42,12 +42,15 @@ interface ProjectRowProps {
     onAddProjectImage: (projectId: string) => void;
 }
 
-const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen, setImageRowOpen, onAddProjectImage }) => {
+const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen, 
+  setImageRowOpen, 
+  onAddProjectImage }) => {
 
     //const fileInputRef = useRef<HTMLInputElement | null>(null);
     const handleAddProjectImageClick = () => {
 
         onAddProjectImage(project.id);
+        
         console.log("handleAddImage: causing a click in the ",)
         // cause a click in the hidden input
         // this will trigger the handleFileChange and get the file
@@ -89,7 +92,13 @@ const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen, setImage
                 <TableCell>
                     {
                         project.projectImageUrl ?
-                            <ImageSnapshot src={project.projectImageUrl} alt={`project-${project.projectName}`} /> :
+                            <ImageSnapshot 
+                            src={project.projectImageUrl} 
+                            alt={`project-${project.projectName}`} 
+                            showAdd={false}
+                            showRemove={true}
+                            onRemoveClick={()=> {}}
+                            /> :
                             <button onClick={() => handleAddProjectImageClick()}>+</button>
                     }
 
