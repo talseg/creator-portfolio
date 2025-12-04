@@ -1,7 +1,8 @@
 import { collection, CollectionReference, doc, getDoc, getDocs, orderBy, query, setDoc, updateDoc, WriteBatch, writeBatch, type DocumentData } from "firebase/firestore";
 import { db, storage } from "./firebaseConfig";
 import type { Project, Image } from "./dbInterfaces";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
+
 
 // ToDo - Move to MobX
 
@@ -17,7 +18,7 @@ export const addNewProjectByName = async (projectName: string, projectIndex: num
   };
   await setDoc(docRef, newProject);
   return newProject;
-} 
+}
 
 
 
@@ -33,7 +34,66 @@ export const fetchProjects = async (): Promise<Project[]> => {
   return (projects)
 };
 
-export const fetchProjectById = async (id: string): Promise<Project> => {
+export const fetchProject = async (projectId: string): Promise<Project> => {
+  const docRef = doc(db, "projects", projectId);
+  const snap = await getDoc(docRef);
+  const projectData = snap.data() as Omit<Project, "id" | "images">;
+  const project: Project = {
+    ...projectData,
+    id: projectId,
+  }
+  return project;
+}
+
+/**
+ * Extracts the Firebase Storage path from a download URL.
+ * Example:
+ *   https://.../o/projects%2F123%2Fimg.png?alt=media
+ * → "projects/123/img.png"
+ */
+export function extractStoragePathFromUrl(downloadUrl: string): string {
+  const match = downloadUrl.match(/\/o\/([^?]+)/);
+  if (!match || !match[1]) {
+    throw new Error("Invalid Firebase Storage download URL");
+  }
+  return decodeURIComponent(match[1]);
+}
+
+/**
+ * Deletes a Firebase Storage file using only the download URL.
+ */
+export async function deleteByDownloadUrl(downloadUrl: string): Promise<void> {
+  const storagePath = extractStoragePathFromUrl(downloadUrl);
+  console.log(`storagePath: ${storagePath}`);
+  const fileRef = ref(storage, storagePath);
+  await deleteObject(fileRef);
+}
+
+
+export const removeProjectImage = async (projectId: string) => {
+  const projectRef = doc(db, "projects", projectId);
+  const snap = await getDoc(projectRef);
+  if (!snap.exists()) {
+    throw new Error(`Project ${projectId} does not exist`);
+  }
+
+  const projectData = snap.data();
+  const url: string | undefined = projectData?.projectImageUrl;
+  if (!url) {
+    throw new Error(`Project ${projectId} url does not exist`);
+  }
+
+  try {
+    await deleteByDownloadUrl(url);
+  } catch (err) {
+    console.error("Failed to delete image from storage:", err);
+    throw err;
+  }
+
+  await updateDoc(projectRef, { projectImageUrl: "" });
+};
+
+export const fetchProjectWithImagesById = async (id: string): Promise<Project> => {
 
   const docRef = doc(db, "projects", id);
   const snap = await getDoc(docRef);
@@ -63,7 +123,7 @@ export const fetchProjectsWithImages = async (): Promise<Project[]> => {
     if (!projects[index]) break;
     const projectId = projects[index]?.id;
     if (!projectId) break;
-    const projectWithImages = await fetchProjectById(projectId);
+    const projectWithImages = await fetchProjectWithImagesById(projectId);
     fullProjects.push(projectWithImages);
   }
   return fullProjects;
@@ -127,7 +187,7 @@ export const addImageToProject = async (projectId: string, imageFile: File): Pro
 }
 
 export const addProjectImage = async (projectId: string, projectImageFile: File): Promise<void> => {
-  
+
   // Upload to Storage
   const storagePath = `projects/${projectId}/projectImage/main_${Date.now()}_${projectImageFile.name}`;
   const storageRef = ref(storage, storagePath);
@@ -144,6 +204,8 @@ export const addProjectImage = async (projectId: string, projectImageFile: File)
     projectImageUrl: downloadUrl
   });
 }
+
+
 
 
 // ToDO - Add these later for Database abstruction

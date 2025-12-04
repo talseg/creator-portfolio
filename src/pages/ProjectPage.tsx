@@ -4,7 +4,7 @@ import { getExceptionString, logException } from "../utilities/exceptionUtils";
 import styled from "styled-components";
 import type { Project } from "../database/dbInterfaces";
 import { CircularProgress } from "@mui/material";
-import { fetchProjectById } from "../database/FirebaseDb";
+import { fetchProjectWithImagesById } from "../database/FirebaseDb";
 
 
 const PageWrapper = styled.div`
@@ -86,7 +86,7 @@ export const ProjectPage: React.FC = () => {
     if (!projectId) return;
     (async () => {
       try {
-        const project = await fetchProjectById(projectId);
+        const project = await fetchProjectWithImagesById(projectId);
         setProject(project);
       } catch (err) {
         logException(err);
