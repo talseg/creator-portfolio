@@ -36,9 +36,6 @@ const ButtonsWrapper = styled.div`
   margin-top: 2px;
   margin-right: 4px;
 `;
-
-type OperationType = undefined | "add" | "remove";
-
 interface ImageSnapshotProps {
   src: string;
   alt?: string;
@@ -50,7 +47,6 @@ interface ImageSnapshotProps {
 
 const ImageSnapshot: React.FC<ImageSnapshotProps> = ({ src, alt = "",
   onAddClick, onRemoveClick, showAdd, showRemove }) => {
-  const showButtons = Boolean(true);
 
   return (
     <ImageSnapshotContainer>
