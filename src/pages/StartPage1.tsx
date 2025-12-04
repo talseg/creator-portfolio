@@ -90,12 +90,13 @@ const HorizontalLongLine = styled.div`
 `;
 
 const MIDDLE_SECTION_REM_HEIGHT = 30;
+// The background color here is controlled by 
+// useImageScrolling because it is effected by the scroll 
 const MiddleSection = styled.div`
   display: flex;
   width: 100%;
   height: ${MIDDLE_SECTION_REM_HEIGHT}rem;
   grid-column: 2 / -1;
-  background: linear-gradient(180deg, #96BFC5 -3rem, #FFF 78rem);
   margin-left: -8rem;
   z-index: 10;
   justify-self: self-end;
@@ -201,7 +202,6 @@ export const StartPage1: React.FC = () => {
     }
     loadProjects();
   }, []);
-
 
   return (
     <WrapperStyled>
