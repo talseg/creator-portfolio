@@ -13,10 +13,6 @@ const meta = {
 
   // More on argTypes: https://storybook.js.org/docs/api/argtypes
   argTypes: {
-    operation: {
-      control: { type: "select" },
-      options: [undefined, "add", "remove"],
-    },
   }
   // Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#story-args
 
@@ -29,7 +25,8 @@ type Story = StoryObj<typeof meta>;
 export const ImageSnapshotElement: Story = {
   args: {
     src: "https://firebasestorage.googleapis.com/v0/b/creator-portfolio-f2b93.firebasestorage.app/o/project1%2Fproject.jpg?alt=media&token=20c96aa4-d7a2-41e4-96dc-5e801e1e1ff8",
-    operation: "remove",
+    showAdd: true,
+    showRemove: true,
     onAddClick: () => alert("Add"),
     onRemoveClick: () => alert("Remove")
   },

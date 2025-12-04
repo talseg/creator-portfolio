@@ -42,28 +42,32 @@ type OperationType = undefined | "add" | "remove";
 interface ImageSnapshotProps {
   src: string;
   alt?: string;
-  operation: OperationType;
+  showAdd?: boolean;
+  showRemove?: boolean;
   onAddClick?: () => void;
   onRemoveClick?: () => void;
 }
 
-const ImageSnapshot: React.FC<ImageSnapshotProps> = ({ src, alt = "", onAddClick, onRemoveClick }) => {
+const ImageSnapshot: React.FC<ImageSnapshotProps> = ({ src, alt = "",
+  onAddClick, onRemoveClick, showAdd, showRemove }) => {
   const showButtons = Boolean(true);
 
   return (
     <ImageSnapshotContainer>
       <SnapshotStyled src={src} alt={alt} />
-      {
-        showButtons &&
-        <ButtonsWrapper>
+      <ButtonsWrapper>
+        {
+          showAdd &&
           <SmallButtonStyled onClick={() => onAddClick && onAddClick()}>
             +
           </SmallButtonStyled>
+        }
+        { showRemove &&
           <SmallButtonStyled onClick={() => onRemoveClick && onRemoveClick()}>
             -
           </SmallButtonStyled>
-        </ButtonsWrapper>
-      }
+        }
+      </ButtonsWrapper>
     </ImageSnapshotContainer>
   );
 }
