@@ -6,8 +6,9 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ImageSnapshot from "../imageSnapshot/ImageSnapshot";
 import React from "react";
-import { addProjectImage } from "../../database/FirebaseDb";
+import { addProjectImage, removeProjectImage } from "../../database/FirebaseDb";
 import { pickImage } from "../../utilities/pickImage";
+import { logException } from "../../utilities/exceptionUtils";
 
 interface ImageTableRowProps {
   images: Image[];
@@ -42,11 +43,33 @@ interface ProjectRowProps {
 const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen,
   setImageRowOpen }) => {
 
-  const handleAddProjectImageClick = () => {
-    pickImage((file) => {
-      if (file) addProjectImage(project.id, file);
+  const handleAddProjectImageClick = async () => {
+    pickImage(async (file) => {
+      if (file) {
+        try {
+          await addProjectImage(project.id, file);
+        }
+        catch (e) {
+          logException(e);
+          alert("Remove Project Image failed");
+          throw e;
+        }
+        alert("Remove Project Image success! Please refresh");
+      }
     })
   };
+
+  const handleRemoveProjectImage = async () => {
+    try {
+      await removeProjectImage(project.id);
+    }
+    catch (e) {
+      logException(e);
+      alert("Remove Project Image failed");
+      throw e;
+    }
+    alert("Remove Project Image success! Please refresh");
+  }
 
   return (
     <TableRow key={project.id}>
@@ -70,7 +93,7 @@ const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen,
             alt={`project-${project.projectName}`}
             showAdd={false}
             showRemove={true}
-            onRemoveClick={() => { }}
+            onRemoveClick={handleRemoveProjectImage}
           /> :
           <button onClick={() => handleAddProjectImageClick()}>+</button>
         }
@@ -91,7 +114,7 @@ const ProjectWithImagesRow: React.FC<RowProps> = ({ project }) => {
 
       <ProjectRow project={project}
         imageRowOpen={showImages}
-        setImageRowOpen={setShowImages}/>
+        setImageRowOpen={setShowImages} />
 
       {/* Expanding Project Images */}
       {project.images && <ImagesTableRow
