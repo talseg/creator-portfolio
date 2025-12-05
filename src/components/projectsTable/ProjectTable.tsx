@@ -6,6 +6,8 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ImageSnapshot from "../imageSnapshot/ImageSnapshot";
 import React from "react";
+import { addProjectImage } from "../../database/FirebaseDb";
+import { pickImage } from "../../utilities/pickImage";
 
 interface ImageTableRowProps {
   images: Image[];
@@ -20,13 +22,10 @@ export const ImagesTableRow: React.FC<ImageTableRowProps> = ({ images, open, pro
       <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
         <Collapse in={open} timeout="auto" unmountOnExit>
           <Box sx={{ margin: 1 }}>
-
             <Typography variant="h6" gutterBottom component="div">
               Project Images
             </Typography>
-
             <ImageTable images={images} projectId={projectId} />
-
           </Box>
         </Collapse>
       </TableCell>
@@ -38,20 +37,19 @@ interface ProjectRowProps {
   project: Project;
   imageRowOpen: boolean;
   setImageRowOpen: (open: boolean) => void;
-  onAddProjectImage: (projectId: string) => void;
 }
 
 const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen,
-  setImageRowOpen,
-  onAddProjectImage }) => {
+  setImageRowOpen }) => {
 
   const handleAddProjectImageClick = () => {
-    onAddProjectImage(project.id);
+    pickImage((file) => {
+      if (file) addProjectImage(project.id, file);
+    })
   };
 
   return (
     <TableRow key={project.id}>
-
 
       {/** Images Expander button */}
       <TableCell>
@@ -66,30 +64,26 @@ const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen,
       <TableCell>{project.projectName}</TableCell>
       <TableCell>{project.projectIndex}</TableCell>
       <TableCell>
-        {
-          project.projectImageUrl ?
-            <ImageSnapshot
-              src={project.projectImageUrl}
-              alt={`project-${project.projectName}`}
-              showAdd={false}
-              showRemove={true}
-              onRemoveClick={() => { }}
-            /> :
-            <button onClick={() => handleAddProjectImageClick()}>+</button>
+        {project.projectImageUrl ?
+          <ImageSnapshot
+            src={project.projectImageUrl}
+            alt={`project-${project.projectName}`}
+            showAdd={false}
+            showRemove={true}
+            onRemoveClick={() => { }}
+          /> :
+          <button onClick={() => handleAddProjectImageClick()}>+</button>
         }
-
       </TableCell>
     </TableRow>
-
   );
 }
 
 interface RowProps {
   project: Project;
-  onAddProjectImage: (projectId: string) => void;
 }
 
-const ProjectWithImagesRow: React.FC<RowProps> = ({ project, onAddProjectImage }) => {
+const ProjectWithImagesRow: React.FC<RowProps> = ({ project }) => {
   const [showImages, setShowImages] = useState(false);
 
   return (
@@ -97,8 +91,7 @@ const ProjectWithImagesRow: React.FC<RowProps> = ({ project, onAddProjectImage }
 
       <ProjectRow project={project}
         imageRowOpen={showImages}
-        setImageRowOpen={setShowImages}
-        onAddProjectImage={onAddProjectImage} />
+        setImageRowOpen={setShowImages}/>
 
       {/* Expanding Project Images */}
       {project.images && <ImagesTableRow
@@ -114,11 +107,9 @@ const ProjectWithImagesRow: React.FC<RowProps> = ({ project, onAddProjectImage }
 export interface ProjectTableProps {
   projects: Project[];
   setProjects: (projects: Project[]) => void;
-  onAddProjectImage: (projectId: string) => void;
 }
 
-
-export const ProjectTable: React.FC<ProjectTableProps> = ({ projects, onAddProjectImage }) => {
+export const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden', maxWidth: "80vw" }}>
@@ -141,7 +132,6 @@ export const ProjectTable: React.FC<ProjectTableProps> = ({ projects, onAddProje
                 <ProjectWithImagesRow
                   project={project}
                   key={`row-project-${index}`}
-                  onAddProjectImage={onAddProjectImage}
                 />
               ))
             }
