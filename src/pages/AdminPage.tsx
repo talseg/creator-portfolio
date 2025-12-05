@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { doc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../database/firebaseConfig";
@@ -7,7 +7,7 @@ import { getExceptionString, logException } from "../utilities/exceptionUtils";
 import { EmailPasswordDialog } from "../components/userPassword/EmailPasswordDialog";
 import { ProjectTable } from "../components/projectsTable/ProjectTable";
 import styled from "styled-components";
-import { addNewProjectByName, addProjectImage, fetchProjectsWithImages, updateProjects } from "../database/FirebaseDb";
+import { addNewProjectByName, fetchProjectsWithImages, updateProjects } from "../database/FirebaseDb";
 import { CircularProgress } from "@mui/material";
 
 const Wrapper = styled.div`
@@ -51,8 +51,6 @@ export const AdminPage: React.FC = () => {
     const [hasError, setHasError] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [projectName, setProjectName] = useState("");
-    const [selectedProjectId, setSelectedProjectId] = useState("");
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     useEffect(() => {
         const loadProjects = async () => {
@@ -69,8 +67,6 @@ export const AdminPage: React.FC = () => {
         }
         loadProjects();
     }, []);
-
-
 
     useEffect(() => {
         // 🔹 Track login state reliably
@@ -171,28 +167,8 @@ export const AdminPage: React.FC = () => {
 
     if (isLoading) return <Wrapper><StyledSpinner /></Wrapper>;
 
-    const handleAddProjectImage = (projectId: string): void =>{
-        setSelectedProjectId(projectId)
-        fileInputRef.current?.click();
-    }
-
-    const addProjectImageFromInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0];
-      console.log(file?.name);
-      if (!file) return;
-      addProjectImage(selectedProjectId, file);
-    }
-
     return (
         <PageWrapper>
-
-      <input
-        type="file"
-        accept="image/*"
-        ref={fileInputRef}
-        onChange={addProjectImageFromInput}
-        style={{ display: 'none' }}
-      />
             <EmailPasswordDialog
                 open={isLoginDialogOPen}
                 onSubmit={handleSubmit}
@@ -207,8 +183,7 @@ export const AdminPage: React.FC = () => {
 
             {projects && <ProjectTable 
                 projects={projects} 
-                setProjects={setProjects} 
-                onAddProjectImage={handleAddProjectImage}
+                setProjects={setProjects}
             />}
 
             <div style={{ display: "flex", gap: "0.5rem" }}>
@@ -234,11 +209,9 @@ export const AdminPage: React.FC = () => {
                     onChange={async (e) => {
                         const projectName = e.target.value;
                         setProjectName(projectName);
-
                     }}
                 />
             </InputWithHeader>
-
 
             <InputWithHeader>
                 <TextHeader>First Project Name: </TextHeader>
@@ -257,7 +230,6 @@ export const AdminPage: React.FC = () => {
             <div>
                 Number of projects in DB: {projects.length}
             </div>
-
 
         </PageWrapper>
     )

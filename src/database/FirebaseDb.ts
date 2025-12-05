@@ -1,7 +1,8 @@
-import { collection, CollectionReference, doc, getDoc, getDocs, orderBy, query, setDoc, updateDoc, WriteBatch, writeBatch, type DocumentData } from "firebase/firestore";
+import { collection, CollectionReference, deleteDoc, doc, getDoc, getDocs, orderBy, query, setDoc, updateDoc, WriteBatch, writeBatch, type DocumentData } from "firebase/firestore";
 import { db, storage } from "./firebaseConfig";
 import type { Project, Image } from "./dbInterfaces";
 import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { logException } from "../utilities/exceptionUtils";
 
 
 // ToDo - Move to MobX
@@ -104,7 +105,7 @@ export const fetchProjectWithImagesById = async (id: string): Promise<Project> =
   const imagesColRef = collection(docRef, "images");
   const imagesSnap = await getDocs(imagesColRef);
   const images = imagesSnap.docs
-    .map(doc => doc.data() as Image)
+    .map(d => ({ id: d.id, ...(d.data() as Omit<Image, "id">) }))
     .sort((a, b) => a.imageIndex - b.imageIndex);
 
   const projectWithImages: Project = {
@@ -160,7 +161,6 @@ const uploadToStorage = async (projectId: string, imageFile: File): Promise<stri
 
 const getProjectImages = async (imagesColRef: CollectionReference<DocumentData, DocumentData>
 ): Promise<Image[]> => {
-  //const imagesColRef = collection(db, "projects", projectId, "images");
   const imagesSnap = await getDocs(imagesColRef);
   const images = imagesSnap.docs
     .map(d => ({ id: d.id, ...(d.data() as Omit<Image, "id">) }))
@@ -205,24 +205,41 @@ export const addProjectImage = async (projectId: string, projectImageFile: File)
   });
 }
 
+export const removeProjectImageFromImages = async (projectId: string, imageId: string) => {
+  const errorString = `project:"${projectId}" image:"${imageId}"`
+  const imageDocRef = doc(db, "projects", projectId, "images", imageId);
+  let snap;
+  try {
+    snap = await getDoc(imageDocRef);
+  }
+  catch (e) {
+    logException(e);
+    alert(`getDoc failed ${errorString}`);
+    throw e;
+  }
 
+  if (!snap) {
+    alert(`getDoc failed ${errorString}`);
+    throw new Error(`Got empty snapshot ${errorString}`);
+  }
+  const data = snap.data();
+  if (!data) {
+    throw new Error(`No image data ${errorString}`);
+  }
+  const { imageUrl } = snap.data() as { imageUrl: string };
 
+  // Delete the Image from the storage
+  try {
+    await deleteByDownloadUrl(imageUrl);
+  } catch (err) {
+    console.error(`Failed to delete Project Images image from storage: ${errorString}`, err);
+    throw err;
+  }
 
-// ToDO - Add these later for Database abstruction
-// interface DatabaseType {
-//   fetchProjects: () => Promise<Project[]>;
-//   fetchProjectById: (id: string) => Promise<Project>;
-//   fetchProjectsWithImages: () => Promise<Project[]>;
-//   updateProject: (project: Project) => Promise<void>;
-//   updateProjects: (project: Project[]) => Promise<void>;
-//   addImageToProject: (projectId: string, imageFile: File) => Promise<void>;
-// }
-
-// export const FirebaseDb: DatabaseType = {
-//   fetchProjects: fetchProjects,
-//   fetchProjectById: fetchProjectById,
-//   fetchProjectsWithImages: fetchProjectsWithImages,
-//   updateProjects: updateProjects,
-//   updateProject: updateProject,
-//   addImageToProject: addImageToProject
-// }
+  try {
+    await deleteDoc(imageDocRef);
+  } catch (err) {
+    console.error(`Failed to delete image document from Firestore:  ${errorString} `, err);
+    throw err;
+  }
+}
