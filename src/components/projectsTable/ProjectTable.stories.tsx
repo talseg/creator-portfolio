@@ -66,7 +66,6 @@ const ProjectTableTester: React.FC = () => {
 
   return (
     <ProjectTable projects={projects} setProjects={setProjects}
-      onAddProjectImage={() => {}}
     />
   );
   
