@@ -1,7 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 import type { Image, Project } from "../../database/dbInterfaces";
 import ImageSnapshot from "../imageSnapshot/ImageSnapshot";
-import { addImageToProject, removeProjectImageFromImages } from "../../database/FirebaseDb";
+import { addImageToProjectImages, removeProjectImageFromImages } from "../../database/FirebaseDb";
 import { pickImage } from "../../utilities/pickImage";
 import { logException } from "../../utilities/exceptionUtils";
 import { useProjectTable } from "./ProjectTableContext";
@@ -19,7 +19,14 @@ export const ImageTable: React.FC<ImageTableProps> = ({ images, project }) => {
     pickImage(async (file) => {
       if (file) {
         try {
-          await addImageToProject(project.id, file);
+          const newImage = await addImageToProjectImages(project.id, file);
+          const newImages = project.images ? [...project.images, newImage] : [ newImage];
+          
+          // ***********  ToDo - No need to update the DB here **********
+          updateProject({
+            ...project,
+            images: newImages
+          });
         }
         catch (e) {
           logException(e);

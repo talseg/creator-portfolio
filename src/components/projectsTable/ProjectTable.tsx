@@ -80,6 +80,7 @@ const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen,
         ...project,
         projectImageUrl: ""
       };
+      // ***********  ToDo - No need to update the DB here **********
       updateProject(updated)
     }
     catch (e) {

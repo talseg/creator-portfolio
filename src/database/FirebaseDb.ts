@@ -171,7 +171,7 @@ const getNextImageIndex = (images: Image[]): number => {
   return lastImage!.imageIndex + 1;
 }
 
-export const addImageToProject = async (projectId: string, imageFile: File): Promise<void> => {
+export const addImageToProjectImages = async (projectId: string, imageFile: File): Promise<Image> => {
   const url = await uploadToStorage(projectId, imageFile);
   const imagesColRef = collection(db, "projects", projectId, "images");
   const images = await getProjectImages(imagesColRef);
@@ -181,6 +181,10 @@ export const addImageToProject = async (projectId: string, imageFile: File): Pro
   };
   const newDocRef = doc(imagesColRef); // auto-id
   await setDoc(newDocRef, newImage);
+  return { 
+    ...newImage,
+    id: newDocRef.id
+  };
 }
 
 export const addProjectImage = async (projectId: string, projectImageFile: File): Promise<string> => {

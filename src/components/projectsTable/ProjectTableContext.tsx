@@ -2,8 +2,11 @@ import { createContext, useContext } from "react";
 import type { Project } from "../../database/dbInterfaces";
 
 interface ProjectTableContextValue {
+  // ******** ToDo - Get the projected from here
   projects: Project[];
   updateProject: (project: Project) => void;
+
+  //***** ToDo - Remove */
   setDirty: () => void;
 }
 
