@@ -1,6 +1,6 @@
-import { Box, Collapse, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { Box, Collapse, IconButton, Input, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import type { Project, Image } from "../../database/dbInterfaces";
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 import { ImageTable } from "./ImageTable";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -9,6 +9,9 @@ import React from "react";
 import { addProjectImage, removeProjectImage } from "../../database/FirebaseDb";
 import { pickImage } from "../../utilities/pickImage";
 import { logException } from "../../utilities/exceptionUtils";
+import { styled as muiStyle } from "@mui/material/styles";
+import { useProjectTable } from "./ProjectTableContext";
+
 
 interface ImageTableRowProps {
   images: Image[];
@@ -34,6 +37,10 @@ export const ImagesTableRow: React.FC<ImageTableRowProps> = ({ images, open, pro
   );
 }
 
+const InputStyled = muiStyle(Input)`
+  font-size: 12px;
+`;
+
 interface ProjectRowProps {
   project: Project;
   imageRowOpen: boolean;
@@ -42,6 +49,8 @@ interface ProjectRowProps {
 
 const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen,
   setImageRowOpen }) => {
+
+  const { updateProject } = useProjectTable();
 
   const handleAddProjectImageClick = async () => {
     pickImage(async (file) => {
@@ -84,7 +93,18 @@ const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen,
         </IconButton>
       </TableCell>
 
-      <TableCell>{project.projectName}</TableCell>
+      <TableCell>
+        <InputStyled
+          multiline
+          value={project.projectName}
+          onChange={(e) => { 
+            const updated: Project = {
+              ...project,
+              projectName: e.target.value
+            };
+            updateProject(updated)
+            }}/>
+      </TableCell>
       <TableCell>{project.projectIndex}</TableCell>
       <TableCell>
         {project.projectImageUrl ?

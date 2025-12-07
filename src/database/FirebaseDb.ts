@@ -4,24 +4,21 @@ import type { Project, Image } from "./dbInterfaces";
 import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { logException } from "../utilities/exceptionUtils";
 
-
 // ToDo - Move to MobX
 
 export const addNewProjectByName = async (projectName: string, projectIndex: number): Promise<Project> => {
   const docRef = doc(collection(db, "projects"));
-  const newProject = {
+  const newProject: Project = {
     id: docRef.id,
     projectName: projectName,
     header: "",
     projectImageUrl: "",
-    projectIndex: projectIndex, // or 0, depending on your ordering logic
-    images: [],
+    projectIndex: projectIndex,
+    images: []
   };
   await setDoc(docRef, newProject);
   return newProject;
 }
-
-
 
 export const fetchProjects = async (): Promise<Project[]> => {
   const q = query(collection(db, "projects"), orderBy("projectIndex", "asc"));

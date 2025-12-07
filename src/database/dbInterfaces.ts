@@ -4,6 +4,8 @@ export interface Image {
     imageIndex: number;
 }
 
+export type CategoryType = "designer" | "Artist" | "Illustrator";
+
 export interface Project {
     id: string;
     projectName: string;
