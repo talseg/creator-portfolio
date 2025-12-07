@@ -4,6 +4,7 @@ import type { Project } from "../../database/dbInterfaces";
 interface ProjectTableContextValue {
   projects: Project[];
   updateProject: (project: Project) => void;
+  setDirty: () => void;
 }
 
 export const ProjectTableContext = createContext<ProjectTableContextValue | null>(null);
@@ -19,7 +20,8 @@ interface ProviderProps extends ProjectTableContextValue, React.PropsWithChildre
 export const ProjectTableProvider: React.FC<ProviderProps> = ({
   children,
   projects,
-  updateProject
+  updateProject,
+  setDirty
 }) => {
 
   return (
@@ -27,6 +29,7 @@ export const ProjectTableProvider: React.FC<ProviderProps> = ({
       value={{
         projects,
         updateProject,
+        setDirty
       }}
     >
       {children}

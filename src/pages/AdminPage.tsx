@@ -207,6 +207,7 @@ export const AdminPage: React.FC = () => {
         <ProjectTableContext value={{
           projects,
           updateProject: handleUpdateProject,
+          setDirty: () => setIsDirty(true)
         }}
         >
           <ProjectTable

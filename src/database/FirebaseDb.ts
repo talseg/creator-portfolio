@@ -183,7 +183,7 @@ export const addImageToProject = async (projectId: string, imageFile: File): Pro
   await setDoc(newDocRef, newImage);
 }
 
-export const addProjectImage = async (projectId: string, projectImageFile: File): Promise<void> => {
+export const addProjectImage = async (projectId: string, projectImageFile: File): Promise<string> => {
 
   // Upload to Storage
   const storagePath = `projects/${projectId}/projectImage/main_${Date.now()}_${projectImageFile.name}`;
@@ -200,6 +200,7 @@ export const addProjectImage = async (projectId: string, projectImageFile: File)
   await updateDoc(projectRef, {
     projectImageUrl: downloadUrl
   });
+  return downloadUrl;
 }
 
 export const removeProjectImageFromImages = async (projectId: string, imageId: string) => {

@@ -1,6 +1,6 @@
 import { Box, Collapse, IconButton, Input, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import type { Project, Image } from "../../database/dbInterfaces";
-import { useState, type ChangeEvent } from "react";
+import { useState } from "react";
 import { ImageTable } from "./ImageTable";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -56,7 +56,12 @@ const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen,
     pickImage(async (file) => {
       if (file) {
         try {
-          await addProjectImage(project.id, file);
+          const newUrl = await addProjectImage(project.id, file);
+          const updated: Project = {
+            ...project,
+            projectImageUrl: newUrl
+          };
+          updateProject(updated)
         }
         catch (e) {
           logException(e);
@@ -71,6 +76,11 @@ const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen,
   const handleRemoveProjectImage = async () => {
     try {
       await removeProjectImage(project.id);
+      const updated: Project = {
+        ...project,
+        projectImageUrl: ""
+      };
+      updateProject(updated)
     }
     catch (e) {
       logException(e);
@@ -97,13 +107,13 @@ const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen,
         <InputStyled
           multiline
           value={project.projectName}
-          onChange={(e) => { 
+          onChange={(e) => {
             const updated: Project = {
               ...project,
               projectName: e.target.value
             };
             updateProject(updated)
-            }}/>
+          }} />
       </TableCell>
       <TableCell>{project.projectIndex}</TableCell>
       <TableCell>
