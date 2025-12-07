@@ -16,10 +16,10 @@ import { useProjectTable } from "./ProjectTableContext";
 interface ImageTableRowProps {
   images: Image[];
   open: boolean;
-  projectId: string;
+  project: Project;
 }
 
-export const ImagesTableRow: React.FC<ImageTableRowProps> = ({ images, open, projectId }) => {
+export const ImagesTableRow: React.FC<ImageTableRowProps> = ({ images, open, project }) => {
 
   return (
     <TableRow>
@@ -29,7 +29,7 @@ export const ImagesTableRow: React.FC<ImageTableRowProps> = ({ images, open, pro
             <Typography variant="h6" gutterBottom component="div">
               Project Images
             </Typography>
-            <ImageTable images={images} projectId={projectId} />
+            <ImageTable images={images} project={project} />
           </Box>
         </Collapse>
       </TableCell>
@@ -150,7 +150,7 @@ const ProjectWithImagesRow: React.FC<RowProps> = ({ project }) => {
       {project.images && <ImagesTableRow
         images={project.images}
         open={showImages}
-        projectId={project.id}
+        project={project}
       />}
 
     </React.Fragment>
