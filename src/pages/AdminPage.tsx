@@ -40,6 +40,12 @@ const InputWithHeader = styled.div`
 const TextHeader = styled.div`
   min-width: 150px;  
 `;
+const DirtyWrapper = styled.div`
+  font-size: 46px;
+  height: auto;
+  height: 0px;
+  margin-top: -14px;
+`;
 
 export const AdminPage: React.FC = () => {
 
@@ -52,6 +58,7 @@ export const AdminPage: React.FC = () => {
   const [hasError, setHasError] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [projectName, setProjectName] = useState("");
+  const [isDirty, setIsDirty] = useState(false);
 
   useEffect(() => {
     const loadProjects = async () => {
@@ -115,6 +122,7 @@ export const AdminPage: React.FC = () => {
   const handleUpdateAllProjects = async () => {
     console.log("calling update all projects");
     await updateProjects(projects);
+    setIsDirty(false);
   }
 
   const handleSignOut = async () => {
@@ -172,8 +180,7 @@ export const AdminPage: React.FC = () => {
     const projectToReplace = projects.find((p) => p.id === project.id);
 
     if (projectToReplace) {
-      // console.log("projectToReplace: ", projectToReplace.projectName);
-
+      setIsDirty(true);
       setProjects((projs) => {
         return projs.map(p => p.id === project.id ? project : p);
       });
@@ -192,6 +199,7 @@ export const AdminPage: React.FC = () => {
       <div style={{ display: "flex", gap: "1rem" }}>
         {renderLoginOptions()}
         <button onClick={handleUpdateAllProjects}>Save</button>
+        {isDirty && <DirtyWrapper>*</DirtyWrapper>}
       </div>
 
       {projects &&
@@ -201,7 +209,6 @@ export const AdminPage: React.FC = () => {
           updateProject: handleUpdateProject,
         }}
         >
-
           <ProjectTable
             projects={projects}
             setProjects={setProjects}
