@@ -47,7 +47,8 @@ const createMockProjectData = (index: number): Project => {
     header: "header " + index,
     projectImageUrl: "url " + index,
     projectIndex: index,
-    images: createImages(4)
+    images: createImages(4),
+    category: "designer"
   }
 } 
 

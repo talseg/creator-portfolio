@@ -1,36 +1,54 @@
 import { Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
-import type { Image } from "../../database/dbInterfaces";
+import type { Image, Project } from "../../database/dbInterfaces";
 import ImageSnapshot from "../imageSnapshot/ImageSnapshot";
-import { addImageToProject, removeProjectImageFromImages } from "../../database/FirebaseDb";
+import { addImageToProjectImages, removeProjectImageFromImages } from "../../database/FirebaseDb";
 import { pickImage } from "../../utilities/pickImage";
 import { logException } from "../../utilities/exceptionUtils";
+import { useProjectTable } from "./ProjectTableContext";
 
 interface ImageTableProps {
   images: Image[];
-  projectId: string;
+  project: Project;
 }
 
-export const ImageTable: React.FC<ImageTableProps> = ({ images, projectId }) => {
+export const ImageTable: React.FC<ImageTableProps> = ({ images, project }) => {
+
+  const { updateProject } = useProjectTable();
 
   const handleAddImageClick = () => {
     pickImage(async (file) => {
       if (file) {
         try {
-          await addImageToProject(projectId, file);
+          const newImage = await addImageToProjectImages(project.id, file);
+          const newImages = project.images ? [...project.images, newImage] : [ newImage];
+          
+          // ***********  ToDo - No need to update the DB here **********
+          updateProject({
+            ...project,
+            images: newImages
+          });
         }
         catch (e) {
           logException(e);
-          alert("Remove Project Image failed");
+          alert("Add Project Image failed");
           throw e;
         }
-        alert("Remove Project Image success! Please refresh");
+        alert("Add Project Image success!");
       }
     })
   };
 
   const handleRemoveImage = async (image: Image) => {
     try {
-      await removeProjectImageFromImages(projectId, image.id);
+      await removeProjectImageFromImages(project.id, image.id);
+      const newImages: Image[] | undefined = project.images?.filter((img) => img.id !== image.id);
+      if (!newImages) return;
+      updateProject(
+        {
+          ...project,
+          images: newImages
+        }
+      )
     }
     catch (e) {
       logException(e);

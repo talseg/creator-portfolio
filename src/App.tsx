@@ -14,9 +14,9 @@ function App() {
   return (
     <HashRouter>
       <Routes>
-        <Route path="/" element={<StartPage1 />} />
+        <Route path="/user" element={<StartPage1 />} />
         <Route path="/prev" element={<StartPage />} />
-        <Route path="/admin" element={<AdminPage />} />
+        <Route path="/" element={<AdminPage />} />
         <Route path="/project/:projectId" element={<ProjectPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

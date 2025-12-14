@@ -4,24 +4,23 @@ import type { Project, Image } from "./dbInterfaces";
 import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { logException } from "../utilities/exceptionUtils";
 
-
 // ToDo - Move to MobX
 
-export const addNewProjectByName = async (projectName: string, projectIndex: number): Promise<Project> => {
+export const addNewProjectByName = async (projectName: string, 
+  projectIndex: number): Promise<Project> => {
   const docRef = doc(collection(db, "projects"));
-  const newProject = {
+  const newProject: Project = {
     id: docRef.id,
     projectName: projectName,
     header: "",
     projectImageUrl: "",
-    projectIndex: projectIndex, // or 0, depending on your ordering logic
-    images: [],
+    category: "designer",
+    projectIndex: projectIndex,
+    images: []
   };
   await setDoc(docRef, newProject);
   return newProject;
 }
-
-
 
 export const fetchProjects = async (): Promise<Project[]> => {
   const q = query(collection(db, "projects"), orderBy("projectIndex", "asc"));
@@ -174,7 +173,7 @@ const getNextImageIndex = (images: Image[]): number => {
   return lastImage!.imageIndex + 1;
 }
 
-export const addImageToProject = async (projectId: string, imageFile: File): Promise<void> => {
+export const addImageToProjectImages = async (projectId: string, imageFile: File): Promise<Image> => {
   const url = await uploadToStorage(projectId, imageFile);
   const imagesColRef = collection(db, "projects", projectId, "images");
   const images = await getProjectImages(imagesColRef);
@@ -184,9 +183,13 @@ export const addImageToProject = async (projectId: string, imageFile: File): Pro
   };
   const newDocRef = doc(imagesColRef); // auto-id
   await setDoc(newDocRef, newImage);
+  return { 
+    ...newImage,
+    id: newDocRef.id
+  };
 }
 
-export const addProjectImage = async (projectId: string, projectImageFile: File): Promise<void> => {
+export const addProjectImage = async (projectId: string, projectImageFile: File): Promise<string> => {
 
   // Upload to Storage
   const storagePath = `projects/${projectId}/projectImage/main_${Date.now()}_${projectImageFile.name}`;
@@ -203,6 +206,7 @@ export const addProjectImage = async (projectId: string, projectImageFile: File)
   await updateDoc(projectRef, {
     projectImageUrl: downloadUrl
   });
+  return downloadUrl;
 }
 
 export const removeProjectImageFromImages = async (projectId: string, imageId: string) => {

@@ -9,6 +9,7 @@ import { ProjectTable } from "../components/projectsTable/ProjectTable";
 import styled from "styled-components";
 import { addNewProjectByName, fetchProjectsWithImages, updateProjects } from "../database/FirebaseDb";
 import { CircularProgress } from "@mui/material";
+import { ProjectTableContext } from "../components/projectsTable/ProjectTableContext";
 
 const Wrapper = styled.div`
     display: grid;
@@ -39,198 +40,227 @@ const InputWithHeader = styled.div`
 const TextHeader = styled.div`
   min-width: 150px;  
 `;
+const DirtyWrapper = styled.div`
+  font-size: 46px;
+  height: auto;
+  height: 0px;
+  margin-top: -14px;
+`;
 
 export const AdminPage: React.FC = () => {
 
-    const [isLoading, setIsLoading] = useState(true);
-    const [projects, setProjects] = useState<Project[]>([]);
-    const [firstProjectName, setFirstProjectName] = useState<string | undefined>("");
-    const [isLoginDialogOPen, setIsLoginDialogOPen] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-    const [email, setEmail] = useState<string | null>(null);
-    const [hasError, setHasError] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [projectName, setProjectName] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [firstProjectName, setFirstProjectName] = useState<string | undefined>("");
+  const [isLoginDialogOPen, setIsLoginDialogOPen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [email, setEmail] = useState<string | null>(null);
+  const [hasError, setHasError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [projectName, setProjectName] = useState("");
+  const [isDirty, setIsDirty] = useState(false);
 
-    useEffect(() => {
-        const loadProjects = async () => {
-            try {
-                setIsLoading(true);
-                const projectsData = await fetchProjectsWithImages();
-                setProjects(projectsData);
-                setIsLoading(false);
-                setFirstProjectName(projectsData[0]?.projectName);
-            } catch (err) {
-                logException(err);
-                setError(getExceptionString(err));
-            }
-        }
-        loadProjects();
-    }, []);
-
-    useEffect(() => {
-        // 🔹 Track login state reliably
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if (user) {
-                setIsLoggedIn(true);
-                setEmail(user?.email);
-            }
-            else {
-                setIsLoginDialogOPen(true);
-                setHasError(false);
-            }
-        });
-        return () => unsubscribe();
-    }, []);
-
-    const handleSubmit = async (email: string, password: string): Promise<void> => {
-        try {
-            await signInWithEmailAndPassword(auth, email, password);
-            setIsLoggedIn(true);
-            setIsLoginDialogOPen(false);
-            setHasError(false);
-        }
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        catch (_) {
-            setIsLoggedIn(false);
-            setHasError(true);
-        }
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        setIsLoading(true);
+        const projectsData = await fetchProjectsWithImages();
+        setProjects(projectsData);
+        setIsLoading(false);
+        setFirstProjectName(projectsData[0]?.projectName);
+      } catch (err) {
+        logException(err);
+        setError(getExceptionString(err));
+      }
     }
+    loadProjects();
+  }, []);
 
-    const handleUpdateDB = async () => {
-        const projectId = projects[0]?.id;
-        if (!projectId) return;
-        const projectRef = doc(db, "projects", projectId);
-
-        try {
-            await updateDoc(projectRef, { projectName: firstProjectName });
-            alert(`Update Project name OK`);
-        }
-        catch (e) {
-            alert(`Update Project name failed: ${(e as Error).message}`);
-        }
-    }
-
-    const handleUpdateAllProjects = async () => {
-        console.log("calling update all projects");
-        await updateProjects(projects);
-    }
-
-    const handleSignOut = async () => {
-        try {
-            if (window.confirm("Are you sure you want to sign out?")) {
-
-                await signOut(auth);
-                setIsLoggedIn(false);
-            }
-        }
-        catch (e) {
-            logException(e, "Can not log out");
-            throw e;
-        }
-    }
-
-    const handleSignIn = async () => {
+  useEffect(() => {
+    // 🔹 Track login state reliably
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsLoggedIn(true);
+        setEmail(user?.email);
+      }
+      else {
         setIsLoginDialogOPen(true);
         setHasError(false);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleSubmit = async (email: string, password: string): Promise<void> => {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      setIsLoggedIn(true);
+      setIsLoginDialogOPen(false);
+      setHasError(false);
     }
-
-    const renderLoginOptions = () => {
-        if (isLoading)
-            return (<>Loading...</>);
-        if (isLoggedIn)
-            return (
-                <div style={{ display: "flex", alignItems: "center" }}>
-                    <div style={{ marginRight: "14px" }}>
-                        {email}
-                    </div>
-                    <button onClick={handleSignOut}>Sign Out</button>
-                </div>
-            );
-        return (
-            <div style={{ display: "flex", alignItems: "center" }}>
-                <div style={{ marginRight: "14px" }}>
-                    Please sign in:
-                </div>
-                <button onClick={handleSignIn}>Sign In</button>
-            </div>
-        );
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    catch (_) {
+      setIsLoggedIn(false);
+      setHasError(true);
     }
+  }
 
-    const getLastProjectIndex = (): number => {
-        if (!projects || projects.length === 0)
-            return 1;
-        return projects[projects.length - 1]!.projectIndex;
+  const handleUpdateDB = async () => {
+    const projectId = projects[0]?.id;
+    if (!projectId) return;
+    const projectRef = doc(db, "projects", projectId);
+
+    try {
+      await updateDoc(projectRef, { projectName: firstProjectName });
+      alert(`Update Project name OK`);
     }
+    catch (e) {
+      alert(`Update Project name failed: ${(e as Error).message}`);
+    }
+  }
 
-    if (error) return <>Projects Load Error</>
+  const handleUpdateAllProjects = async () => {
+    await updateProjects(projects);
+    setIsDirty(false);
+  }
 
-    if (isLoading) return <Wrapper><StyledSpinner /></Wrapper>;
+  const handleSignOut = async () => {
+    try {
+      if (window.confirm("Are you sure you want to sign out?")) {
 
+        await signOut(auth);
+        setIsLoggedIn(false);
+      }
+    }
+    catch (e) {
+      logException(e, "Can not log out");
+      throw e;
+    }
+  }
+
+  const handleSignIn = async () => {
+    setIsLoginDialogOPen(true);
+    setHasError(false);
+  }
+
+  const renderLoginOptions = () => {
+    if (isLoading)
+      return (<>Loading...</>);
+    if (isLoggedIn)
+      return (
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <div style={{ marginRight: "14px" }}>
+            {email}
+          </div>
+          <button onClick={handleSignOut}>Sign Out</button>
+        </div>
+      );
     return (
-        <PageWrapper>
-            <EmailPasswordDialog
-                open={isLoginDialogOPen}
-                onSubmit={handleSubmit}
-                hasError={hasError}
-                onClose={() => { setIsLoginDialogOPen(false) }}
-            />
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ marginRight: "14px" }}>
+          Please sign in:
+        </div>
+        <button onClick={handleSignIn}>Sign In</button>
+      </div>
+    );
+  }
 
-            <div style={{ display: "flex", gap: "1rem" }}>
-                {renderLoginOptions()}
-                <button onClick={handleUpdateAllProjects}>Save</button>
-            </div>
+  const getLastProjectIndex = (): number => {
+    if (!projects || projects.length === 0)
+      return 1;
+    return projects[projects.length - 1]!.projectIndex;
+  }
 
-            {projects && <ProjectTable 
-                projects={projects} 
-                setProjects={setProjects}
-            />}
+  if (error) return <>Projects Load Error</>
 
-            <div style={{ display: "flex", gap: "0.5rem" }}>
-                <button onClick={handleUpdateDB}>Update DB</button>
-                <button onClick={async () => {
-                    if (!projectName) {
-                        alert("please update project name before adding it");
-                        return;
-                    }
-                    await addNewProjectByName(projectName, getLastProjectIndex() + 1);
-                    setIsLoading(true);
-                    const newProjects = await fetchProjectsWithImages();
-                    setProjects([...newProjects]);
-                    setIsLoading(false);
-                }}>Add Project</button>
+  if (isLoading) return <Wrapper><StyledSpinner /></Wrapper>;
 
-            </div>
+  const handleUpdateProject = (project: Project) => {
+    const projectToReplace = projects.find((p) => p.id === project.id);
 
-            <InputWithHeader>
-                <TextHeader>New project name:</TextHeader>
-                <input
-                    value={projectName}
-                    onChange={async (e) => {
-                        const projectName = e.target.value;
-                        setProjectName(projectName);
-                    }}
-                />
-            </InputWithHeader>
+    if (projectToReplace) {
+      setIsDirty(true);
+      setProjects((projs) => {
+        return projs.map(p => p.id === project.id ? project : p);
+      });
+    }
+  }
 
-            <InputWithHeader>
-                <TextHeader>First Project Name: </TextHeader>
-                <input
-                    value={firstProjectName}
-                    onChange={async (e) => {
-                        const newProjectName = e.target.value;
-                        setFirstProjectName(newProjectName);
-                        if (projects && projects[0]) {
-                            projects[0].projectName = newProjectName;
-                        }
-                    }}
-                />
-            </InputWithHeader>
+  return (
+    <PageWrapper>
+      <EmailPasswordDialog
+        open={isLoginDialogOPen}
+        onSubmit={handleSubmit}
+        hasError={hasError}
+        onClose={() => { setIsLoginDialogOPen(false) }}
+      />
 
-            <div>
-                Number of projects in DB: {projects.length}
-            </div>
+      <div style={{ display: "flex", gap: "1rem" }}>
+        {renderLoginOptions()}
+        <button onClick={handleUpdateAllProjects}>Save</button>
+        {isDirty && <DirtyWrapper>*</DirtyWrapper>}
+      </div>
 
-        </PageWrapper>
-    )
+      {projects &&
+
+        <ProjectTableContext value={{
+          projects,
+          updateProject: handleUpdateProject,
+          setDirty: () => setIsDirty(true)
+        }}
+        >
+          <ProjectTable
+            projects={projects}
+            setProjects={setProjects}
+          />
+
+        </ProjectTableContext>
+      }
+      <div style={{ display: "flex", gap: "0.5rem" }}>
+        <button onClick={handleUpdateDB}>Update DB</button>
+        <button onClick={async () => {
+          if (!projectName) {
+            alert("please update project name before adding it");
+            return;
+          }
+          await addNewProjectByName(projectName, getLastProjectIndex() + 1);
+          setIsLoading(true);
+          const newProjects = await fetchProjectsWithImages();
+          setProjects([...newProjects]);
+          setIsLoading(false);
+        }}>Add Project</button>
+
+      </div>
+
+      <InputWithHeader>
+        <TextHeader>New project name:</TextHeader>
+        <input
+          value={projectName}
+          onChange={async (e) => {
+            const projectName = e.target.value;
+            setProjectName(projectName);
+          }}
+        />
+      </InputWithHeader>
+
+      <InputWithHeader>
+        <TextHeader>First Project Name: </TextHeader>
+        <input
+          value={firstProjectName}
+          onChange={async (e) => {
+            const newProjectName = e.target.value;
+            setFirstProjectName(newProjectName);
+            if (projects && projects[0]) {
+              projects[0].projectName = newProjectName;
+            }
+          }}
+        />
+      </InputWithHeader>
+
+      <div>
+        Number of projects in DB: {projects.length}
+      </div>
+
+    </PageWrapper>
+  )
 }

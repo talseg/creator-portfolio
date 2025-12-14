@@ -4,7 +4,7 @@ import myImage from "../images/MainPicture.png";
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import { fetchProjects } from "../database/FirebaseDb";
 import { logException } from "../utilities/exceptionUtils";
-import type { Project } from "../database/dbInterfaces";
+import type { CategoryType, Project } from "../database/dbInterfaces";
 import { useImageScrolling } from "../utilities/useImageScrolling";
 import LabelText from "../components/labeltext/LabelText";
 import ProjectImage from "../components/projectImage/ProjectImage";
@@ -118,6 +118,7 @@ const ImagesColumn = styled.div<{ $column: number }>`
   grid-column: ${({ $column }) => $column};
   display: flex;
   width: 100%;
+  align-self: flex-start;
 `
 
 // const ProjectImage = styled.img`
@@ -139,39 +140,12 @@ const SimpleDot = styled.div`
   transform: translate(2px, -3px);
 `;
 
-const renderProjectImages = (projects: Project[], option?: "reverse" | "alternate") => {
+const renderProjectImages = (projects: Project[], category: CategoryType) : ReactElement[] => 
+  projects.filter((proj) => proj.category === category).map<ReactElement>(
+    (proj, i) => 
+      <ProjectImage project={proj} key={`project-${i}`}></ProjectImage>
+  );
 
-  const images: ReactElement[] = [];
-
-
-  if (option === "reverse") {
-    for (let i = projects.length - 1; i >= 0; i--) {
-      const project = projects[i];
-      if (!project) break;
-      const image = <ProjectImage project={project}></ProjectImage>
-      images.push(image);
-    }
-    return images;
-  }
-  if (option === "alternate") {
-    for (let i = 0; i < projects.length; i++) {
-      if (i % 2 === 1) continue;
-      const project = projects[i];
-      if (!project) break;
-      const image = <ProjectImage key={i} project={project}></ProjectImage>
-      images.push(image);
-    }
-    return images;
-  }
-
-  for (let i = 0; i < projects.length; i++) {
-    const project = projects[i];
-    if (!project) break;
-    const image = <ProjectImage key={i} project={project}></ProjectImage>
-    images.push(image);
-  }
-  return images;
-}
 
 export const StartPage1: React.FC = () => {
 
@@ -262,7 +236,7 @@ export const StartPage1: React.FC = () => {
         >
           <ImagesContainer>
             {
-              renderProjectImages(projects)
+              renderProjectImages(projects, "designer")
             }
           </ImagesContainer>
           {/* <VerticalLine /> */}
@@ -275,7 +249,7 @@ export const StartPage1: React.FC = () => {
         >
           <ImagesContainer>
             {
-              renderProjectImages(projects, "alternate")
+              renderProjectImages(projects, "artist")
             }
           </ImagesContainer>
           {/* <VerticalLine /> */}
@@ -288,7 +262,7 @@ export const StartPage1: React.FC = () => {
         >
           <ImagesContainer>
             {
-              renderProjectImages(projects, "reverse")
+              renderProjectImages(projects, "illustrator")
             }
           </ImagesContainer>
         </ImagesColumn>

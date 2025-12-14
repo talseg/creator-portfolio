@@ -1,5 +1,7 @@
-import { Box, Collapse, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
-import type { Project, Image } from "../../database/dbInterfaces";
+import { Box, Collapse, IconButton, Input, MenuItem, Paper, 
+  Select, Table, TableBody, TableCell, TableContainer, 
+  TableHead, TableRow, Typography, type SelectChangeEvent } from "@mui/material";
+import type { Project, Image, CategoryType } from "../../database/dbInterfaces";
 import { useState } from "react";
 import { ImageTable } from "./ImageTable";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -9,14 +11,24 @@ import React from "react";
 import { addProjectImage, removeProjectImage } from "../../database/FirebaseDb";
 import { pickImage } from "../../utilities/pickImage";
 import { logException } from "../../utilities/exceptionUtils";
+import { styled as muiStyled } from "@mui/material/styles";
+import { useProjectTable } from "./ProjectTableContext";
 
 interface ImageTableRowProps {
   images: Image[];
   open: boolean;
-  projectId: string;
+  project: Project;
 }
 
-export const ImagesTableRow: React.FC<ImageTableRowProps> = ({ images, open, projectId }) => {
+const SelectStyled = muiStyled(Select)`
+  font-size: 12px;
+`;
+
+const InputStyled = muiStyled(Input)`
+  font-size: 12px;
+`;
+
+export const ImagesTableRow: React.FC<ImageTableRowProps> = ({ images, open, project }) => {
 
   return (
     <TableRow>
@@ -26,7 +38,7 @@ export const ImagesTableRow: React.FC<ImageTableRowProps> = ({ images, open, pro
             <Typography variant="h6" gutterBottom component="div">
               Project Images
             </Typography>
-            <ImageTable images={images} projectId={projectId} />
+            <ImageTable images={images} project={project} />
           </Box>
         </Collapse>
       </TableCell>
@@ -43,18 +55,25 @@ interface ProjectRowProps {
 const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen,
   setImageRowOpen }) => {
 
+  const { updateProject } = useProjectTable();
+
   const handleAddProjectImageClick = async () => {
     pickImage(async (file) => {
       if (file) {
         try {
-          await addProjectImage(project.id, file);
+          const newUrl = await addProjectImage(project.id, file);
+          const updated: Project = {
+            ...project,
+            projectImageUrl: newUrl
+          };
+          updateProject(updated)
         }
         catch (e) {
           logException(e);
-          alert("Remove Project Image failed");
+          alert("Add Project Image failed");
           throw e;
         }
-        alert("Remove Project Image success! Please refresh");
+        alert("Add Project Image success!");
       }
     })
   };
@@ -62,6 +81,12 @@ const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen,
   const handleRemoveProjectImage = async () => {
     try {
       await removeProjectImage(project.id);
+      const updated: Project = {
+        ...project,
+        projectImageUrl: ""
+      };
+      // ***********  ToDo - No need to update the DB here **********
+      updateProject(updated)
     }
     catch (e) {
       logException(e);
@@ -69,6 +94,14 @@ const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen,
       throw e;
     }
     alert("Remove Project Image success! Please refresh");
+  }
+
+  const handleCategoryChange = (e: SelectChangeEvent) => {
+    const updated: Project = {
+      ...project,
+      category: e.target.value as CategoryType
+    };
+    updateProject(updated)
   }
 
   return (
@@ -84,8 +117,32 @@ const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen,
         </IconButton>
       </TableCell>
 
-      <TableCell>{project.projectName}</TableCell>
+      <TableCell>
+        <InputStyled
+          multiline
+          value={project.projectName}
+          onChange={(e) => {
+            const updated: Project = {
+              ...project,
+              projectName: e.target.value
+            };
+            updateProject(updated)
+          }} />
+      </TableCell>
       <TableCell>{project.projectIndex}</TableCell>
+      <TableCell>
+        <SelectStyled
+          labelId="demo-simple-select-standard-label"
+          id="demo-simple-select-standard"
+          value={project.category}
+          onChange={(e) => handleCategoryChange(e as SelectChangeEvent)}
+          variant="standard"
+        >
+          <MenuItem value={"designer"}>Designer</MenuItem>
+          <MenuItem value={"artist"}>Artist</MenuItem>
+          <MenuItem value={"illustrator"}>Illustrator</MenuItem>
+        </SelectStyled>
+      </TableCell>
       <TableCell>
         {project.projectImageUrl ?
           <ImageSnapshot
@@ -120,7 +177,7 @@ const ProjectWithImagesRow: React.FC<RowProps> = ({ project }) => {
       {project.images && <ImagesTableRow
         images={project.images}
         open={showImages}
-        projectId={project.id}
+        project={project}
       />}
 
     </React.Fragment>
@@ -144,6 +201,7 @@ export const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
               <TableCell>Images</TableCell>
               <TableCell>Project Name</TableCell>
               <TableCell>Project Index</TableCell>
+              <TableCell>Category</TableCell>
               <TableCell align="center">
                 Image
               </TableCell>
