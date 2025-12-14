@@ -74,6 +74,23 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       return undefined;
     };
 
+    const canScrollUp = (
+      index: number,
+      proposedValue: number
+    ): boolean => {
+      const colRef = imageRefs.current[index];
+      if (!colRef?.current) return true;
+
+      const rect = colRef.current.getBoundingClientRect();
+
+      if (scrollValues[index] === undefined)
+        return false;
+
+      const projectedBottom = rect.bottom + (proposedValue - scrollValues[index]);
+
+      return projectedBottom >= window.innerHeight;
+    };
+
     function onWheel(e: WheelEvent) {
       e.preventDefault();
       if (!middledRef.current) return;
@@ -112,11 +129,22 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
           setShouldUpdateImages(false);
           setMainScrollValue(v => v - delta);
         } else {
+
           setScrollValues(prev => {
+            const current = prev[index] ?? 0;
+
+            if (newValue < current) {
+              if (!canScrollUp(index, newValue)) {
+                return prev; // hard stop
+              }
+            }
+
             const copy = [...prev];
             copy[index] = newValue;
             return copy;
           });
+
+
         }
       }
 
