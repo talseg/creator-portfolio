@@ -46,8 +46,6 @@ export const ImagesTableRow: React.FC<ImageTableRowProps> = ({ images, open, pro
   );
 }
 
-
-
 interface ProjectRowProps {
   project: Project;
   imageRowOpen: boolean;
