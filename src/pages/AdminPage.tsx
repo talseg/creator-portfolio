@@ -120,7 +120,6 @@ export const AdminPage: React.FC = () => {
   }
 
   const handleUpdateAllProjects = async () => {
-    console.log("calling update all projects");
     await updateProjects(projects);
     setIsDirty(false);
   }

@@ -6,13 +6,15 @@ import { logException } from "../utilities/exceptionUtils";
 
 // ToDo - Move to MobX
 
-export const addNewProjectByName = async (projectName: string, projectIndex: number): Promise<Project> => {
+export const addNewProjectByName = async (projectName: string, 
+  projectIndex: number): Promise<Project> => {
   const docRef = doc(collection(db, "projects"));
   const newProject: Project = {
     id: docRef.id,
     projectName: projectName,
     header: "",
     projectImageUrl: "",
+    category: "designer",
     projectIndex: projectIndex,
     images: []
   };

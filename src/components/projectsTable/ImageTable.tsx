@@ -30,10 +30,10 @@ export const ImageTable: React.FC<ImageTableProps> = ({ images, project }) => {
         }
         catch (e) {
           logException(e);
-          alert("Remove Project Image failed");
+          alert("Add Project Image failed");
           throw e;
         }
-        alert("Remove Project Image success! Please refresh");
+        alert("Add Project Image success!");
       }
     })
   };

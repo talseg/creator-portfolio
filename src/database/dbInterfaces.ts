@@ -4,7 +4,7 @@ export interface Image {
     imageIndex: number;
 }
 
-export type CategoryType = "designer" | "Artist" | "Illustrator";
+export type CategoryType = "designer" | "artist" | "illustrator";
 
 export interface Project {
     id: string;
@@ -12,5 +12,6 @@ export interface Project {
     header: string;
     projectImageUrl: string;
     projectIndex: number;
+    category: CategoryType;
     images?: Image[];
 }
