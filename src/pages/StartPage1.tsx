@@ -118,6 +118,7 @@ const ImagesColumn = styled.div<{ $column: number }>`
   grid-column: ${({ $column }) => $column};
   display: flex;
   width: 100%;
+  align-self: flex-start;
 `
 
 // const ProjectImage = styled.img`
