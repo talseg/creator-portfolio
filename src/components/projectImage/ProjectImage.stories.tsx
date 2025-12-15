@@ -37,12 +37,12 @@ const createMockProject: () => Project = () => {
     );
 }
 
-const ProjectImageTester: React.FC<{ project: Project }> = ({ project }) => {
+const ProjectImageTester: React.FC<{ project: Project, isActive: boolean }> = ({ project, isActive }) => {
     console.log(project);
     return (
         <MainWindow>
             <ImageColumn>
-                <ProjectImage project={project}/>
+                <ProjectImage project={project} isActive={isActive}/>
             </ImageColumn>
         </MainWindow>
     );
@@ -60,7 +60,8 @@ type Story = StoryObj<typeof meta>;
 
 export const ProjectImageElement: Story = {
     args: {
-        project: createMockProject()
+        project: createMockProject(),
+        isActive: true
   }
 };
 
