@@ -113,7 +113,7 @@ const ImagesContainer = styled.div`
   flex-direction: column;
   
   img {
-    filter: grayscale(100%);
+    filter: grayscale(100%) brightness(0.9);
   };
 
   &:hover img {
@@ -150,10 +150,10 @@ const SimpleDot = styled.div`
   transform: translate(2px, -3px);
 `;
 
-const renderProjectImages = (projects: Project[], category: CategoryType) : ReactElement[] => 
+const renderProjectImages = (projects: Project[], category: CategoryType, isActive: boolean) : ReactElement[] => 
   projects.filter((proj) => proj.category === category).map<ReactElement>(
     (proj, i) => 
-      <ProjectImage project={proj} key={`project-${i}`}></ProjectImage>
+      <ProjectImage project={proj} key={`project-${i}`} isActive={isActive}></ProjectImage>
   );
 
 
@@ -166,13 +166,15 @@ export const StartPage1: React.FC = () => {
   const imageRef3 = useRef<HTMLDivElement>(null);
   const imageRefs = useRef([imageRef1, imageRef2, imageRef3]);
 
-  const { onMouseEnter, onMouseLeave } = useImageScrolling(
+  const { onMouseEnter, onMouseLeave, scrollArea } = useImageScrolling(
     {
       imageRefs,
       middledRef,
       middleSectionHeight: MIDDLE_SECTION_REM_HEIGHT
     }
   );
+
+  console.log(`scrollArea: ${scrollArea}`);
 
   useEffect(() => {
     const loadProjects = async () => {
@@ -186,6 +188,14 @@ export const StartPage1: React.FC = () => {
     }
     loadProjects();
   }, []);
+
+
+  const isColumnActive = (area: CategoryType): boolean => {
+    if (area === "designer") return scrollArea === 1;
+    if (area === "artist") return scrollArea === 2;
+    if (area === "illustrator") return scrollArea === 3;
+    return false;
+  }
 
   return (
     <WrapperStyled>
@@ -246,7 +256,7 @@ export const StartPage1: React.FC = () => {
         >
           <ImagesContainer>
             {
-              renderProjectImages(projects, "designer")
+              renderProjectImages(projects, "designer", isColumnActive("designer"))
             }
           </ImagesContainer>
           {/* <VerticalLine /> */}
@@ -259,7 +269,7 @@ export const StartPage1: React.FC = () => {
         >
           <ImagesContainer>
             {
-              renderProjectImages(projects, "artist")
+              renderProjectImages(projects, "artist", isColumnActive("artist"))
             }
           </ImagesContainer>
           {/* <VerticalLine /> */}
@@ -272,7 +282,7 @@ export const StartPage1: React.FC = () => {
         >
           <ImagesContainer>
             {
-              renderProjectImages(projects, "illustrator")
+              renderProjectImages(projects, "illustrator", isColumnActive("illustrator"))
             }
           </ImagesContainer>
         </ImagesColumn>

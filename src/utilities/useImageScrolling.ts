@@ -6,7 +6,7 @@ interface ImageScrollingProps {
   middleSectionHeight: number;
 }
 
-type ScrollAreaType = undefined | "middle" | 1 | 2 | 3;
+export type ScrollAreaType = undefined | "middle" | 1 | 2 | 3;
 
 export const useImageScrolling = (props: ImageScrollingProps) => {
   const { imageRefs, middledRef, middleSectionHeight } = props;
@@ -213,5 +213,5 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     setScrollArea(undefined);
   };
 
-  return { onMouseEnter, onMouseLeave };
+  return { onMouseEnter, onMouseLeave, scrollArea };
 };
