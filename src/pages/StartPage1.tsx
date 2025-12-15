@@ -111,6 +111,16 @@ const ImagesContainer = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
+  
+  img {
+    filter: grayscale(100%);
+  };
+
+  &:hover img {
+    filter: grayscale(0%);
+    transition: filter 250ms ease;
+  };
+  
 `;
 
 const ImagesColumn = styled.div<{ $column: number }>`
