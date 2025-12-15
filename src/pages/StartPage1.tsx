@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import OrSegalSvg from "../assets/orSegal.svg?react";
 import myImage from "../images/MainPicture.png";
 import { useEffect, useRef, useState, type ReactElement } from "react";
@@ -20,12 +20,15 @@ const LogoLinkWrapper = styled.a`
   margin-top: 10px;
 `;
 
-const HeaderTextBox = styled.div<{ $color?: string }>`
+const HeaderTextBox = styled.div<{ $isActive: boolean }>`
   display: flex;
   width: 100%;
   height: 100%;
   align-items: center;
   justify-content: center;
+  ${({ $isActive }) =>
+    $isActive && css`background: #FFFDB4;`
+  }
 `;
 
 const LogoBox = styled.div`
@@ -150,12 +153,16 @@ const SimpleDot = styled.div`
   transform: translate(2px, -3px);
 `;
 
-const renderProjectImages = (projects: Project[], category: CategoryType, isActive: boolean) : ReactElement[] => 
+const renderProjectImages = (projects: Project[], category: CategoryType, isActive: boolean): ReactElement[] =>
   projects.filter((proj) => proj.category === category).map<ReactElement>(
-    (proj, i) => 
+    (proj, i) =>
       <ProjectImage project={proj} key={`project-${i}`} isActive={isActive}></ProjectImage>
   );
 
+const HeaderTextStyled = styled(LabelText) <{ $isActive: boolean }>`
+  font-weight: ${({ $isActive: $isActibe }) =>
+    $isActibe ? "bold" : "normal"};
+`;
 
 export const StartPage1: React.FC = () => {
 
@@ -211,22 +218,22 @@ export const StartPage1: React.FC = () => {
           </HeaderBox>
 
           <HeaderBox>
-            <HeaderTextBox style={{ background: "#FFFDB4" }}>
-              <LabelText>Designer</LabelText>
+            <HeaderTextBox $isActive={isColumnActive("designer")}>
+              <HeaderTextStyled $isActive={isColumnActive("designer")}>Designer</HeaderTextStyled>
             </HeaderTextBox>
             <VerticalLine />
           </HeaderBox>
 
           <HeaderBox>
-            <HeaderTextBox>
-              <LabelText>Artist</LabelText>
+            <HeaderTextBox $isActive={isColumnActive("artist")}>
+              <HeaderTextStyled $isActive={isColumnActive("artist")}>Artist</HeaderTextStyled>
             </HeaderTextBox>
             <VerticalLine />
           </HeaderBox>
 
           <HeaderBox>
-            <HeaderTextBox>
-              <LabelText>Illustrator</LabelText>
+            <HeaderTextBox $isActive={isColumnActive("illustrator")}>
+              <HeaderTextStyled $isActive={isColumnActive("illustrator")}>Illustrator</HeaderTextStyled>
             </HeaderTextBox>
           </HeaderBox>
 
