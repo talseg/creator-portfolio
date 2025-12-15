@@ -76,28 +76,26 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
 
     const getScrollUpValue = (
       index: number,
-      proposedValue: number
+      proposedValue: number,
+      currentValue: number
     ): number => {
       const colRef = imageRefs.current[index];
-      if (!colRef?.current) return 0;
+      if (!colRef?.current) return currentValue;
 
       const rect = colRef.current.getBoundingClientRect();
 
-      if (scrollValues[index] === undefined)
-        return 0;
-
       // Prevent a short list of images from scrolling
       if (rect.height < window.innerHeight)
-        return scrollValues[index];
+        return currentValue;
 
-      const projectedBottom = rect.bottom + (proposedValue - scrollValues[index]);
+      const projectedBottom = rect.bottom + (proposedValue - currentValue);
 
       // regular Image scrolling - accept the proposed value
       if (projectedBottom >= window.innerHeight) 
         return proposedValue;
 
       // return the max allowed scroll up
-      return window.innerHeight - rect.bottom + scrollValues[index];
+      return window.innerHeight - rect.bottom + currentValue;
     };
 
 
@@ -147,7 +145,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
             if (newValue < current) {
               // Don't allow scrolling up the images too much
               // the last image must not go upeer from the window end
-              scrollValue = getScrollUpValue(index, newValue);
+              scrollValue = getScrollUpValue(index, newValue, current);
             }
             const copy = [...prev];
             copy[index] = scrollValue;
