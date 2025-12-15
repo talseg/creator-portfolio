@@ -74,22 +74,33 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       return undefined;
     };
 
-    const canScrollUp = (
+    const getScrollUpValue = (
       index: number,
       proposedValue: number
-    ): boolean => {
+    ): number => {
       const colRef = imageRefs.current[index];
-      if (!colRef?.current) return true;
+      if (!colRef?.current) return 0;
 
       const rect = colRef.current.getBoundingClientRect();
 
       if (scrollValues[index] === undefined)
-        return false;
+        return 0;
+
+      // Prevent a short list of images from scrolling
+      if (rect.height < window.innerHeight)
+        return scrollValues[index];
 
       const projectedBottom = rect.bottom + (proposedValue - scrollValues[index]);
 
-      return projectedBottom >= window.innerHeight;
+      // regular Image scrolling - accept the proposed value
+      if (projectedBottom >= window.innerHeight) 
+        return proposedValue;
+
+      // return the max allowed scroll up
+      return window.innerHeight - rect.bottom + scrollValues[index];
     };
+
+
 
     function onWheel(e: WheelEvent) {
       e.preventDefault();
@@ -132,19 +143,16 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
 
           setScrollValues(prev => {
             const current = prev[index] ?? 0;
-
+            let scrollValue = newValue;
             if (newValue < current) {
-              if (!canScrollUp(index, newValue)) {
-                return prev; // hard stop
-              }
+              // Don't allow scrolling up the images too much
+              // the last image must not go upeer from the window end
+              scrollValue = getScrollUpValue(index, newValue);
             }
-
             const copy = [...prev];
-            copy[index] = newValue;
+            copy[index] = scrollValue;
             return copy;
           });
-
-
         }
       }
 
