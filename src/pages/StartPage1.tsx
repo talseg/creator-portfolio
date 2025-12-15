@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import OrSegalSvg from "../assets/orSegal.svg?react";
 import myImage from "../images/MainPicture.png";
 import { useEffect, useRef, useState, type ReactElement } from "react";
@@ -20,12 +20,15 @@ const LogoLinkWrapper = styled.a`
   margin-top: 10px;
 `;
 
-const HeaderTextBox = styled.div<{ $color?: string }>`
+const HeaderTextBox = styled.div<{ $isActive: boolean }>`
   display: flex;
   width: 100%;
   height: 100%;
   align-items: center;
   justify-content: center;
+  ${({ $isActive }) =>
+    $isActive && css`background: #FFFDB4;`
+  }
 `;
 
 const LogoBox = styled.div`
@@ -111,6 +114,16 @@ const ImagesContainer = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
+  
+  img {
+    filter: grayscale(100%) brightness(0.9);
+  };
+
+  &:hover img {
+    filter: grayscale(0%);
+    transition: filter 250ms ease;
+  };
+  
 `;
 
 const ImagesColumn = styled.div<{ $column: number }>`
@@ -140,12 +153,16 @@ const SimpleDot = styled.div`
   transform: translate(2px, -3px);
 `;
 
-const renderProjectImages = (projects: Project[], category: CategoryType) : ReactElement[] => 
+const renderProjectImages = (projects: Project[], category: CategoryType, isActive: boolean): ReactElement[] =>
   projects.filter((proj) => proj.category === category).map<ReactElement>(
-    (proj, i) => 
-      <ProjectImage project={proj} key={`project-${i}`}></ProjectImage>
+    (proj, i) =>
+      <ProjectImage project={proj} key={`project-${i}`} isActive={isActive}></ProjectImage>
   );
 
+const HeaderTextStyled = styled(LabelText) <{ $isActive: boolean }>`
+  font-weight: ${({ $isActive: $isActibe }) =>
+    $isActibe ? "bold" : "normal"};
+`;
 
 export const StartPage1: React.FC = () => {
 
@@ -156,13 +173,15 @@ export const StartPage1: React.FC = () => {
   const imageRef3 = useRef<HTMLDivElement>(null);
   const imageRefs = useRef([imageRef1, imageRef2, imageRef3]);
 
-  const { onMouseEnter, onMouseLeave } = useImageScrolling(
+  const { onMouseEnter, onMouseLeave, scrollArea } = useImageScrolling(
     {
       imageRefs,
       middledRef,
       middleSectionHeight: MIDDLE_SECTION_REM_HEIGHT
     }
   );
+
+  console.log(`scrollArea: ${scrollArea}`);
 
   useEffect(() => {
     const loadProjects = async () => {
@@ -176,6 +195,14 @@ export const StartPage1: React.FC = () => {
     }
     loadProjects();
   }, []);
+
+
+  const isColumnActive = (area: CategoryType): boolean => {
+    if (area === "designer") return scrollArea === 1;
+    if (area === "artist") return scrollArea === 2;
+    if (area === "illustrator") return scrollArea === 3;
+    return false;
+  }
 
   return (
     <WrapperStyled>
@@ -191,22 +218,22 @@ export const StartPage1: React.FC = () => {
           </HeaderBox>
 
           <HeaderBox>
-            <HeaderTextBox style={{ background: "#FFFDB4" }}>
-              <LabelText>Designer</LabelText>
+            <HeaderTextBox $isActive={isColumnActive("designer")}>
+              <HeaderTextStyled $isActive={isColumnActive("designer")}>Designer</HeaderTextStyled>
             </HeaderTextBox>
             <VerticalLine />
           </HeaderBox>
 
           <HeaderBox>
-            <HeaderTextBox>
-              <LabelText>Artist</LabelText>
+            <HeaderTextBox $isActive={isColumnActive("artist")}>
+              <HeaderTextStyled $isActive={isColumnActive("artist")}>Artist</HeaderTextStyled>
             </HeaderTextBox>
             <VerticalLine />
           </HeaderBox>
 
           <HeaderBox>
-            <HeaderTextBox>
-              <LabelText>Illustrator</LabelText>
+            <HeaderTextBox $isActive={isColumnActive("illustrator")}>
+              <HeaderTextStyled $isActive={isColumnActive("illustrator")}>Illustrator</HeaderTextStyled>
             </HeaderTextBox>
           </HeaderBox>
 
@@ -236,7 +263,7 @@ export const StartPage1: React.FC = () => {
         >
           <ImagesContainer>
             {
-              renderProjectImages(projects, "designer")
+              renderProjectImages(projects, "designer", isColumnActive("designer"))
             }
           </ImagesContainer>
           {/* <VerticalLine /> */}
@@ -249,7 +276,7 @@ export const StartPage1: React.FC = () => {
         >
           <ImagesContainer>
             {
-              renderProjectImages(projects, "artist")
+              renderProjectImages(projects, "artist", isColumnActive("artist"))
             }
           </ImagesContainer>
           {/* <VerticalLine /> */}
@@ -262,7 +289,7 @@ export const StartPage1: React.FC = () => {
         >
           <ImagesContainer>
             {
-              renderProjectImages(projects, "illustrator")
+              renderProjectImages(projects, "illustrator", isColumnActive("illustrator"))
             }
           </ImagesContainer>
         </ImagesColumn>

@@ -64,7 +64,11 @@ const VerticalLine = styled.div`
 //   position: relative;
 // `;
 
-const ProjectImage: React.FC<{ project: Project }> = ({ project }) => {
+const ProjectNameStyled = styled(LabelText)<{ $isActive: boolean }>`
+  color: ${({ $isActive }) => $isActive ? "black" : "#797979" };
+`;
+
+const ProjectImage: React.FC<{ project: Project, isActive: boolean }> = ({ project, isActive }) => {
 
   // console.log(project);
   const navigate = useNavigate();
@@ -76,9 +80,9 @@ const ProjectImage: React.FC<{ project: Project }> = ({ project }) => {
         <ImageWrapper><ImageStyled src={url} /></ImageWrapper>
         <ProjectNameWrapper>
 
-          <LabelText fontSize="1vw">
+          <ProjectNameStyled fontSize="1vw" $isActive={isActive}>
             {project.projectName}
-          </LabelText>
+          </ProjectNameStyled>
 
         </ProjectNameWrapper>
         
