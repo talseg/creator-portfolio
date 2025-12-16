@@ -64,7 +64,6 @@ export function extractStoragePathFromUrl(downloadUrl: string): string {
  */
 export async function deleteByDownloadUrl(downloadUrl: string): Promise<void> {
   const storagePath = extractStoragePathFromUrl(downloadUrl);
-  console.log(`storagePath: ${storagePath}`);
   const fileRef = ref(storage, storagePath);
   await deleteObject(fileRef);
 }
@@ -196,13 +195,9 @@ export const addProjectImage = async (projectId: string, projectImageFile: File)
   const storageRef = ref(storage, storagePath);
   await uploadBytes(storageRef, projectImageFile);
   const downloadUrl = await getDownloadURL(storageRef);
-
-  console.log("added image: ", storagePath);
-
   // Update the DB with the Url
   const projectRef = doc(db, "projects", projectId);
 
-  console.log(`update projectRef: ${projectId} url: ${projectRef}`);
   await updateDoc(projectRef, {
     projectImageUrl: downloadUrl
   });

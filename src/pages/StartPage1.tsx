@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, type ReactElement } from "react";
 import { fetchProjects } from "../database/FirebaseDb";
 import { logException } from "../utilities/exceptionUtils";
 import type { CategoryType, Project } from "../database/dbInterfaces";
-import { useImageScrolling } from "../utilities/useImageScrolling";
+import { useImageScrolling, type ScrollAreaType } from "../utilities/useImageScrolling";
 import LabelText from "../components/labeltext/LabelText";
 import ProjectImage from "../components/projectImage/ProjectImage";
 
@@ -62,6 +62,8 @@ const MainGridStyled = styled.div`
   &::-webkit-scrollbar {
     display: none;             /* Chrome, Safari */
   }
+
+  touch-action: pan-y;
 `;
 
 const HeaderRow = styled.div`
@@ -110,7 +112,7 @@ const MainImage = styled.img`
   justify-content: center;
 `;
 
-const ImagesContainer = styled.div`
+const ImagesContainer = styled.div<{ $isActive: boolean }>`
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -119,11 +121,12 @@ const ImagesContainer = styled.div`
     filter: grayscale(100%) brightness(0.9);
   };
 
-  &:hover img {
+  ${({ $isActive }) => $isActive && css`
+   img {
     filter: grayscale(0%);
     transition: filter 250ms ease;
-  };
-  
+   }
+  `}
 `;
 
 const ImagesColumn = styled.div<{ $column: number }>`
@@ -133,12 +136,6 @@ const ImagesColumn = styled.div<{ $column: number }>`
   width: 100%;
   align-self: flex-start;
 `
-
-// const ProjectImage = styled.img`
-//   width: 100%;
-//   object-fit: cover;
-//   margin-right: 10px;
-// `;
 
 const VerticalLine = styled.div`
   border-left: 1px solid black;
@@ -173,22 +170,21 @@ export const StartPage1: React.FC = () => {
   const imageRef3 = useRef<HTMLDivElement>(null);
   const imageRefs = useRef([imageRef1, imageRef2, imageRef3]);
 
-  const { onMouseEnter, onMouseLeave, scrollArea } = useImageScrolling(
-    {
-      imageRefs,
-      middledRef,
-      middleSectionHeight: MIDDLE_SECTION_REM_HEIGHT
-    }
-  );
-
-  console.log(`scrollArea: ${scrollArea}`);
+  const { onMouseEnter, onMouseLeave, scrollArea,
+    onTouchStart, onTouchEnd,
+    onTouchMove, onTouchCancel } = useImageScrolling(
+      {
+        imageRefs,
+        middledRef,
+        middleSectionHeight: MIDDLE_SECTION_REM_HEIGHT
+      }
+    );
 
   useEffect(() => {
     const loadProjects = async () => {
       try {
         const projectsData = await fetchProjects();
         setProjects(projectsData);
-        console.log(`num projects: `, projectsData.length);
       } catch (err) {
         logException(err);
       }
@@ -204,10 +200,30 @@ export const StartPage1: React.FC = () => {
     return false;
   }
 
+
+  const handleTouchStart = (area: ScrollAreaType, e: React.TouchEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    onTouchStart(area, e);
+  }
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    onTouchEnd(e);
+  }
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    onTouchMove(e);
+  }
+
   return (
     <WrapperStyled>
 
-      <MainGridStyled className="main-page-grid" >
+      <MainGridStyled className="main-page-grid"
+        onTouchStart={(e) => handleTouchStart(undefined, e)}
+        onTouchEnd={(e) => handleTouchEnd(e)}
+        onTouchMove={(e) => handleTouchMove(e)}
+      >
 
         <HeaderRow>
 
@@ -252,6 +268,10 @@ export const StartPage1: React.FC = () => {
         <MiddleSection ref={middledRef}
           onMouseEnter={() => onMouseEnter("middle")}
           onMouseLeave={() => onMouseLeave()}
+          onTouchStart={(e) => handleTouchStart("middle", e)}
+          onTouchEnd={(e) => handleTouchEnd(e)}
+          onTouchMove={(e) => handleTouchMove(e)}
+          onTouchCancel={onTouchCancel}
         >
           <MainImage src={myImage}></MainImage>
         </MiddleSection>
@@ -260,8 +280,12 @@ export const StartPage1: React.FC = () => {
           $column={2}
           onMouseEnter={() => onMouseEnter(1)}
           onMouseLeave={() => onMouseLeave()}
+          onTouchStart={(e) => handleTouchStart(1, e)}
+          onTouchEnd={(e) => handleTouchEnd(e)}
+          onTouchMove={(e) => handleTouchMove(e)}
+          onTouchCancel={onTouchCancel}
         >
-          <ImagesContainer>
+          <ImagesContainer $isActive={scrollArea === 1}>
             {
               renderProjectImages(projects, "designer", isColumnActive("designer"))
             }
@@ -273,8 +297,12 @@ export const StartPage1: React.FC = () => {
           $column={3}
           onMouseEnter={() => onMouseEnter(2)}
           onMouseLeave={() => onMouseLeave()}
+          onTouchStart={(e) => handleTouchStart(2, e)}
+          onTouchEnd={(e) => handleTouchEnd(e)}
+          onTouchMove={(e) => handleTouchMove(e)}
+          onTouchCancel={onTouchCancel}
         >
-          <ImagesContainer>
+          <ImagesContainer $isActive={scrollArea === 2}>
             {
               renderProjectImages(projects, "artist", isColumnActive("artist"))
             }
@@ -286,8 +314,12 @@ export const StartPage1: React.FC = () => {
           $column={4}
           onMouseEnter={() => onMouseEnter(3)}
           onMouseLeave={() => onMouseLeave()}
+          onTouchStart={(e) => handleTouchStart(3, e)}
+          onTouchEnd={(e) => handleTouchEnd(e)}
+          onTouchMove={(e) => handleTouchMove(e)}
+          onTouchCancel={onTouchCancel}
         >
-          <ImagesContainer>
+          <ImagesContainer $isActive={scrollArea === 3}>
             {
               renderProjectImages(projects, "illustrator", isColumnActive("illustrator"))
             }
