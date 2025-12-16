@@ -172,12 +172,13 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
         setScrollValues(prev => {
 
           const current = prev[index] ?? 0;
-          let scrollValue = newValue;
+          const proposed  = current - delta;
+          let scrollValue = proposed;
 
-          if (newValue < current) {
+          if (proposed < current) {
             // Don't allow scrolling up the images too much
             // the last image must not go upeer from the window end
-            scrollValue = getScrollUpValue(index, newValue, current);
+            scrollValue = getScrollUpValue(index, proposed, current);
           }
 
           const copy = [...prev];
