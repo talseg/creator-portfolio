@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, type ReactElement } from "react";
 import { fetchProjects } from "../database/FirebaseDb";
 import { logException } from "../utilities/exceptionUtils";
 import type { CategoryType, Project } from "../database/dbInterfaces";
-import { useImageScrolling } from "../utilities/useImageScrolling";
+import { useImageScrolling, type ScrollAreaType } from "../utilities/useImageScrolling";
 import LabelText from "../components/labeltext/LabelText";
 import ProjectImage from "../components/projectImage/ProjectImage";
 
@@ -62,6 +62,8 @@ const MainGridStyled = styled.div`
   &::-webkit-scrollbar {
     display: none;             /* Chrome, Safari */
   }
+
+  touch-action: pan-y;
 `;
 
 const HeaderRow = styled.div`
@@ -173,7 +175,7 @@ export const StartPage1: React.FC = () => {
   const imageRef3 = useRef<HTMLDivElement>(null);
   const imageRefs = useRef([imageRef1, imageRef2, imageRef3]);
 
-  const { onMouseEnter, onMouseLeave, scrollArea } = useImageScrolling(
+  const { onMouseEnter, onMouseLeave, scrollArea, onTouchStart, onTouchEnd, onTouchMove } = useImageScrolling(
     {
       imageRefs,
       middledRef,
@@ -181,7 +183,7 @@ export const StartPage1: React.FC = () => {
     }
   );
 
-  console.log(`scrollArea: ${scrollArea}`);
+  //console.log(`scrollArea: ${scrollArea}`);
 
   useEffect(() => {
     const loadProjects = async () => {
@@ -204,10 +206,30 @@ export const StartPage1: React.FC = () => {
     return false;
   }
 
+
+  const handleTouchStart = (area: ScrollAreaType, e: React.TouchEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    onTouchStart(area, e);
+  }
+
+  const handleTouchEnd = (area: ScrollAreaType, e: React.TouchEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    onTouchEnd(area, e);
+  }
+
+  const handleTouchMove = (area: ScrollAreaType, e: React.TouchEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    onTouchMove(area, e);
+  }
+
   return (
     <WrapperStyled>
 
-      <MainGridStyled className="main-page-grid" >
+      <MainGridStyled className="main-page-grid"
+        onTouchStart={(e) => handleTouchStart(undefined, e)}
+        onTouchEnd={(e) => handleTouchEnd(undefined, e)}
+        onTouchMove={(e) => handleTouchMove(undefined, e)}
+      >
 
         <HeaderRow>
 
@@ -252,6 +274,9 @@ export const StartPage1: React.FC = () => {
         <MiddleSection ref={middledRef}
           onMouseEnter={() => onMouseEnter("middle")}
           onMouseLeave={() => onMouseLeave()}
+          onTouchStart={(e) => handleTouchStart("middle", e)}
+          onTouchEnd={(e) => handleTouchEnd("middle", e)}
+          onTouchMove={(e) => handleTouchMove("middle", e)}
         >
           <MainImage src={myImage}></MainImage>
         </MiddleSection>
@@ -260,6 +285,9 @@ export const StartPage1: React.FC = () => {
           $column={2}
           onMouseEnter={() => onMouseEnter(1)}
           onMouseLeave={() => onMouseLeave()}
+          onTouchStart={(e) => handleTouchStart(1, e)}
+          onTouchEnd={(e) => handleTouchEnd(1, e)}
+          onTouchMove={(e) => handleTouchMove(1, e)}
         >
           <ImagesContainer>
             {
@@ -273,6 +301,9 @@ export const StartPage1: React.FC = () => {
           $column={3}
           onMouseEnter={() => onMouseEnter(2)}
           onMouseLeave={() => onMouseLeave()}
+          onTouchStart={(e) => handleTouchStart(2, e)}
+          onTouchEnd={(e) => handleTouchEnd(2, e)}
+          onTouchMove={(e) => handleTouchMove(2, e)}
         >
           <ImagesContainer>
             {
@@ -286,6 +317,9 @@ export const StartPage1: React.FC = () => {
           $column={4}
           onMouseEnter={() => onMouseEnter(3)}
           onMouseLeave={() => onMouseLeave()}
+          onTouchStart={(e) => handleTouchStart(3, e)}
+          onTouchEnd={(e) => handleTouchEnd(3, e)}
+          onTouchMove={(e) => handleTouchMove(3, e)}
         >
           <ImagesContainer>
             {
