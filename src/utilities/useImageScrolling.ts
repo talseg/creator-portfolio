@@ -116,22 +116,15 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       pointerArea = scrollArea;
     }
 
-
-
     const isImageScroll =
       shouldUpdateImages &&
       pointerArea &&
       pointerArea !== "middle";
 
-
     // 3-a: Scrolling inside image column
     if (isImageScroll) {
 
-
-
       const index = Number(pointerArea) - 1; // 1→0, 2→1, 3→2
-
-
 
       const current = scrollValues[index];
       if (current === undefined) return;
@@ -184,9 +177,8 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       setMainScrollValue(v => v - delta);
       setShouldUpdateImages(false);
     }
-  }, [detectAreaUnderPointer, getScrollUpValue, isTouchGestureActive,
-    mainScrollValue, middleSectionHeight,
-    middledRef, scrollArea, scrollValues, shouldUpdateImages]);
+  }, [detectAreaUnderPointer, getScrollUpValue, isTouchGestureActive, mainScrollValue, 
+    middleSectionHeight, middledRef, scrollArea, scrollValues, shouldUpdateImages]);
 
 
 
