@@ -122,7 +122,6 @@ export const ProjectPage: React.FC = () => {
                 src={img.imageUrl} alt={`Image ${img.imageIndex}`} key={i}
                 onLoad={() => onImageLoaded()} onError={() => {
                   onImageLoaded();
-                  console.log(`Got error for image number ${i}`)
                 }} />
             )}
           </ImagesContainer>

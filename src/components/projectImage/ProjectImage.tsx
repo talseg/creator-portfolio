@@ -70,7 +70,6 @@ const ProjectNameStyled = styled(LabelText)<{ $isActive: boolean }>`
 
 const ProjectImage: React.FC<{ project: Project, isActive: boolean }> = ({ project, isActive }) => {
 
-  // console.log(project);
   const navigate = useNavigate();
 
   const url = project.projectImageUrl ? project.projectImageUrl : errorImage;

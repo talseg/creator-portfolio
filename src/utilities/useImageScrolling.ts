@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useVerticalScroll } from "./useVerticalScroll";
 
 interface ImageScrollingProps {
   imageRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
@@ -11,18 +12,14 @@ export type ScrollAreaType = undefined | "middle" | 1 | 2 | 3;
 export const useImageScrolling = (props: ImageScrollingProps) => {
   const { imageRefs, middledRef, middleSectionHeight } = props;
 
-  const [scrollArea, setScrollArea1] = useState<ScrollAreaType>(undefined);
+  const [scrollArea, setScrollArea] = useState<ScrollAreaType>(undefined);
   const [mainScrollValue, setMainScrollValue] = useState(0);
   const [scrollValues, setScrollValues] = useState([0, 0, 0]);
   const [shouldUpdateImages, setShouldUpdateImages] = useState(false);
-  const lastTouchY = useRef<undefined | number>(undefined);
 
-  const setScrollArea = (area: ScrollAreaType, from?: string) => {
-    console.log(`Got setScrollArea to ${area} from: ${from}`)
-    setScrollArea1(area);
-  }
-
-
+  const { onTouchStart, onTouchMove, onTouchEnd, isScrolllingByTouch } = useVerticalScroll({ 
+    onDeltaYScroll : (delta) => applyScroll(delta)
+  });
 
   // Store last mouse position so we can use it on scroll
   const mousePosRef = useRef<{ x: number; y: number } | null>(null);
@@ -42,17 +39,6 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     window.addEventListener("mousemove", onMouseMove);
     return () => window.removeEventListener("mousemove", onMouseMove);
   }, []);
-
-
-
-
-
-
-
-
-
-
-
 
   const detectAreaUnderPointer = useCallback((): ScrollAreaType => {
     const pos = mousePosRef.current;
@@ -110,9 +96,6 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
 
   const applyScroll = useCallback((deltaY: number) => {
 
-    console.log(`Got applyScroll deltaY:${deltaY} scrollArea:${scrollArea}`);
-
-
     const delta = deltaY;
     if (!middledRef.current) return;
     const newMain = mainScrollValue - delta;
@@ -123,10 +106,10 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     // 👉 ALWAYS recompute scroll area based on pointer location
 
     let pointerArea: ScrollAreaType;
-    if (lastTouchY.current === undefined) {
+    if (!isScrolllingByTouch) {
       pointerArea = detectAreaUnderPointer();
       if (pointerArea !== scrollArea) {
-        setScrollArea(pointerArea, "detectAreaUnderPointer");
+        setScrollArea(pointerArea);
       }
     }
     else {
@@ -154,9 +137,6 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       if (current === undefined) return;
       const newValue = current - delta;
 
-
-      console.log(`Scrolling Images of ${index} current:${current} delta:${delta} new:${newValue}`);
-
       // Hit upper limit → switch back to main scroll
       if (newValue > 0) {
         setScrollValues(prev => {
@@ -168,11 +148,10 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
         setMainScrollValue(v => v - delta);
       } else {
 
-        console.log(`setScrollValues of ${index} to ${newValue}`);
         setScrollValues(prev => {
 
           const current = prev[index] ?? 0;
-          const proposed  = current - delta;
+          const proposed = current - delta;
           let scrollValue = proposed;
 
           if (proposed < current) {
@@ -192,7 +171,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     else if (newMain < -collapseHeight) {
       setMainScrollValue(-collapseHeight);
       setShouldUpdateImages(true);
-      setScrollArea(pointerArea, "middle Section "); // recompute once more
+      setScrollArea(pointerArea); // recompute once more
     }
 
     // 3-c: Top reached
@@ -205,47 +184,10 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       setMainScrollValue(v => v - delta);
       setShouldUpdateImages(false);
     }
-  }, [detectAreaUnderPointer, getScrollUpValue, mainScrollValue,
-    middleSectionHeight, middledRef, scrollArea, scrollValues, shouldUpdateImages]);
+  }, [detectAreaUnderPointer, getScrollUpValue, isScrolllingByTouch,
+    mainScrollValue, middleSectionHeight,
+    middledRef, scrollArea, scrollValues, shouldUpdateImages]);
 
-
-
-  const onWheel = useCallback((e: WheelEvent) => {
-    e.preventDefault();
-    applyScroll(e.deltaY);
-  }, [applyScroll]);
-
-  const onTouchStart = (area: ScrollAreaType, e: React.TouchEvent<HTMLDivElement>) => {
-    setScrollArea(area, "onTouchStart");
-    if (e.touches.length === 2) {
-      lastTouchY.current = e.touches[0]?.clientY;
-      //console.log(`touchStarted on area ${area}`);
-    }
-  }
-
-  const onTouchMove = (area: ScrollAreaType, e: React.TouchEvent<HTMLDivElement>) => {
-    if (lastTouchY.current === undefined) return;
-    if (e.touches.length !== 2 || e.touches[0] === undefined) return;
-    const currentY = e.touches[0].clientY;
-    const delta = lastTouchY.current - currentY;
-    if (delta === 0) return;
-    lastTouchY.current = currentY;
-    console.log(`applyScroll(${delta})`);
-    applyScroll(delta);
-  }
-
-
-  const onTouchEnd = (area: ScrollAreaType, e: React.TouchEvent<HTMLDivElement>) => {
-    lastTouchY.current = undefined;
-  }
-
-  // -------------------------------------------
-  // 3. Wheel scroll: main logic
-  // -------------------------------------------
-  useEffect(() => {
-    window.addEventListener("wheel", onWheel, { passive: false });
-    return () => window.removeEventListener("wheel", onWheel);
-  }, [onWheel]);
 
 
   // -------------------------------------------
@@ -276,17 +218,23 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
   // 5. Handlers (same API as before)
   // -------------------------------------------
   const onMouseEnter = (area: ScrollAreaType) => {
-    setScrollArea(area, "onMouseEnter ");
+    setScrollArea(area);
   };
 
   const onMouseLeave = () => {
-    setScrollArea(undefined, "onMouseLeave");
+    setScrollArea(undefined);
   };
 
+  const handleTouchStart = (area: ScrollAreaType, e: React.TouchEvent<HTMLDivElement>) => {
+    setScrollArea(area);
+    onTouchStart(e);
+  }
 
-
-
-
-
-  return { onMouseEnter, onMouseLeave, scrollArea, onTouchStart, onTouchEnd, onTouchMove };
+  return {
+    scrollArea,
+    onMouseEnter, onMouseLeave,
+    onTouchStart: handleTouchStart,
+    onTouchEnd: onTouchEnd,
+    onTouchMove: onTouchMove
+  };
 };

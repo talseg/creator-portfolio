@@ -112,7 +112,7 @@ const MainImage = styled.img`
   justify-content: center;
 `;
 
-const ImagesContainer = styled.div`
+const ImagesContainer = styled.div<{ $isActive: boolean }>`
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -121,10 +121,12 @@ const ImagesContainer = styled.div`
     filter: grayscale(100%) brightness(0.9);
   };
 
-  &:hover img {
+  ${({ $isActive }) => $isActive && css`
+   img {
     filter: grayscale(0%);
     transition: filter 250ms ease;
-  };
+   }
+  `}
   
 `;
 
@@ -183,14 +185,11 @@ export const StartPage1: React.FC = () => {
     }
   );
 
-  //console.log(`scrollArea: ${scrollArea}`);
-
   useEffect(() => {
     const loadProjects = async () => {
       try {
         const projectsData = await fetchProjects();
         setProjects(projectsData);
-        console.log(`num projects: `, projectsData.length);
       } catch (err) {
         logException(err);
       }
@@ -212,14 +211,14 @@ export const StartPage1: React.FC = () => {
     onTouchStart(area, e);
   }
 
-  const handleTouchEnd = (area: ScrollAreaType, e: React.TouchEvent<HTMLDivElement>) => {
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
     e.stopPropagation();
-    onTouchEnd(area, e);
+    onTouchEnd(e);
   }
 
-  const handleTouchMove = (area: ScrollAreaType, e: React.TouchEvent<HTMLDivElement>) => {
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
     e.stopPropagation();
-    onTouchMove(area, e);
+    onTouchMove(e);
   }
 
   return (
@@ -227,8 +226,8 @@ export const StartPage1: React.FC = () => {
 
       <MainGridStyled className="main-page-grid"
         onTouchStart={(e) => handleTouchStart(undefined, e)}
-        onTouchEnd={(e) => handleTouchEnd(undefined, e)}
-        onTouchMove={(e) => handleTouchMove(undefined, e)}
+        onTouchEnd={(e) => handleTouchEnd(e)}
+        onTouchMove={(e) => handleTouchMove(e)}
       >
 
         <HeaderRow>
@@ -275,8 +274,8 @@ export const StartPage1: React.FC = () => {
           onMouseEnter={() => onMouseEnter("middle")}
           onMouseLeave={() => onMouseLeave()}
           onTouchStart={(e) => handleTouchStart("middle", e)}
-          onTouchEnd={(e) => handleTouchEnd("middle", e)}
-          onTouchMove={(e) => handleTouchMove("middle", e)}
+          onTouchEnd={(e) => handleTouchEnd(e)}
+          onTouchMove={(e) => handleTouchMove(e)}
         >
           <MainImage src={myImage}></MainImage>
         </MiddleSection>
@@ -286,10 +285,10 @@ export const StartPage1: React.FC = () => {
           onMouseEnter={() => onMouseEnter(1)}
           onMouseLeave={() => onMouseLeave()}
           onTouchStart={(e) => handleTouchStart(1, e)}
-          onTouchEnd={(e) => handleTouchEnd(1, e)}
-          onTouchMove={(e) => handleTouchMove(1, e)}
+          onTouchEnd={(e) => handleTouchEnd(e)}
+          onTouchMove={(e) => handleTouchMove(e)}
         >
-          <ImagesContainer>
+          <ImagesContainer $isActive={ scrollArea === 1}>
             {
               renderProjectImages(projects, "designer", isColumnActive("designer"))
             }
@@ -302,10 +301,10 @@ export const StartPage1: React.FC = () => {
           onMouseEnter={() => onMouseEnter(2)}
           onMouseLeave={() => onMouseLeave()}
           onTouchStart={(e) => handleTouchStart(2, e)}
-          onTouchEnd={(e) => handleTouchEnd(2, e)}
-          onTouchMove={(e) => handleTouchMove(2, e)}
+          onTouchEnd={(e) => handleTouchEnd(e)}
+          onTouchMove={(e) => handleTouchMove(e)}
         >
-          <ImagesContainer>
+          <ImagesContainer $isActive={ scrollArea === 2}>
             {
               renderProjectImages(projects, "artist", isColumnActive("artist"))
             }
@@ -318,10 +317,10 @@ export const StartPage1: React.FC = () => {
           onMouseEnter={() => onMouseEnter(3)}
           onMouseLeave={() => onMouseLeave()}
           onTouchStart={(e) => handleTouchStart(3, e)}
-          onTouchEnd={(e) => handleTouchEnd(3, e)}
-          onTouchMove={(e) => handleTouchMove(3, e)}
+          onTouchEnd={(e) => handleTouchEnd(e)}
+          onTouchMove={(e) => handleTouchMove(e)}
         >
-          <ImagesContainer>
+          <ImagesContainer $isActive={ scrollArea === 3}>
             {
               renderProjectImages(projects, "illustrator", isColumnActive("illustrator"))
             }
