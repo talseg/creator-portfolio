@@ -17,7 +17,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
   const [scrollValues, setScrollValues] = useState([0, 0, 0]);
   const [shouldUpdateImages, setShouldUpdateImages] = useState(false);
 
-  const { onTouchStart, onTouchMove, onTouchEnd, isScrolllingByTouch } = useVerticalScroll({ 
+  const { onTouchStart, onTouchMove, onTouchEnd, onTouchCancel, isTouchGestureActive } = useVerticalScroll({ 
     onDeltaYScroll : (delta) => applyScroll(delta)
   });
 
@@ -106,7 +106,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     // 👉 ALWAYS recompute scroll area based on pointer location
 
     let pointerArea: ScrollAreaType;
-    if (!isScrolllingByTouch) {
+    if (!isTouchGestureActive) {
       pointerArea = detectAreaUnderPointer();
       if (pointerArea !== scrollArea) {
         setScrollArea(pointerArea);
@@ -184,7 +184,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       setMainScrollValue(v => v - delta);
       setShouldUpdateImages(false);
     }
-  }, [detectAreaUnderPointer, getScrollUpValue, isScrolllingByTouch,
+  }, [detectAreaUnderPointer, getScrollUpValue, isTouchGestureActive,
     mainScrollValue, middleSectionHeight,
     middledRef, scrollArea, scrollValues, shouldUpdateImages]);
 
@@ -232,9 +232,11 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
 
   return {
     scrollArea,
-    onMouseEnter, onMouseLeave,
+    onMouseEnter, 
+    onMouseLeave,
     onTouchStart: handleTouchStart,
-    onTouchEnd: onTouchEnd,
-    onTouchMove: onTouchMove
+    onTouchEnd,
+    onTouchMove,
+    onTouchCancel
   };
 };

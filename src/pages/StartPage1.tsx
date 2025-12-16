@@ -177,13 +177,15 @@ export const StartPage1: React.FC = () => {
   const imageRef3 = useRef<HTMLDivElement>(null);
   const imageRefs = useRef([imageRef1, imageRef2, imageRef3]);
 
-  const { onMouseEnter, onMouseLeave, scrollArea, onTouchStart, onTouchEnd, onTouchMove } = useImageScrolling(
-    {
-      imageRefs,
-      middledRef,
-      middleSectionHeight: MIDDLE_SECTION_REM_HEIGHT
-    }
-  );
+  const { onMouseEnter, onMouseLeave, scrollArea,
+    onTouchStart, onTouchEnd,
+    onTouchMove, onTouchCancel } = useImageScrolling(
+      {
+        imageRefs,
+        middledRef,
+        middleSectionHeight: MIDDLE_SECTION_REM_HEIGHT
+      }
+    );
 
   useEffect(() => {
     const loadProjects = async () => {
@@ -276,6 +278,7 @@ export const StartPage1: React.FC = () => {
           onTouchStart={(e) => handleTouchStart("middle", e)}
           onTouchEnd={(e) => handleTouchEnd(e)}
           onTouchMove={(e) => handleTouchMove(e)}
+          onTouchCancel={onTouchCancel}
         >
           <MainImage src={myImage}></MainImage>
         </MiddleSection>
@@ -287,8 +290,9 @@ export const StartPage1: React.FC = () => {
           onTouchStart={(e) => handleTouchStart(1, e)}
           onTouchEnd={(e) => handleTouchEnd(e)}
           onTouchMove={(e) => handleTouchMove(e)}
+          onTouchCancel={onTouchCancel}
         >
-          <ImagesContainer $isActive={ scrollArea === 1}>
+          <ImagesContainer $isActive={scrollArea === 1}>
             {
               renderProjectImages(projects, "designer", isColumnActive("designer"))
             }
@@ -303,8 +307,9 @@ export const StartPage1: React.FC = () => {
           onTouchStart={(e) => handleTouchStart(2, e)}
           onTouchEnd={(e) => handleTouchEnd(e)}
           onTouchMove={(e) => handleTouchMove(e)}
+          onTouchCancel={onTouchCancel}
         >
-          <ImagesContainer $isActive={ scrollArea === 2}>
+          <ImagesContainer $isActive={scrollArea === 2}>
             {
               renderProjectImages(projects, "artist", isColumnActive("artist"))
             }
@@ -319,8 +324,9 @@ export const StartPage1: React.FC = () => {
           onTouchStart={(e) => handleTouchStart(3, e)}
           onTouchEnd={(e) => handleTouchEnd(e)}
           onTouchMove={(e) => handleTouchMove(e)}
+          onTouchCancel={onTouchCancel}
         >
-          <ImagesContainer $isActive={ scrollArea === 3}>
+          <ImagesContainer $isActive={scrollArea === 3}>
             {
               renderProjectImages(projects, "illustrator", isColumnActive("illustrator"))
             }

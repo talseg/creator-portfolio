@@ -40,6 +40,11 @@ export const useVerticalScroll = (props: VerticalScrollProps) => {
     }
   }
 
+  const onTouchCancel = () => {
+    lastTouchY.current = undefined;
+    setIsTouchGestureActive(false);
+  }
+
   // -------------------------------------------
   // 3. Wheel scroll: main logic
   // -------------------------------------------
@@ -48,5 +53,5 @@ export const useVerticalScroll = (props: VerticalScrollProps) => {
     return () => window.removeEventListener("wheel", onWheel);
   }, [onWheel]);
 
-  return { onTouchStart, onTouchMove, onTouchEnd, isScrolllingByTouch: isTouchGestureActive };
+  return { onTouchStart, onTouchMove, onTouchEnd, isTouchGestureActive, onTouchCancel };
 };
