@@ -127,7 +127,6 @@ const ImagesContainer = styled.div<{ $isActive: boolean }>`
     transition: filter 250ms ease;
    }
   `}
-  
 `;
 
 const ImagesColumn = styled.div<{ $column: number }>`
