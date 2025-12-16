@@ -138,12 +138,6 @@ const ImagesColumn = styled.div<{ $column: number }>`
   align-self: flex-start;
 `
 
-// const ProjectImage = styled.img`
-//   width: 100%;
-//   object-fit: cover;
-//   margin-right: 10px;
-// `;
-
 const VerticalLine = styled.div`
   border-left: 1px solid black;
   height: 100%;
