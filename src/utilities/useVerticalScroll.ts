@@ -11,9 +11,10 @@ export const useVerticalScroll = (props: VerticalScrollProps) => {
   const lastTouchY = useRef<undefined | number>(undefined);
 
   const onWheel = useCallback((e: WheelEvent) => {
+    if (isTouchGestureActive) return;
     e.preventDefault();
     onDeltaYScroll(e.deltaY);
-  }, [onDeltaYScroll]);
+  }, [isTouchGestureActive, onDeltaYScroll]);
 
   const onTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     if (e.touches.length === 2) {
