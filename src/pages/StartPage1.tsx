@@ -63,7 +63,7 @@ const MainGridStyled = styled.div`
     display: none;             /* Chrome, Safari */
   }
 
-  touch-action: pan-y;
+  touch-action: none;
 `;
 
 const HeaderRow = styled.div`
