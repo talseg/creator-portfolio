@@ -26,8 +26,15 @@ const HeaderTextBox = styled.div<{ $isActive: boolean }>`
   height: 100%;
   align-items: center;
   justify-content: center;
+
+  background-color: transparent;
+  transition: background-color 400ms ease-out;
+
   ${({ $isActive }) =>
-    $isActive && css`background: #FFFDB4;`
+    $isActive ? css`
+       background: #FFFDB4;` : 
+      css`
+       transition: none;`
   }
 `;
 
