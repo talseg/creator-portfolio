@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRafScrollEngine } from "./useRafScrollEngine";
+//import { useRafScrollEngine } from "./useRafScrollEngine";
+import { useVelocityFingerScroll } from "./useVelocotyFingerScroll";
 
 interface ImageScrollingProps {
   imageRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
@@ -23,13 +24,13 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
   const shouldUpdateImages = useRef(false);
   const rafScheduledRef = useRef(false);
 
-  // const { onTouchStart, onTouchMove, onTouchEnd, onTouchCancel, isTouchGestureActive } = useVelocityFingerScroll({
-  //   onDeltaYScroll: (delta) => applyScroll(delta)
-  // });
-
-    const { onTouchStart, onTouchMove, onTouchEnd, onTouchCancel, isTouchGestureActive } = useRafScrollEngine({
+  const { onTouchStart, onTouchMove, onTouchEnd, onTouchCancel, isTouchGestureActive } = useVelocityFingerScroll({
     onDeltaYScroll: (delta) => applyScroll(delta)
   });
+
+  // const { onTouchStart, onTouchMove, onTouchEnd, onTouchCancel, isTouchGestureActive } = useRafScrollEngine({
+  //   onDeltaYScroll: (delta) => applyScroll(delta)
+  // });
 
   // Store last mouse position so we can use it on scroll
   const mousePosRef = useRef<{ x: number; y: number } | null>(null);
