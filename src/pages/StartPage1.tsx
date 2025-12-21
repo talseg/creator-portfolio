@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components";
+import pkg from "../../package.json";
 import OrSegalSvg from "../assets/orSegal.svg?react";
 import myImage from "../images/MainPicture.png";
 import { useEffect, useRef, useState, type ReactElement } from "react";
@@ -271,6 +272,8 @@ export const StartPage1: React.FC = () => {
           }}></SimpleDot>
 
         </HeaderRow>
+
+        <div style={{ gridRow: 2, gridColumn: 1, color: "black" }}>{pkg.version}</div>
 
         <MiddleSection ref={middledRef}
           onMouseEnter={() => onMouseEnter("middle")}
