@@ -56,12 +56,11 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
 
     // Image columns
     const refs = imageRefs.current;
+    if (!refs) return;
     for (let i = 0; i < refs.length; i++) {
-      if (!refs) return;
       const ref = refs[i];
-      if (!ref?.current) return;
+      if (!ref?.current) continue;
       const el = ref.current;
-      if (!el) continue;
       const r = el.getBoundingClientRect();
       if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) {
         return (i + 1) as ScrollAreaType; // 1, 2, 3
@@ -118,9 +117,6 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
         ref.current.style.transform = `translateY(${mainScrollValue.current + val}px)`;
       });
     }
-
-    console.log(`applyScroll(${deltaY})`);
-
 
     const delta = deltaY;
     if (!middledRef.current) return;
@@ -191,7 +187,6 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     // 3-b: Middle section collapses
     else if (newMain < -collapseHeight) {
       mainScrollValue.current = -collapseHeight;
-      console.log(`setShouldUpdateImages(true);`);
       shouldUpdateImages.current = true;
       setScrollArea(pointerArea); // recompute once more
     }

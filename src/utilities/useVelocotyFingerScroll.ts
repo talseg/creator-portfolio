@@ -69,7 +69,7 @@ export const useVelocityFingerScroll = (props: VelocityFingerScrollProps) => {
     rafRef.current = requestAnimationFrame(tick);
   };
 
-  const onTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+  const onTouchEnd = (_: React.TouchEvent<HTMLDivElement>) => {
     lastYRef.current = null;
     startInertia();
   }
