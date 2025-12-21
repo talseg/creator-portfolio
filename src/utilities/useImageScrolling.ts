@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useVelocityFingerScroll } from "./useVelocotyFingerScroll";
+import { useRafScrollEngine } from "./useRafScrollEngine";
 
 interface ImageScrollingProps {
   imageRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
@@ -23,7 +23,11 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
   const shouldUpdateImages = useRef(false);
   const rafScheduledRef = useRef(false);
 
-  const { onTouchStart, onTouchMove, onTouchEnd, onTouchCancel, isTouchGestureActive } = useVelocityFingerScroll({
+  // const { onTouchStart, onTouchMove, onTouchEnd, onTouchCancel, isTouchGestureActive } = useVelocityFingerScroll({
+  //   onDeltaYScroll: (delta) => applyScroll(delta)
+  // });
+
+    const { onTouchStart, onTouchMove, onTouchEnd, onTouchCancel, isTouchGestureActive } = useRafScrollEngine({
     onDeltaYScroll: (delta) => applyScroll(delta)
   });
 
@@ -245,3 +249,4 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     onTouchCancel
   };
 };
+
