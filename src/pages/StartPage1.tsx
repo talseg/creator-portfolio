@@ -215,7 +215,7 @@ export const StartPage1: React.FC = () => {
 
   const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
     e.stopPropagation();
-    onTouchEnd(e);
+    onTouchEnd();
   }
 
   const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
