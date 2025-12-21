@@ -7,6 +7,11 @@ interface ImageScrollingProps {
   middleSectionHeight: number;
 }
 
+// NOTE:
+// This implementation favors simplicity and clarity.
+// Sub-pixel quantization and delta gating were tested and
+// did not provide meaningful UX improvement for this design.
+
 export type ScrollAreaType = undefined | "middle" | 1 | 2 | 3;
 
 export const useImageScrolling = (props: ImageScrollingProps) => {
