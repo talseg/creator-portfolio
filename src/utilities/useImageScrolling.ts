@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useFingerScroll } from "./useFingerScroll";
 import { useVelocityFingerScroll } from "./useVelocotyFingerScroll";
 
 interface ImageScrollingProps {
@@ -14,11 +13,9 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
   const { imageRefs, middledRef, middleSectionHeight } = props;
 
   const [scrollArea, setScrollArea] = useState<ScrollAreaType>(undefined);
-  //const [mainScrollValue, setMainScrollValue] = useState(0);
-  //const [scrollValues, setScrollValues] = useState([0, 0, 0]);
-  const [shouldUpdateImages, setShouldUpdateImages] = useState(false);
   const scrollValues = useRef([0, 0, 0]);
   const mainScrollValue = useRef(0);
+  const shouldUpdateImages = useRef(false);
 
 
   const { onTouchStart, onTouchMove, onTouchEnd, onTouchCancel, isTouchGestureActive } = useVelocityFingerScroll({
@@ -99,11 +96,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
   }, [imageRefs]);
 
 
-
-
-
   const applyScroll = useCallback((deltaY: number) => {
-
 
     const updateDomTranslates = () => {
 
@@ -152,14 +145,12 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     }
 
     const isImageScroll =
-      shouldUpdateImages &&
+      shouldUpdateImages.current &&
       pointerArea &&
       pointerArea !== "middle";
 
     // 3-a: Scrolling inside image column
     if (isImageScroll) {
-
-      console.log("in isImageScroll");
 
       const index = Number(pointerArea) - 1; // 1→0, 2→1, 3→2
 
@@ -172,14 +163,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       if (newValue > 0) {
 
         scrollValues.current[index] = 0;
-
-        // setScrollValues(prev => {
-        //   const copy = [...prev];
-        //   copy[index] = 0;
-        //   return copy;
-        // });
-        setShouldUpdateImages(false);
-        
+        shouldUpdateImages.current = false;
 
         if (mainScrollValue.current - delta >= 0) {
           mainScrollValue.current = 0;
@@ -207,57 +191,23 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     // 3-b: Middle section collapses
     else if (newMain < -collapseHeight) {
       mainScrollValue.current = -collapseHeight;
-      //setMainScrollValue(-collapseHeight);
       console.log(`setShouldUpdateImages(true);`);
-      setShouldUpdateImages(true);
+      shouldUpdateImages.current = true;
       setScrollArea(pointerArea); // recompute once more
     }
 
     // 3-c: Top reached
     else if (newMain > 0) {
       mainScrollValue.current = 0;
-      //setMainScrollValue(0);
     }
 
     // 3-d: Normal scroll of middle section
     else {
       mainScrollValue.current = mainScrollValue.current - delta;
-      //setMainScrollValue(v => v - delta);
-      setShouldUpdateImages(false);
+      shouldUpdateImages.current = false;
     }
     updateDomTranslates();
   }, [detectAreaUnderPointer, getScrollUpValue, imageRefs, isTouchGestureActive, middleSectionHeight, middledRef, scrollArea, shouldUpdateImages]);
-
-
-
-
-
-  // -------------------------------------------
-  // 4. Update DOM transforms
-  // -------------------------------------------
-  // useEffect(() => {
-  //   if (!middledRef.current) return;
-  //   middledRef.current.style.transform = `translateY(${mainScrollValue}px)`;
-
-  //   const getRemOffsetByScrollValue = (scrollValue: number): number => {
-  //     return ((-31 / 466.666666) * scrollValue - 3);
-  //   }
-  //   const remOffset = getRemOffsetByScrollValue(mainScrollValue.current);
-
-  //   middledRef.current.style.background =
-  //     `linear-gradient(180deg, #96BFC5 ${remOffset}rem, #FFF 78rem)`;
-
-  //   imageRefs.current.forEach((ref, index) => {
-  //     if (!ref.current) return;
-  //     const val = scrollValues.current[index];
-  //     if (val === undefined) return;
-  //     ref.current.style.transform = `translateY(${mainScrollValue.current + val}px)`;
-  //   });
-  // }, [imageRefs, mainScrollValue, middledRef, scrollValues]);
-
-
-
-
 
   // -------------------------------------------
   // 5. Handlers (same API as before)

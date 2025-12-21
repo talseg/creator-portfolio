@@ -47,7 +47,7 @@ export const useVelocityFingerScroll = (props: VelocityFingerScrollProps) => {
 
 
   const startInertia = () => {
-    const friction = 0.94;
+    const friction = 0.95;
     const stopThreshold = 1;
 
     const tick = () => {
