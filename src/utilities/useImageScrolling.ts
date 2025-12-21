@@ -16,7 +16,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
   const scrollValues = useRef([0, 0, 0]);
   const mainScrollValue = useRef(0);
   const shouldUpdateImages = useRef(false);
-
+  const rafScheduledRef = useRef(false);
 
   const { onTouchStart, onTouchMove, onTouchEnd, onTouchCancel, isTouchGestureActive } = useVelocityFingerScroll({
     onDeltaYScroll: (delta) => applyScroll(delta)
@@ -118,6 +118,16 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       });
     }
 
+    // Make sure the update run only once in each update frame
+    const scheduleDomUpdate = () => {
+      if (rafScheduledRef.current) return;
+      rafScheduledRef.current = true;
+      requestAnimationFrame(() => {
+        rafScheduledRef.current = false;
+        updateDomTranslates();
+      });
+    };
+
     const delta = deltaY;
     if (!middledRef.current) return;
     if (!scrollValues.current) return;
@@ -201,7 +211,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       mainScrollValue.current = mainScrollValue.current - delta;
       shouldUpdateImages.current = false;
     }
-    updateDomTranslates();
+    scheduleDomUpdate();
   }, [detectAreaUnderPointer, getScrollUpValue, imageRefs, isTouchGestureActive, middleSectionHeight, middledRef, scrollArea, shouldUpdateImages]);
 
   // -------------------------------------------
