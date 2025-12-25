@@ -69,6 +69,13 @@ const VerticalLine = styled.div`
   margin-left: 20px;
 `;
 
+const HeaderRow = styled.div`
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+`;
+
 export const MobilePage: React.FC = () => {
 
   const [projects, setProjects] = useState<Project[]>([]);
@@ -89,26 +96,26 @@ export const MobilePage: React.FC = () => {
   return (
     <Wrapper>
       <Column>
-        <div style={{ display: "flex" }}>
+        <HeaderRow>
           <Header>Designer</Header>
           <VerticalLine/>
-        </div>
+        </HeaderRow>
           {renderProjectImages(projects, "designer", true)}
       </Column>
 
       <Column>
-        <div style={{ display: "flex" }}>
+        <HeaderRow>
           <Header>Artist</Header>
           <VerticalLine/>
-        </div>
+        </HeaderRow>
           {renderProjectImages(projects, "artist", true)}
       </Column>
 
       <Column>
-        <div style={{ display: "flex" }}>
+        <HeaderRow>
           <Header>Artist</Header>
           <VerticalLine/>
-        </div>
+        </HeaderRow>
           {renderProjectImages(projects, "illustrator", true)}
       </Column>
 
