@@ -66,7 +66,7 @@ const Header = styled.div`
 const VerticalLine = styled.div`
   border-left: 1px solid black;
   height: 100%;
-  margin-left: 20px;
+  margin-left: 4vw;
 `;
 
 const HeaderRow = styled.div`
