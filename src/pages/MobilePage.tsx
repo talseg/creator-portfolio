@@ -1,4 +1,9 @@
+import { useEffect, useState, type ReactElement } from "react";
 import styled from "styled-components"
+import { fetchProjects } from "../database/FirebaseDb";
+import { logException } from "../utilities/exceptionUtils";
+import type { CategoryType, Project } from "../database/dbInterfaces";
+import ProjectImage from "../components/projectImage/ProjectImage";
 
 const Wrapper = styled.div`
   width: 100vw;
@@ -12,55 +17,99 @@ const Wrapper = styled.div`
   scroll-snap-stop: always;
   -webkit-overflow-scrolling: touch;
   gap: 30px;
-  background-color: red;
 `
 
 const Column = styled.div`
   flex: 0 0 80vw;   /* ← THIS is the key line */
   margin-left: 10vw;
   margin-right: 10vw;
-  height: 700px;
 
-  background-color: blue;
-  color: white;
+  height: 100vh;
+  overflow-x: hidden;
 
   display: flex;
-  /* justify-content: center; */
-  align-items: center;
   flex-direction: column;
-
+  
   scroll-snap-align: center;
-  border-radius: 2%;
+
+  -webkit-overflow-scrolling: touch;
+
+  /* hide scrollbar */
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* IE / old Edge */
+
+  &::-webkit-scrollbar {
+    display: none;              /* Chrome / Safari / iOS */
+  }
 `;
 
-const ColumnContentWrapper = styled.div`
+const renderProjectImages = (projects: Project[], category: CategoryType, isActive: boolean): ReactElement[] =>
+  projects.filter((proj, index) => proj.category === category && index !== 11).map<ReactElement>(
+    (proj, i) =>
+      <ProjectImage project={proj}
+        key={`project-${i}`}
+        isActive={isActive}
+        fontSize="1rem"></ProjectImage>
+  );
+
+const Header = styled.div`
+  background-color: #FFFDB4;
+  width: 72vw;
+  margin-left: 4vw;
+  height: 50px;
+  color: black;
   display: flex;
   align-items: center;
   justify-content: center;
+`
+
+const VerticalLine = styled.div`
+  border-left: 1px solid black;
   height: 100%;
+  margin-left: 20px;
 `;
 
-
 export const MobilePage: React.FC = () => {
+
+  const [projects, setProjects] = useState<Project[]>([]);
+
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        const projectsData = await fetchProjects();
+        setProjects(projectsData);
+      } catch (err) {
+        logException(err);
+      }
+    }
+    loadProjects();
+  }, []);
+
 
   return (
     <Wrapper>
       <Column>
-        {/* <ColumnContentWrapper> */}
-          column 1
-        {/* </ColumnContentWrapper> */}
+        <div style={{ display: "flex" }}>
+          <Header>Designer</Header>
+          <VerticalLine/>
+        </div>
+          {renderProjectImages(projects, "designer", true)}
       </Column>
 
       <Column>
-        {/* <ColumnContentWrapper> */}
-          column 2
-        {/* </ColumnContentWrapper> */}
+        <div style={{ display: "flex" }}>
+          <Header>Artist</Header>
+          <VerticalLine/>
+        </div>
+          {renderProjectImages(projects, "artist", true)}
       </Column>
 
       <Column>
-        {/* <ColumnContentWrapper> */}
-          column 3
-        {/* </ColumnContentWrapper> */}
+        <div style={{ display: "flex" }}>
+          <Header>Artist</Header>
+          <VerticalLine/>
+        </div>
+          {renderProjectImages(projects, "illustrator", true)}
       </Column>
 
     </Wrapper>

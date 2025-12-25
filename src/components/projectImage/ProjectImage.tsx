@@ -68,7 +68,13 @@ const ProjectNameStyled = styled(LabelText)<{ $isActive: boolean }>`
   color: ${({ $isActive }) => $isActive ? "black" : "#797979" };
 `;
 
-const ProjectImage: React.FC<{ project: Project, isActive: boolean }> = ({ project, isActive }) => {
+interface ProjectImageProps {
+  project: Project;
+  isActive: boolean;
+  fontSize?: string;
+}
+
+const ProjectImage: React.FC<ProjectImageProps> = ({ project, isActive, fontSize = "1vw" }) => {
 
   const navigate = useNavigate();
 
@@ -79,7 +85,7 @@ const ProjectImage: React.FC<{ project: Project, isActive: boolean }> = ({ proje
         <ImageWrapper><ImageStyled src={url} /></ImageWrapper>
         <ProjectNameWrapper>
 
-          <ProjectNameStyled fontSize="1vw" $isActive={isActive}>
+          <ProjectNameStyled fontSize={fontSize} $isActive={isActive}>
             {project.projectName}
           </ProjectNameStyled>
 
