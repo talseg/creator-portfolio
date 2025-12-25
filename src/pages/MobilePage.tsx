@@ -1,5 +1,5 @@
-import { useEffect, useState, type ReactElement } from "react";
-import styled from "styled-components"
+import { useEffect, useRef, useState, type ReactElement } from "react";
+import styled, { css } from "styled-components"
 import { fetchProjects } from "../database/FirebaseDb";
 import { logException } from "../utilities/exceptionUtils";
 import type { CategoryType, Project } from "../database/dbInterfaces";
@@ -19,7 +19,7 @@ const Wrapper = styled.div`
   gap: 30px;
 `
 
-const Column = styled.div`
+const Column = styled.div<{ $isActive: boolean }>`
   flex: 0 0 80vw;   /* ← THIS is the key line */
   margin-left: 10vw;
   margin-right: 10vw;
@@ -41,6 +41,18 @@ const Column = styled.div`
   &::-webkit-scrollbar {
     display: none;              /* Chrome / Safari / iOS */
   }
+
+  img {
+    filter: grayscale(100%) brightness(0.9);
+  };
+
+  ${({ $isActive }) => $isActive && css`
+   img {
+    filter: grayscale(0%);
+    transition: filter 1000ms ease;
+   }
+  `}
+  
 `;
 
 const renderProjectImages = (projects: Project[], category: CategoryType, isActive: boolean): ReactElement[] =>
@@ -52,7 +64,7 @@ const renderProjectImages = (projects: Project[], category: CategoryType, isActi
         fontSize="1rem"></ProjectImage>
   );
 
-const Header = styled.div`
+const Header = styled.div<{ $isActive: boolean }>`
   background-color: #FFFDB4;
   width: 72vw;
   margin-left: 4vw;
@@ -61,6 +73,14 @@ const Header = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: white;
+  transition: background-color 800ms ease-out;
+  ${({ $isActive }) =>
+    $isActive ? css`
+       background-color: #FFFDB4;` :
+      css`
+       transition: none;`
+  }
 `
 
 const VerticalLine = styled.div`
@@ -79,6 +99,8 @@ const HeaderRow = styled.div`
 export const MobilePage: React.FC = () => {
 
   const [projects, setProjects] = useState<Project[]>([]);
+  const columnRefs = useRef<HTMLDivElement[]>([]);
+  const [activeIndex, setActiveIndex] = useState<number>(0);
 
   useEffect(() => {
     const loadProjects = async () => {
@@ -93,32 +115,61 @@ export const MobilePage: React.FC = () => {
   }, []);
 
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+
+          if (entry.isIntersecting) {
+            const index = Number(entry.target.getAttribute("data-index"));
+            setActiveIndex(index);
+          }
+        });
+      },
+      {
+        root: null,                 // viewport
+        threshold: 0.9           // mostly visible
+      }
+    );
+
+    columnRefs.current.forEach(col => {
+      if (col) observer.observe(col);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  console.log("render");
+
   return (
     <Wrapper>
-      <Column>
-        <HeaderRow>
-          <Header>Designer</Header>
-          <VerticalLine/>
-        </HeaderRow>
-          {renderProjectImages(projects, "designer", true)}
-      </Column>
+      {(["designer", "artist", "illustrator"] as CategoryType[]).map(
+        (category, index) => {
+          const isActive = activeIndex === index;
+          const categoryName = category.charAt(0).toUpperCase() + category.slice(1);
+          return (
+            <Column
+              $isActive={isActive}
+              key={category}
+              ref={(el) => {
+                if (el) columnRefs.current[index] = el;
+              }}
+              data-index={index}
+            >
+              <HeaderRow>
+                <Header $isActive={isActive}>{categoryName}</Header>
+                <VerticalLine />
+              </HeaderRow>
 
-      <Column>
-        <HeaderRow>
-          <Header>Artist</Header>
-          <VerticalLine/>
-        </HeaderRow>
-          {renderProjectImages(projects, "artist", true)}
-      </Column>
-
-      <Column>
-        <HeaderRow>
-          <Header>Artist</Header>
-          <VerticalLine/>
-        </HeaderRow>
-          {renderProjectImages(projects, "illustrator", true)}
-      </Column>
-
+              {renderProjectImages(
+                projects,
+                category,
+                isActive
+              )}
+            </Column>
+          )
+        }
+      )}
     </Wrapper>
   )
 }
