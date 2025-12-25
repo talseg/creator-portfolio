@@ -4,6 +4,7 @@ import { fetchProjects } from "../database/FirebaseDb";
 import { logException } from "../utilities/exceptionUtils";
 import type { CategoryType, Project } from "../database/dbInterfaces";
 import ProjectImage from "../components/projectImage/ProjectImage";
+import { capitalize } from "@mui/material";
 
 const Wrapper = styled.div`
   width: 100vw;
@@ -146,7 +147,7 @@ export const MobilePage: React.FC = () => {
       {(["designer", "artist", "illustrator"] as CategoryType[]).map(
         (category, index) => {
           const isActive = activeIndex === index;
-          const categoryName = category.charAt(0).toUpperCase() + category.slice(1);
+          const categoryName = capitalize(category);
           return (
             <Column
               $isActive={isActive}
