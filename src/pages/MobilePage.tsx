@@ -16,13 +16,13 @@ const Wrapper = styled.div`
   scroll-snap-type: x mandatory;
   scroll-snap-stop: always;
   -webkit-overflow-scrolling: touch;
-  gap: 30px;
+  gap: 10px;
 `
 
 const Column = styled.div<{ $isActive: boolean }>`
-  flex: 0 0 80vw;   /* ← THIS is the key line */
-  margin-left: 10vw;
-  margin-right: 10vw;
+  flex: 0 0 85vw;   /* ← THIS is the key line */
+  margin-left: 0vw;
+  margin-right: 0vw;
 
   height: 100vh;
   overflow-x: hidden;
@@ -65,8 +65,7 @@ const renderProjectImages = (projects: Project[], category: CategoryType, isActi
   );
 
 const Header = styled.div<{ $isActive: boolean }>`
-  background-color: #FFFDB4;
-  width: 72vw;
+  width: 100%;
   margin-left: 4vw;
   height: 50px;
   color: black;
@@ -84,9 +83,9 @@ const Header = styled.div<{ $isActive: boolean }>`
 `
 
 const VerticalLine = styled.div`
-  border-left: 1px solid black;
+  border-left: 1.0px solid black;
   height: 100%;
-  margin-left: 4vw;
+  margin-left: 4.4vw;
 `;
 
 const HeaderRow = styled.div`
