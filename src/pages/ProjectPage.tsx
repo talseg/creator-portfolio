@@ -30,7 +30,7 @@ const DataWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 24px;
+  margin: 0 24px;
   min-height: 100vh;
 `;
 
