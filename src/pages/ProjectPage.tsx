@@ -10,7 +10,8 @@ import { fetchProjectWithImagesById } from "../database/FirebaseDb";
 const PageWrapper = styled.div`
   display: grid;
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #96BFC5 0%, #96BFC5 20%, #FFF 100%);
 `;
 
 const StyledSpinner = styled(CircularProgress)`
