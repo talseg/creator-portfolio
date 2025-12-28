@@ -100,6 +100,7 @@ export const MobilePage: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const columnRefs = useRef<HTMLDivElement[]>([]);
   const [activeIndex, setActiveIndex] = useState<number>(0);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const loadProjects = async () => {
@@ -126,8 +127,8 @@ export const MobilePage: React.FC = () => {
         });
       },
       {
-        root: null,                 // viewport
-        threshold: 0.9           // mostly visible
+        root: wrapperRef.current, // viewport
+        threshold: 0.9            // mostly visible
       }
     );
 
@@ -141,7 +142,7 @@ export const MobilePage: React.FC = () => {
   console.log("render");
 
   return (
-    <Wrapper>
+    <Wrapper ref={wrapperRef}>
       {(["designer", "artist", "illustrator"] as CategoryType[]).map(
         (category, index) => {
           const isActive = activeIndex === index;
