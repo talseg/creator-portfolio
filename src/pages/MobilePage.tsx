@@ -171,12 +171,7 @@ export const MobilePage: React.FC<MobilePageProps> = ({ projects }) => {
                   <VerticalLine />
                 </HeaderRow>
 
-                {renderProjectImages(
-                  projects,
-                  category,
-                  isActive,
-                  "1rem"
-                )}
+                {renderProjectImages(projects, category, isActive, "1rem")}
               </Column>
             )
           }
