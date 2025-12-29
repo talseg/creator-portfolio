@@ -2,13 +2,11 @@ import styled, { css } from "styled-components";
 import pkg from "../../package.json";
 import OrSegalSvg from "../assets/orSegal.svg?react";
 import myImage from "../images/MainPicture.png";
-import { useEffect, useRef, useState, type ReactElement } from "react";
-import { fetchProjects } from "../database/FirebaseDb";
-import { logException } from "../utilities/exceptionUtils";
 import type { CategoryType, Project } from "../database/dbInterfaces";
 import { useImageScrolling, type ScrollAreaType } from "../utilities/useImageScrolling";
 import LabelText from "../components/labeltext/LabelText";
-import ProjectImage from "../components/projectImage/ProjectImage";
+import { useRef } from "react";
+import { renderProjectImages } from "../utilities/projectUtils";
 
 const WrapperStyled = styled.div`
   display: flex;
@@ -33,7 +31,7 @@ const HeaderTextBox = styled.div<{ $isActive: boolean }>`
 
   ${({ $isActive }) =>
     $isActive ? css`
-       background: #FFFDB4;` : 
+       background: #FFFDB4;` :
       css`
        transition: none;`
   }
@@ -158,20 +156,17 @@ const SimpleDot = styled.div`
   transform: translate(2px, -3px);
 `;
 
-const renderProjectImages = (projects: Project[], category: CategoryType, isActive: boolean): ReactElement[] =>
-  projects.filter((proj) => proj.category === category).map<ReactElement>(
-    (proj, i) =>
-      <ProjectImage project={proj} key={`project-${i}`} isActive={isActive}></ProjectImage>
-  );
-
 const HeaderTextStyled = styled(LabelText) <{ $isActive: boolean }>`
   font-weight: ${({ $isActive: $isActibe }) =>
     $isActibe ? "bold" : "normal"};
 `;
 
-export const StartPage1: React.FC = () => {
+interface StartPage1Props {
+  projects: Project[];
+}
 
-  const [projects, setProjects] = useState<Project[]>([]);
+export const StartPage1: React.FC<StartPage1Props> = ({ projects }) => {
+
   const middledRef = useRef<HTMLDivElement>(null);
   const imageRef1 = useRef<HTMLDivElement>(null);
   const imageRef2 = useRef<HTMLDivElement>(null);
@@ -188,26 +183,12 @@ export const StartPage1: React.FC = () => {
       }
     );
 
-  useEffect(() => {
-    const loadProjects = async () => {
-      try {
-        const projectsData = await fetchProjects();
-        setProjects(projectsData);
-      } catch (err) {
-        logException(err);
-      }
-    }
-    loadProjects();
-  }, []);
-
-
   const isColumnActive = (area: CategoryType): boolean => {
     if (area === "designer") return scrollArea === 1;
     if (area === "artist") return scrollArea === 2;
     if (area === "illustrator") return scrollArea === 3;
     return false;
   }
-
 
   const handleTouchStart = (area: ScrollAreaType, e: React.TouchEvent<HTMLDivElement>) => {
     e.stopPropagation();

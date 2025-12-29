@@ -1,9 +1,7 @@
-import { useEffect, useRef, useState, type ReactElement } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components"
-import { fetchProjects } from "../database/FirebaseDb";
-import { logException } from "../utilities/exceptionUtils";
 import type { CategoryType, Project } from "../database/dbInterfaces";
-import ProjectImage from "../components/projectImage/ProjectImage";
+import { renderProjectImages } from "../utilities/projectUtils";
 
 const Wrapper = styled.div`
   width: 100vw;
@@ -55,15 +53,6 @@ const Column = styled.div<{ $isActive: boolean }>`
   
 `;
 
-const renderProjectImages = (projects: Project[], category: CategoryType, isActive: boolean): ReactElement[] =>
-  projects.filter((proj, index) => proj.category === category && index !== 11).map<ReactElement>(
-    (proj, i) =>
-      <ProjectImage project={proj}
-        key={`project-${i}`}
-        isActive={isActive}
-        fontSize="1rem"></ProjectImage>
-  );
-
 const Header = styled.div<{ $isActive: boolean }>`
   width: 100%;
   margin-left: 4vw;
@@ -95,25 +84,15 @@ const HeaderRow = styled.div`
   display: flex;
 `;
 
-export const MobilePage: React.FC = () => {
+interface MobilePageProps {
+  projects: Project[];
+}
 
-  const [projects, setProjects] = useState<Project[]>([]);
+export const MobilePage: React.FC<MobilePageProps> = ({ projects }) => {
+
   const columnRefs = useRef<HTMLDivElement[]>([]);
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const wrapperRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const loadProjects = async () => {
-      try {
-        const projectsData = await fetchProjects();
-        setProjects(projectsData);
-      } catch (err) {
-        logException(err);
-      }
-    }
-    loadProjects();
-  }, []);
-
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -164,7 +143,8 @@ export const MobilePage: React.FC = () => {
               {renderProjectImages(
                 projects,
                 category,
-                isActive
+                isActive,
+                "1rem"
               )}
             </Column>
           )
