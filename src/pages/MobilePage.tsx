@@ -12,7 +12,23 @@ const Page = styled.div`
   flex-direction: column;
 `;
 
-const Wrapper = styled.div`
+const LogoLinkWrapper = styled.a`
+  align-self: center;
+  margin-top: 10px;
+`;
+
+const StyledLogo = styled(OrSegalSvg)`
+  height: 36px;
+`;
+
+const LogoBox = styled.div`
+  display: flex;
+  width: 100%;
+  height: 50px;
+  margin-left: 20px;
+`
+
+const ColumnsWrapper = styled.div`
   width: 100vw;
   height: 100vh;
 
@@ -93,21 +109,6 @@ const HeaderRow = styled.div`
   display: flex;
 `;
 
-const LogoLinkWrapper = styled.a`
-  align-self: center;
-  margin-top: 10px;
-`;
-
-const StyledLogo = styled(OrSegalSvg)`
-  height: 36px;
-`;
-
-const LogoBox = styled.div`
-  display: flex;
-  width: 100%;
-  height: 50px;
-  margin-left: 20px;
-`
 interface MobilePageProps {
   projects: Project[];
 }
@@ -150,7 +151,7 @@ export const MobilePage: React.FC<MobilePageProps> = ({ projects }) => {
         <LogoLinkWrapper href="https://www.orsegal.net"><StyledLogo /></LogoLinkWrapper>
       </LogoBox>
 
-      <Wrapper ref={wrapperRef}>
+      <ColumnsWrapper ref={wrapperRef}>
 
         {(["designer", "artist", "illustrator"] as CategoryType[]).map(
           (category, index) => {
@@ -180,7 +181,7 @@ export const MobilePage: React.FC<MobilePageProps> = ({ projects }) => {
             )
           }
         )}
-      </Wrapper>
+      </ColumnsWrapper>
 
     </Page>
   )
