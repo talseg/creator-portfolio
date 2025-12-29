@@ -1,7 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components"
+import OrSegalSvg from "../assets/orSegal.svg?react";
 import type { CategoryType, Project } from "../database/dbInterfaces";
 import { renderProjectImages } from "../utilities/projectUtils";
+
+const Page = styled.div`
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+`;
 
 const Wrapper = styled.div`
   width: 100vw;
@@ -84,6 +93,21 @@ const HeaderRow = styled.div`
   display: flex;
 `;
 
+const LogoLinkWrapper = styled.a`
+  align-self: center;
+  margin-top: 10px;
+`;
+
+const StyledLogo = styled(OrSegalSvg)`
+  height: 36px;
+`;
+
+const LogoBox = styled.div`
+  display: flex;
+  width: 100%;
+  height: 50px;
+  margin-left: 20px;
+`
 interface MobilePageProps {
   projects: Project[];
 }
@@ -118,38 +142,46 @@ export const MobilePage: React.FC<MobilePageProps> = ({ projects }) => {
     return () => observer.disconnect();
   }, []);
 
-  console.log("render");
-
   return (
-    <Wrapper ref={wrapperRef}>
-      {(["designer", "artist", "illustrator"] as CategoryType[]).map(
-        (category, index) => {
-          const isActive = activeIndex === index;
-          const categoryName = category.charAt(0).toUpperCase() + category.slice(1);
-          return (
-            <Column
-              $isActive={isActive}
-              key={category}
-              ref={(el) => {
-                if (el) columnRefs.current[index] = el;
-              }}
-              data-index={index}
-            >
-              <HeaderRow>
-                <Header $isActive={isActive}>{categoryName}</Header>
-                <VerticalLine />
-              </HeaderRow>
 
-              {renderProjectImages(
-                projects,
-                category,
-                isActive,
-                "1rem"
-              )}
-            </Column>
-          )
-        }
-      )}
-    </Wrapper>
+    <Page>
+
+      <LogoBox>
+        <LogoLinkWrapper href="https://www.orsegal.net"><StyledLogo /></LogoLinkWrapper>
+      </LogoBox>
+
+      <Wrapper ref={wrapperRef}>
+
+        {(["designer", "artist", "illustrator"] as CategoryType[]).map(
+          (category, index) => {
+            const isActive = activeIndex === index;
+            const categoryName = category.charAt(0).toUpperCase() + category.slice(1);
+            return (
+              <Column
+                $isActive={isActive}
+                key={category}
+                ref={(el) => {
+                  if (el) columnRefs.current[index] = el;
+                }}
+                data-index={index}
+              >
+                <HeaderRow>
+                  <Header $isActive={isActive}>{categoryName}</Header>
+                  <VerticalLine />
+                </HeaderRow>
+
+                {renderProjectImages(
+                  projects,
+                  category,
+                  isActive,
+                  "1rem"
+                )}
+              </Column>
+            )
+          }
+        )}
+      </Wrapper>
+
+    </Page>
   )
 }
