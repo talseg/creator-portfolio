@@ -5,7 +5,7 @@ import myImage from "../images/MainPicture.png";
 import type { CategoryType, Project } from "../database/dbInterfaces";
 import { useImageScrolling, type ScrollAreaType } from "../utilities/useImageScrolling";
 import LabelText from "../components/labeltext/LabelText";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { renderProjectImages } from "../utilities/projectUtils";
 
 const WrapperStyled = styled.div`
@@ -100,13 +100,12 @@ const HorizontalLongLine = styled.div`
   grid-column: 1 / -1;
 `;
 
-const MIDDLE_SECTION_REM_HEIGHT = 30;
 // The background color here is controlled by 
 // useImageScrolling because it is effected by the scroll 
-const MiddleSection = styled.div`
+const MiddleSection = styled.div<{ height: number }>`
   display: flex;
   width: 100%;
-  height: ${MIDDLE_SECTION_REM_HEIGHT}rem;
+  height: ${({ height }) => `${height}rem`};
   grid-column: 2 / -1;
   margin-left: -8rem;
   z-index: 10;
@@ -165,13 +164,29 @@ interface StartPage1Props {
   projects: Project[];
 }
 
+const getMiddleSectionHeight = (windowHeight: number) => {
+  return windowHeight / 30;
+}
+
 export const StartPage1: React.FC<StartPage1Props> = ({ projects }) => {
 
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const middledRef = useRef<HTMLDivElement>(null);
   const imageRef1 = useRef<HTMLDivElement>(null);
   const imageRef2 = useRef<HTMLDivElement>(null);
   const imageRef3 = useRef<HTMLDivElement>(null);
   const imageRefs = useRef([imageRef1, imageRef2, imageRef3]);
+
+  useEffect(() => {
+    const onResize = () => {
+      setWindowHeight(window.innerHeight);
+    };
+
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  const middleSectionHeight = getMiddleSectionHeight(windowHeight);
 
   const { onMouseEnter, onMouseLeave, scrollArea,
     onTouchStart, onTouchEnd,
@@ -179,7 +194,7 @@ export const StartPage1: React.FC<StartPage1Props> = ({ projects }) => {
       {
         imageRefs,
         middledRef,
-        middleSectionHeight: MIDDLE_SECTION_REM_HEIGHT
+        middleSectionHeight: middleSectionHeight
       }
     );
 
@@ -256,7 +271,7 @@ export const StartPage1: React.FC<StartPage1Props> = ({ projects }) => {
 
         <div style={{ gridRow: 2, gridColumn: 1, color: "black" }}>{pkg.version}</div>
 
-        <MiddleSection ref={middledRef}
+        <MiddleSection height={middleSectionHeight} ref={middledRef}
           onMouseEnter={() => onMouseEnter("middle")}
           onMouseLeave={() => onMouseLeave()}
           onTouchStart={(e) => handleTouchStart("middle", e)}
