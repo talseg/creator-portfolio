@@ -1,11 +1,34 @@
-import { useEffect, useRef, useState, type ReactElement } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components"
-import { fetchProjects } from "../database/FirebaseDb";
-import { logException } from "../utilities/exceptionUtils";
+import OrSegalSvg from "../assets/orSegal.svg?react";
 import type { CategoryType, Project } from "../database/dbInterfaces";
-import ProjectImage from "../components/projectImage/ProjectImage";
+import { renderProjectImages } from "../utilities/projectUtils";
 
-const Wrapper = styled.div`
+const Page = styled.div`
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+`;
+
+const LogoLinkWrapper = styled.a`
+  align-self: center;
+  margin-top: 10px;
+`;
+
+const StyledLogo = styled(OrSegalSvg)`
+  height: 36px;
+`;
+
+const LogoBox = styled.div`
+  display: flex;
+  width: 100%;
+  height: 50px;
+  margin-left: 20px;
+`
+
+const ColumnsWrapper = styled.div`
   width: 100vw;
   height: 100vh;
 
@@ -55,15 +78,6 @@ const Column = styled.div<{ $isActive: boolean }>`
   
 `;
 
-const renderProjectImages = (projects: Project[], category: CategoryType, isActive: boolean): ReactElement[] =>
-  projects.filter((proj, index) => proj.category === category && index !== 11).map<ReactElement>(
-    (proj, i) =>
-      <ProjectImage project={proj}
-        key={`project-${i}`}
-        isActive={isActive}
-        fontSize="1rem"></ProjectImage>
-  );
-
 const Header = styled.div<{ $isActive: boolean }>`
   width: 100%;
   margin-left: 4vw;
@@ -95,25 +109,15 @@ const HeaderRow = styled.div`
   display: flex;
 `;
 
-export const MobilePage: React.FC = () => {
+interface MobilePageProps {
+  projects: Project[];
+}
 
-  const [projects, setProjects] = useState<Project[]>([]);
+export const MobilePage: React.FC<MobilePageProps> = ({ projects }) => {
+
   const columnRefs = useRef<HTMLDivElement[]>([]);
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const wrapperRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const loadProjects = async () => {
-      try {
-        const projectsData = await fetchProjects();
-        setProjects(projectsData);
-      } catch (err) {
-        logException(err);
-      }
-    }
-    loadProjects();
-  }, []);
-
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -139,37 +143,41 @@ export const MobilePage: React.FC = () => {
     return () => observer.disconnect();
   }, []);
 
-  console.log("render");
-
   return (
-    <Wrapper ref={wrapperRef}>
-      {(["designer", "artist", "illustrator"] as CategoryType[]).map(
-        (category, index) => {
-          const isActive = activeIndex === index;
-          const categoryName = category.charAt(0).toUpperCase() + category.slice(1);
-          return (
-            <Column
-              $isActive={isActive}
-              key={category}
-              ref={(el) => {
-                if (el) columnRefs.current[index] = el;
-              }}
-              data-index={index}
-            >
-              <HeaderRow>
-                <Header $isActive={isActive}>{categoryName}</Header>
-                <VerticalLine />
-              </HeaderRow>
 
-              {renderProjectImages(
-                projects,
-                category,
-                isActive
-              )}
-            </Column>
-          )
-        }
-      )}
-    </Wrapper>
+    <Page>
+
+      <LogoBox>
+        <LogoLinkWrapper href="https://www.orsegal.net"><StyledLogo /></LogoLinkWrapper>
+      </LogoBox>
+
+      <ColumnsWrapper ref={wrapperRef}>
+
+        {(["designer", "artist", "illustrator"] as CategoryType[]).map(
+          (category, index) => {
+            const isActive = activeIndex === index;
+            const categoryName = category.charAt(0).toUpperCase() + category.slice(1);
+            return (
+              <Column
+                $isActive={isActive}
+                key={category}
+                ref={(el) => {
+                  if (el) columnRefs.current[index] = el;
+                }}
+                data-index={index}
+              >
+                <HeaderRow>
+                  <Header $isActive={isActive}>{categoryName}</Header>
+                  <VerticalLine />
+                </HeaderRow>
+
+                {renderProjectImages(projects, category, isActive, "1rem")}
+              </Column>
+            )
+          }
+        )}
+      </ColumnsWrapper>
+
+    </Page>
   )
 }

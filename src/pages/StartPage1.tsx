@@ -2,13 +2,11 @@ import styled, { css } from "styled-components";
 import pkg from "../../package.json";
 import OrSegalSvg from "../assets/orSegal.svg?react";
 import myImage from "../images/MainPicture.png";
-import { useEffect, useRef, useState, type ReactElement } from "react";
-import { fetchProjects } from "../database/FirebaseDb";
-import { logException } from "../utilities/exceptionUtils";
 import type { CategoryType, Project } from "../database/dbInterfaces";
 import { useImageScrolling, type ScrollAreaType } from "../utilities/useImageScrolling";
 import LabelText from "../components/labeltext/LabelText";
-import ProjectImage from "../components/projectImage/ProjectImage";
+import { useEffect, useRef, useState } from "react";
+import { renderProjectImages } from "../utilities/projectUtils";
 
 const WrapperStyled = styled.div`
   display: flex;
@@ -33,7 +31,7 @@ const HeaderTextBox = styled.div<{ $isActive: boolean }>`
 
   ${({ $isActive }) =>
     $isActive ? css`
-       background: #FFFDB4;` : 
+       background: #FFFDB4;` :
       css`
        transition: none;`
   }
@@ -102,13 +100,12 @@ const HorizontalLongLine = styled.div`
   grid-column: 1 / -1;
 `;
 
-const MIDDLE_SECTION_REM_HEIGHT = 30;
 // The background color here is controlled by 
 // useImageScrolling because it is effected by the scroll 
-const MiddleSection = styled.div`
+const MiddleSection = styled.div<{ height: number }>`
   display: flex;
   width: 100%;
-  height: ${MIDDLE_SECTION_REM_HEIGHT}rem;
+  height: ${({ height }) => `${height}rem`};
   grid-column: 2 / -1;
   margin-left: -8rem;
   z-index: 10;
@@ -158,25 +155,38 @@ const SimpleDot = styled.div`
   transform: translate(2px, -3px);
 `;
 
-const renderProjectImages = (projects: Project[], category: CategoryType, isActive: boolean): ReactElement[] =>
-  projects.filter((proj) => proj.category === category).map<ReactElement>(
-    (proj, i) =>
-      <ProjectImage project={proj} key={`project-${i}`} isActive={isActive}></ProjectImage>
-  );
-
 const HeaderTextStyled = styled(LabelText) <{ $isActive: boolean }>`
   font-weight: ${({ $isActive: $isActibe }) =>
     $isActibe ? "bold" : "normal"};
 `;
 
-export const StartPage1: React.FC = () => {
+interface StartPage1Props {
+  projects: Project[];
+}
 
-  const [projects, setProjects] = useState<Project[]>([]);
+const getMiddleSectionHeight = (windowHeight: number) => {
+  return windowHeight / 30;
+}
+
+export const StartPage1: React.FC<StartPage1Props> = ({ projects }) => {
+
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const middledRef = useRef<HTMLDivElement>(null);
   const imageRef1 = useRef<HTMLDivElement>(null);
   const imageRef2 = useRef<HTMLDivElement>(null);
   const imageRef3 = useRef<HTMLDivElement>(null);
   const imageRefs = useRef([imageRef1, imageRef2, imageRef3]);
+
+  useEffect(() => {
+    const onResize = () => {
+      setWindowHeight(window.innerHeight);
+    };
+
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  const middleSectionHeight = getMiddleSectionHeight(windowHeight);
 
   const { onMouseEnter, onMouseLeave, scrollArea,
     onTouchStart, onTouchEnd,
@@ -184,22 +194,9 @@ export const StartPage1: React.FC = () => {
       {
         imageRefs,
         middledRef,
-        middleSectionHeight: MIDDLE_SECTION_REM_HEIGHT
+        middleSectionHeight: middleSectionHeight
       }
     );
-
-  useEffect(() => {
-    const loadProjects = async () => {
-      try {
-        const projectsData = await fetchProjects();
-        setProjects(projectsData);
-      } catch (err) {
-        logException(err);
-      }
-    }
-    loadProjects();
-  }, []);
-
 
   const isColumnActive = (area: CategoryType): boolean => {
     if (area === "designer") return scrollArea === 1;
@@ -207,7 +204,6 @@ export const StartPage1: React.FC = () => {
     if (area === "illustrator") return scrollArea === 3;
     return false;
   }
-
 
   const handleTouchStart = (area: ScrollAreaType, e: React.TouchEvent<HTMLDivElement>) => {
     e.stopPropagation();
@@ -275,7 +271,7 @@ export const StartPage1: React.FC = () => {
 
         <div style={{ gridRow: 2, gridColumn: 1, color: "black" }}>{pkg.version}</div>
 
-        <MiddleSection ref={middledRef}
+        <MiddleSection height={middleSectionHeight} ref={middledRef}
           onMouseEnter={() => onMouseEnter("middle")}
           onMouseLeave={() => onMouseLeave()}
           onTouchStart={(e) => handleTouchStart("middle", e)}
