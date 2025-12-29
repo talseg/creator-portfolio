@@ -10,7 +10,6 @@ export type InteractionMode = "desktop-columns" | "mobile-swipe";
 export const MainPage: React.FC = () => {
 
   const [projects, setProjects] = useState<Project[]>([]);
-
   const [mode, setMode] = useState<InteractionMode>(() =>
     window.innerWidth > window.innerHeight ? "desktop-columns" : "mobile-swipe"
   );
