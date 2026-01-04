@@ -101,8 +101,6 @@ const HorizontalLongLine = styled.div`
   grid-column: 1 / -1;
 `;
 
-// The background color here is controlled by 
-// useImageScrolling because it is effected by the scroll 
 const MiddleSection = styled.div<{ height: number }>`
   display: flex;
   width: 100%;
@@ -118,14 +116,11 @@ const MainImage = styled.img`
   justify-content: center;
 `;
 
-const ImagesContainer = styled.div<{ $isActive: boolean, padding?: string }>`
-  /* width: 100%; */
+const ImagesContainer = styled.div<{ $isActive: boolean }>`
   display: flex;
   grid-column: 1;
-  /* grid-template-columns: 1.5vw 1fr 1.5vw 2px; */
   flex-direction: column;
-  padding: 0 5% 0 5% ;
-  /* ${({ padding }) => padding && `padding: ${padding};`} */
+  padding: 0 5% 0 5%;
   
   img {
     filter: grayscale(100%) brightness(0.9);
@@ -144,22 +139,14 @@ const ImagesColumn = styled.div<{ $column: number }>`
   grid-column: ${({ $column }) => $column};
   display: grid;
   grid-template-columns: 1fr auto;
-  /* background-color: blue; */
   width: 100%;
-
-  /* width: 100%; */
-  /* align-self: flex-start; */
+   align-self: flex-start;
 `
 
-const VerticalLine = styled.div`
+const VerticalLine = styled.div<{ gridColumn?: number }>`
   border-left: 1px solid black;
   height: 100%;
-`;
-
-const VerticalLine1 = styled.div`
-  border-left: 1px solid black;
-  height: 100%;
-  grid-column: 2;
+  ${({ gridColumn }) => gridColumn && `grid-column: ${gridColumn};`}
 `;
 
 const SimpleDot = styled.div`
@@ -190,7 +177,7 @@ const ProjectImageStyled = styled(ProjectImage)`
 
 export const renderProjectImages = (projects: Project[], category: CategoryType,
   isActive: boolean, fontSize?: string): ReactElement[] =>
-  projects.filter((proj, index) => proj.category === category && index !== 11).map<ReactElement>(
+  projects.filter((proj) => proj.category === category).map<ReactElement>(
     (proj, i) =>
       <ProjectImageStyled project={proj}
         key={`project-${i}`}
@@ -321,17 +308,13 @@ export const StartPage1: React.FC<StartPage1Props> = ({ projects }) => {
           onTouchMove={(e) => handleTouchMove(e)}
           onTouchCancel={onTouchCancel}
         >
-
-
-          <ImagesContainer $isActive={scrollArea === 1} padding="0 2em 0 0">
+          <ImagesContainer $isActive={scrollArea === 1}>
             {
               renderProjectImages(projects, "designer", isColumnActive("designer"))
             }
           </ImagesContainer>
 
-
-          <VerticalLine1 className="vertical-line-1" />
-
+          <VerticalLine />
         </ImagesColumn>
 
         <ImagesColumn ref={imageRef2}
@@ -344,17 +327,13 @@ export const StartPage1: React.FC<StartPage1Props> = ({ projects }) => {
           onTouchCancel={onTouchCancel}
         >
 
-          <ImagesContainer $isActive={scrollArea === 2} padding="0 1em 0 1em">
+          <ImagesContainer $isActive={scrollArea === 2}>
             {
               renderProjectImages(projects, "artist", isColumnActive("artist"))
             }
-            {/* <VerticalLine1/> */}
           </ImagesContainer>
 
-          {/* <VerticalLine /> */}
-
-
-          <VerticalLine1 />
+          <VerticalLine />
 
         </ImagesColumn>
 
@@ -367,14 +346,12 @@ export const StartPage1: React.FC<StartPage1Props> = ({ projects }) => {
           onTouchMove={(e) => handleTouchMove(e)}
           onTouchCancel={onTouchCancel}
         >
-          <ImagesContainer $isActive={scrollArea === 3} padding="0 1em 0 1em">
+          <ImagesContainer $isActive={scrollArea === 3}>
             {
               renderProjectImages(projects, "illustrator", isColumnActive("illustrator"))
             }
 
           </ImagesContainer>
-
-
         </ImagesColumn>
 
       </MainGridStyled>

@@ -46,7 +46,6 @@ const VerticalLine = styled.div`
   border-left: 1.0px solid black;
   height: 100%;
   grid-column: 4;
-  /* margin-left: 4.4vw; */
 `;
 
 const VerticalLine1 = styled.div`
@@ -208,7 +207,6 @@ export const MobilePage: React.FC<MobilePageProps> = ({ projects }) => {
                 <VerticalLine />
 
                 <div style={{ gridColumn: 2 }}>
-
                   {renderProjectImages(projects, category, isActive, "1rem")}
                 </div>
 
