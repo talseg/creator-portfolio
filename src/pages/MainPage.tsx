@@ -44,8 +44,7 @@ export const MainPage: React.FC = () => {
 
 
   return (
-    // mode === "desktop-columns" ?
-    true ?
+    mode === "desktop-columns" ?
       <StartPage1 projects={projects} /> :
       <MobilePage projects={projects} />
   );
