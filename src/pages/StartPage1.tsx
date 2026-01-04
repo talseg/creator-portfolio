@@ -118,11 +118,14 @@ const MainImage = styled.img`
   justify-content: center;
 `;
 
-const ImagesContainer = styled.div<{ $isActive: boolean }>`
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1.5vw 1fr 1.5vw 2px;
+const ImagesContainer = styled.div<{ $isActive: boolean, padding?: string }>`
+  /* width: 100%; */
+  display: flex;
+  grid-column: 1;
+  /* grid-template-columns: 1.5vw 1fr 1.5vw 2px; */
   flex-direction: column;
+  /* padding: 0 1em 0 0 ; */
+  ${({ padding }) => padding && `padding: ${padding};`}
   
   img {
     filter: grayscale(100%) brightness(0.9);
@@ -139,9 +142,13 @@ const ImagesContainer = styled.div<{ $isActive: boolean }>`
 const ImagesColumn = styled.div<{ $column: number }>`
   grid-row: 3;
   grid-column: ${({ $column }) => $column};
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  /* background-color: blue; */
   width: 100%;
-  align-self: flex-start;
+
+  /* width: 100%; */
+  /* align-self: flex-start; */
 `
 
 const VerticalLine = styled.div`
@@ -152,7 +159,7 @@ const VerticalLine = styled.div`
 const VerticalLine1 = styled.div`
   border-left: 1px solid black;
   height: 100%;
-  grid-column: 4;
+  grid-column: 2;
 `;
 
 const SimpleDot = styled.div`
@@ -177,16 +184,18 @@ const getMiddleSectionHeight = (windowHeight: number) => {
 }
 
 
+const ProjectImageStyled = styled(ProjectImage)`
+  
+`;
 
-
-export const renderProjectImages = (projects: Project[], category: CategoryType, 
+export const renderProjectImages = (projects: Project[], category: CategoryType,
   isActive: boolean, fontSize?: string): ReactElement[] =>
   projects.filter((proj, index) => proj.category === category && index !== 11).map<ReactElement>(
     (proj, i) =>
-      <ProjectImage project={proj}
+      <ProjectImageStyled project={proj}
         key={`project-${i}`}
         isActive={isActive}
-        fontSize={fontSize}></ProjectImage>
+        fontSize={fontSize}></ProjectImageStyled>
   );
 
 export const StartPage1: React.FC<StartPage1Props> = ({ projects }) => {
@@ -312,13 +321,17 @@ export const StartPage1: React.FC<StartPage1Props> = ({ projects }) => {
           onTouchMove={(e) => handleTouchMove(e)}
           onTouchCancel={onTouchCancel}
         >
-          <ImagesContainer $isActive={scrollArea === 1}>
+
+
+          <ImagesContainer $isActive={scrollArea === 1} padding="0 2em 0 0">
             {
               renderProjectImages(projects, "designer", isColumnActive("designer"))
             }
-            <VerticalLine1/>
           </ImagesContainer>
-          {/* <VerticalLine /> */}
+
+
+          <VerticalLine1 className="vertical-line-1" />
+
         </ImagesColumn>
 
         <ImagesColumn ref={imageRef2}
@@ -330,13 +343,19 @@ export const StartPage1: React.FC<StartPage1Props> = ({ projects }) => {
           onTouchMove={(e) => handleTouchMove(e)}
           onTouchCancel={onTouchCancel}
         >
-          <ImagesContainer $isActive={scrollArea === 2}>
+
+          <ImagesContainer $isActive={scrollArea === 2} padding="0 1em 0 1em">
             {
               renderProjectImages(projects, "artist", isColumnActive("artist"))
             }
-             {/* <VerticalLine1/> */}
+            {/* <VerticalLine1/> */}
           </ImagesContainer>
-         
+
+          {/* <VerticalLine /> */}
+
+
+          <VerticalLine1 />
+
         </ImagesColumn>
 
         <ImagesColumn ref={imageRef3}
@@ -348,14 +367,14 @@ export const StartPage1: React.FC<StartPage1Props> = ({ projects }) => {
           onTouchMove={(e) => handleTouchMove(e)}
           onTouchCancel={onTouchCancel}
         >
-          <ImagesContainer $isActive={scrollArea === 3}>
+          <ImagesContainer $isActive={scrollArea === 3} padding="0 1em 0 1em">
             {
               renderProjectImages(projects, "illustrator", isColumnActive("illustrator"))
             }
-            <VerticalLine1/>
+
           </ImagesContainer>
 
-          
+
         </ImagesColumn>
 
       </MainGridStyled>
