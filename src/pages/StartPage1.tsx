@@ -100,8 +100,6 @@ const HorizontalLongLine = styled.div`
   grid-column: 1 / -1;
 `;
 
-// The background color here is controlled by 
-// useImageScrolling because it is effected by the scroll 
 const MiddleSection = styled.div<{ height: number }>`
   display: flex;
   width: 100%;
@@ -118,9 +116,10 @@ const MainImage = styled.img`
 `;
 
 const ImagesContainer = styled.div<{ $isActive: boolean }>`
-  width: 100%;
   display: flex;
+  grid-column: 1;
   flex-direction: column;
+  padding: 0 5% 0 5%;
   
   img {
     filter: grayscale(100%) brightness(0.9);
@@ -137,14 +136,16 @@ const ImagesContainer = styled.div<{ $isActive: boolean }>`
 const ImagesColumn = styled.div<{ $column: number }>`
   grid-row: 3;
   grid-column: ${({ $column }) => $column};
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto;
   width: 100%;
-  align-self: flex-start;
+   align-self: flex-start;
 `
 
-const VerticalLine = styled.div`
+const VerticalLine = styled.div<{ gridColumn?: number }>`
   border-left: 1px solid black;
   height: 100%;
+  ${({ gridColumn }) => gridColumn && `grid-column: ${gridColumn};`}
 `;
 
 const SimpleDot = styled.div`
@@ -296,7 +297,8 @@ export const StartPage1: React.FC<StartPage1Props> = ({ projects }) => {
               renderProjectImages(projects, "designer", isColumnActive("designer"))
             }
           </ImagesContainer>
-          {/* <VerticalLine /> */}
+
+          <VerticalLine />
         </ImagesColumn>
 
         <ImagesColumn ref={imageRef2}
@@ -308,12 +310,15 @@ export const StartPage1: React.FC<StartPage1Props> = ({ projects }) => {
           onTouchMove={(e) => handleTouchMove(e)}
           onTouchCancel={onTouchCancel}
         >
+
           <ImagesContainer $isActive={scrollArea === 2}>
             {
               renderProjectImages(projects, "artist", isColumnActive("artist"))
             }
           </ImagesContainer>
-          {/* <VerticalLine /> */}
+
+          <VerticalLine />
+
         </ImagesColumn>
 
         <ImagesColumn ref={imageRef3}
@@ -329,6 +334,7 @@ export const StartPage1: React.FC<StartPage1Props> = ({ projects }) => {
             {
               renderProjectImages(projects, "illustrator", isColumnActive("illustrator"))
             }
+
           </ImagesContainer>
         </ImagesColumn>
 

@@ -9,5 +9,5 @@ export const renderProjectImages = (projects: Project[], category: CategoryType,
       <ProjectImage project={proj}
         key={`project-${i}`}
         isActive={isActive}
-        fontSize={fontSize}></ProjectImage>
+        fontSize={fontSize}/>
   );

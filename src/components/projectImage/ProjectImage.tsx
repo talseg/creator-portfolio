@@ -7,7 +7,7 @@ import errorImage from "../../images/cats.png";
 const TOP_GAP = 0;
 const IMAG_HEIGHT = 70;
 const IMAGE_TO_NAME_GAP = 3;
-const IMAGE_WIDTH_PERCENT = 90;
+export const IMAGE_WIDTH_PERCENT = 100;
 
 const Wrapper = styled.div`
   display: grid;
@@ -44,12 +44,7 @@ const ImageStyled = styled.img`
 `
 
 const ColumnWrapper = styled.div`
-  display: flex;  
-`;
-
-const VerticalLine = styled.div`
-  border-left: 1px solid black;
-  height: 100%;
+  display: flex;
 `;
 
 // const LeftImageDot = styled.div`
@@ -72,15 +67,16 @@ interface ProjectImageProps {
   project: Project;
   isActive: boolean;
   fontSize?: string;
+  className?: string;
 }
 
-const ProjectImage: React.FC<ProjectImageProps> = ({ project, isActive, fontSize = "1vw" }) => {
+const ProjectImage: React.FC<ProjectImageProps> = ({ project, isActive, fontSize = "1vw", className }) => {
 
   const navigate = useNavigate();
 
   const url = project.projectImageUrl ? project.projectImageUrl : errorImage;
   return (
-    <ColumnWrapper onClick={() => navigate(`/project/${project.id}`)}>
+    <ColumnWrapper onClick={() => navigate(`/project/${project.id}`)} className={className}>
       <Wrapper>
         <ImageWrapper><ImageStyled src={url} /></ImageWrapper>
         <ProjectNameWrapper>
@@ -93,7 +89,7 @@ const ProjectImage: React.FC<ProjectImageProps> = ({ project, isActive, fontSize
         
       </Wrapper>
 
-      <VerticalLine/>
+      {/* <VerticalLine/> */}
       
     </ColumnWrapper>
   )

@@ -31,7 +31,6 @@ const LogoBox = styled.div`
 const ColumnsWrapper = styled.div`
   width: 100vw;
   height: 100vh;
-
   display: flex;
   overflow-x: auto;
   overflow-y: hidden;
@@ -39,19 +38,37 @@ const ColumnsWrapper = styled.div`
   scroll-snap-type: x mandatory;
   scroll-snap-stop: always;
   -webkit-overflow-scrolling: touch;
-  gap: 10px;
 `
+
+const VerticalLine = styled.div`
+  position: sticky;
+  top: 0;
+  border-left: 1.0px solid black;
+  height: 100%;
+  grid-column: 4;
+`;
+
+const VerticalLine1 = styled.div`
+  border-left: 1.0px solid black;
+  height: 100%;
+  grid-column: 4;
+  grid-row: 2;
+`;
 
 const Column = styled.div<{ $isActive: boolean }>`
   flex: 0 0 85vw;   /* ← THIS is the key line */
-  margin-left: 0vw;
-  margin-right: 0vw;
+
+  display: grid;
+  /*                     left gap  image  right gap  line      */ 
+  grid-template-columns: 4.4vw     1fr    4.4vw      2px;
+  grid-template-rows: 1fr 1fr;
 
   height: 100vh;
   overflow-x: hidden;
+  /* padding-left: 16px; */
 
-  display: flex;
-  flex-direction: column;
+  /* display: flex;
+  flex-direction: column; */
   
   scroll-snap-align: center;
 
@@ -80,7 +97,7 @@ const Column = styled.div<{ $isActive: boolean }>`
 
 const Header = styled.div<{ $isActive: boolean }>`
   width: 100%;
-  margin-left: 4vw;
+  /* margin-left: 4vw; */
   height: 50px;
   color: black;
   display: flex;
@@ -96,22 +113,20 @@ const Header = styled.div<{ $isActive: boolean }>`
   }
 `
 
-const VerticalLine = styled.div`
-  border-left: 1.0px solid black;
-  height: 100%;
-  margin-left: 4.4vw;
-`;
+
 
 const HeaderRow = styled.div`
   position: sticky;
   top: 0;
   z-index: 10;
   display: flex;
+  grid-column: 2;
 `;
 
 interface MobilePageProps {
   projects: Project[];
 }
+
 
 export const MobilePage: React.FC<MobilePageProps> = ({ projects }) => {
 
@@ -168,10 +183,16 @@ export const MobilePage: React.FC<MobilePageProps> = ({ projects }) => {
               >
                 <HeaderRow>
                   <Header $isActive={isActive}>{categoryName}</Header>
-                  <VerticalLine />
                 </HeaderRow>
 
-                {renderProjectImages(projects, category, isActive, "1rem")}
+                <VerticalLine />
+
+                <div style={{ gridColumn: 2 }}>
+                  {renderProjectImages(projects, category, isActive, "1rem")}
+                </div>
+
+                <VerticalLine1 />
+
               </Column>
             )
           }
