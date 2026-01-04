@@ -124,7 +124,7 @@ const ImagesContainer = styled.div<{ $isActive: boolean, padding?: string }>`
   grid-column: 1;
   /* grid-template-columns: 1.5vw 1fr 1.5vw 2px; */
   flex-direction: column;
-  padding: 0 1em 0 1em ;
+  padding: 0 5% 0 5% ;
   /* ${({ padding }) => padding && `padding: ${padding};`} */
   
   img {
