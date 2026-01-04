@@ -12,11 +12,29 @@ export const useVelocityFingerScroll = (props: VelocityFingerScrollProps) => {
   const velocityRef = useRef(0);
   const rafRef = useRef<number | null>(null);
   const lastYRef = useRef<number | null>(null);
+  const wheelPendingDeltaRef = useRef(0);
+  const wheelRafRef = useRef<number | null>(null);
+
 
   const onWheel = useCallback((e: WheelEvent) => {
     if (isTouchGestureActive) return;
     e.preventDefault();
-    onDeltaYScroll(e.deltaY);
+
+    wheelPendingDeltaRef.current += e.deltaY;
+
+    if (wheelRafRef.current != null) return;
+
+    wheelRafRef.current = requestAnimationFrame(() => {
+      wheelRafRef.current = null;
+
+      const delta = wheelPendingDeltaRef.current;
+      wheelPendingDeltaRef.current = 0;
+
+      if (delta !== 0) {
+        onDeltaYScroll(delta);
+      }
+    });
+
   }, [isTouchGestureActive, onDeltaYScroll]);
 
   const onTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
