@@ -47,11 +47,6 @@ const ColumnWrapper = styled.div`
   display: flex;
 `;
 
-const VerticalLine = styled.div`
-  border-left: 1px solid black;
-  height: 100%;
-`;
-
 // const LeftImageDot = styled.div`
 //   width: 5px;
 //   height: 5px;
