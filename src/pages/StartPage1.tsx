@@ -5,8 +5,9 @@ import myImage from "../images/MainPicture.png";
 import type { CategoryType, Project } from "../database/dbInterfaces";
 import { useImageScrolling, type ScrollAreaType } from "../utilities/useImageScrolling";
 import LabelText from "../components/labeltext/LabelText";
-import { useEffect, useRef, useState } from "react";
-import { renderProjectImages } from "../utilities/projectUtils";
+import { useEffect, useRef, useState, type ReactElement } from "react";
+import ProjectImage from "../components/projectImage/ProjectImage";
+// import { renderProjectImages } from "../utilities/projectUtils";
 
 const WrapperStyled = styled.div`
   display: flex;
@@ -119,7 +120,8 @@ const MainImage = styled.img`
 
 const ImagesContainer = styled.div<{ $isActive: boolean }>`
   width: 100%;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1.5vw 1fr 1.5vw 2px;
   flex-direction: column;
   
   img {
@@ -147,6 +149,12 @@ const VerticalLine = styled.div`
   height: 100%;
 `;
 
+const VerticalLine1 = styled.div`
+  border-left: 1px solid black;
+  height: 100%;
+  grid-column: 4;
+`;
+
 const SimpleDot = styled.div`
   width: 5px;
   height: 5px;
@@ -167,6 +175,19 @@ interface StartPage1Props {
 const getMiddleSectionHeight = (windowHeight: number) => {
   return windowHeight / 30;
 }
+
+
+
+
+export const renderProjectImages = (projects: Project[], category: CategoryType, 
+  isActive: boolean, fontSize?: string): ReactElement[] =>
+  projects.filter((proj, index) => proj.category === category && index !== 11).map<ReactElement>(
+    (proj, i) =>
+      <ProjectImage project={proj}
+        key={`project-${i}`}
+        isActive={isActive}
+        fontSize={fontSize}></ProjectImage>
+  );
 
 export const StartPage1: React.FC<StartPage1Props> = ({ projects }) => {
 
@@ -295,6 +316,7 @@ export const StartPage1: React.FC<StartPage1Props> = ({ projects }) => {
             {
               renderProjectImages(projects, "designer", isColumnActive("designer"))
             }
+            <VerticalLine1/>
           </ImagesContainer>
           {/* <VerticalLine /> */}
         </ImagesColumn>
@@ -312,8 +334,9 @@ export const StartPage1: React.FC<StartPage1Props> = ({ projects }) => {
             {
               renderProjectImages(projects, "artist", isColumnActive("artist"))
             }
+             {/* <VerticalLine1/> */}
           </ImagesContainer>
-          {/* <VerticalLine /> */}
+         
         </ImagesColumn>
 
         <ImagesColumn ref={imageRef3}
@@ -329,7 +352,10 @@ export const StartPage1: React.FC<StartPage1Props> = ({ projects }) => {
             {
               renderProjectImages(projects, "illustrator", isColumnActive("illustrator"))
             }
+            <VerticalLine1/>
           </ImagesContainer>
+
+          
         </ImagesColumn>
 
       </MainGridStyled>
