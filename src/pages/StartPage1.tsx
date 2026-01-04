@@ -5,9 +5,8 @@ import myImage from "../images/MainPicture.png";
 import type { CategoryType, Project } from "../database/dbInterfaces";
 import { useImageScrolling, type ScrollAreaType } from "../utilities/useImageScrolling";
 import LabelText from "../components/labeltext/LabelText";
-import { useEffect, useRef, useState, type ReactElement } from "react";
-import ProjectImage from "../components/projectImage/ProjectImage";
-// import { renderProjectImages } from "../utilities/projectUtils";
+import { useEffect, useRef, useState } from "react";
+import { renderProjectImages } from "../utilities/projectUtils";
 
 const WrapperStyled = styled.div`
   display: flex;
@@ -169,21 +168,6 @@ interface StartPage1Props {
 const getMiddleSectionHeight = (windowHeight: number) => {
   return windowHeight / 30;
 }
-
-
-const ProjectImageStyled = styled(ProjectImage)`
-  
-`;
-
-export const renderProjectImages = (projects: Project[], category: CategoryType,
-  isActive: boolean, fontSize?: string): ReactElement[] =>
-  projects.filter((proj) => proj.category === category).map<ReactElement>(
-    (proj, i) =>
-      <ProjectImageStyled project={proj}
-        key={`project-${i}`}
-        isActive={isActive}
-        fontSize={fontSize}></ProjectImageStyled>
-  );
 
 export const StartPage1: React.FC<StartPage1Props> = ({ projects }) => {
 

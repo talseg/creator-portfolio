@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState, type ReactElement } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components"
 import OrSegalSvg from "../assets/orSegal.svg?react";
 import type { CategoryType, Project } from "../database/dbInterfaces";
-import ProjectImage from "../components/projectImage/ProjectImage";
+import { renderProjectImages } from "../utilities/projectUtils";
 
 const Page = styled.div`
   width: 100vw;
@@ -127,24 +127,6 @@ interface MobilePageProps {
   projects: Project[];
 }
 
-const ProjectImageStyled = styled(ProjectImage)`
-  /* grid-column: 2; */
-`;
-
-
-export const renderProjectImages = (projects: Project[], category: CategoryType,
-  isActive: boolean, fontSize?: string, className?: string): ReactElement[] =>
-  projects.filter((proj, index) => proj.category === category && index !== 11).map<ReactElement>(
-    (proj, i) =>
-      <>
-        <ProjectImageStyled project={proj}
-          key={`project-${i}`}
-          isActive={isActive}
-          fontSize={fontSize}
-          className={className} />
-      </>
-
-  );
 
 export const MobilePage: React.FC<MobilePageProps> = ({ projects }) => {
 
@@ -201,7 +183,6 @@ export const MobilePage: React.FC<MobilePageProps> = ({ projects }) => {
               >
                 <HeaderRow>
                   <Header $isActive={isActive}>{categoryName}</Header>
-                  {/* <VerticalLine /> */}
                 </HeaderRow>
 
                 <VerticalLine />
