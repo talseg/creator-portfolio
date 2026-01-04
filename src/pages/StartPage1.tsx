@@ -124,8 +124,8 @@ const ImagesContainer = styled.div<{ $isActive: boolean, padding?: string }>`
   grid-column: 1;
   /* grid-template-columns: 1.5vw 1fr 1.5vw 2px; */
   flex-direction: column;
-  /* padding: 0 1em 0 0 ; */
-  ${({ padding }) => padding && `padding: ${padding};`}
+  padding: 0 1em 0 1em ;
+  /* ${({ padding }) => padding && `padding: ${padding};`} */
   
   img {
     filter: grayscale(100%) brightness(0.9);
