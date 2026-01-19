@@ -2,11 +2,12 @@ import styled, { css } from "styled-components";
 import pkg from "../../package.json";
 import OrSegalSvg from "../assets/orSegal.svg?react";
 import myImage from "../images/MainPicture.png";
-import type { CategoryType, Project } from "../database/dbInterfaces";
+import type { CategoryType } from "../database/dbInterfaces";
 import { useImageScrolling, type ScrollAreaType } from "../utilities/useImageScrolling";
 import LabelText from "../components/labeltext/LabelText";
 import { useEffect, useRef, useState } from "react";
 import { renderProjectImages } from "../utilities/projectUtils";
+import { projectsStore } from "../stores/projecrStore";
 
 const WrapperStyled = styled.div`
   display: flex;
@@ -161,15 +162,12 @@ const HeaderTextStyled = styled(LabelText) <{ $isActive: boolean }>`
     $isActibe ? "bold" : "normal"};
 `;
 
-interface StartPage1Props {
-  projects: Project[];
-}
 
 const getMiddleSectionHeight = (windowHeight: number) => {
   return windowHeight / 30;
 }
 
-export const StartPage1: React.FC<StartPage1Props> = ({ projects }) => {
+export const StartPage1: React.FC = () => {
 
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const middledRef = useRef<HTMLDivElement>(null);
@@ -177,6 +175,7 @@ export const StartPage1: React.FC<StartPage1Props> = ({ projects }) => {
   const imageRef2 = useRef<HTMLDivElement>(null);
   const imageRef3 = useRef<HTMLDivElement>(null);
   const imageRefs = useRef([imageRef1, imageRef2, imageRef3]);
+  const projects = projectsStore.projects;
 
   useEffect(() => {
     const onResize = () => {
