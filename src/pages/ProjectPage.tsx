@@ -1,11 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { getExceptionString, logException } from "../utilities/exceptionUtils";
-import styled from "styled-components";
-import type { Project } from "../database/dbInterfaces";
 import { CircularProgress } from "@mui/material";
-import { fetchProjectWithImagesById } from "../database/FirebaseDb";
-
+import { projectsStore } from "../stores/projecrStore";
+import styled from "styled-components";
 
 const PageWrapper = styled.div`
   display: grid;
@@ -79,29 +76,15 @@ const ErrorText = styled.div`
 export const ProjectPage: React.FC = () => {
 
   const { projectId } = useParams<{ projectId: string }>();
-  const [project, setProject] = useState<Project | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [numLoadedImages, setNumLoadedImages] = useState(0)
-
-  useEffect(() => {
-    if (!projectId) return;
-    (async () => {
-      try {
-        const project = await fetchProjectWithImagesById(projectId);
-        setProject(project);
-      } catch (err) {
-        logException(err);
-        setError(getExceptionString(err));
-      }
-    })();
-  }, [projectId]);
+  const [numLoadedImages, setNumLoadedImages] = useState(0);
+  const projects = projectsStore.projects;
+  const project = projects.find((proj) => proj.id === projectId);
 
   const onImageLoaded = (): void => {
     setNumLoadedImages(v => v + 1);
   }
 
   if (!projectId) return <ErrorText>❌ Wrong project ID: {projectId}</ErrorText>;
-  if (error) return <ErrorText>❌ {error}</ErrorText>;
 
   const allLoaded = Boolean(project && numLoadedImages === project.images?.length);
 

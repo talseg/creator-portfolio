@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components"
 import OrSegalSvg from "../assets/orSegal.svg?react";
-import type { CategoryType, Project } from "../database/dbInterfaces";
+import type { CategoryType } from "../database/dbInterfaces";
 import { renderProjectImages } from "../utilities/projectUtils";
+import { projectsStore } from "../stores/projecrStore";
 
 const Page = styled.div`
   width: 100vw;
@@ -113,8 +114,6 @@ const Header = styled.div<{ $isActive: boolean }>`
   }
 `
 
-
-
 const HeaderRow = styled.div`
   position: sticky;
   top: 0;
@@ -123,16 +122,12 @@ const HeaderRow = styled.div`
   grid-column: 2;
 `;
 
-interface MobilePageProps {
-  projects: Project[];
-}
-
-
-export const MobilePage: React.FC<MobilePageProps> = ({ projects }) => {
+export const MobilePage: React.FC = () => {
 
   const columnRefs = useRef<HTMLDivElement[]>([]);
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const projects = projectsStore.projects;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
