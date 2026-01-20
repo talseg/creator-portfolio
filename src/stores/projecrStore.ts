@@ -1,17 +1,7 @@
-import { action, makeObservable, observable } from "mobx";
+import { action, makeAutoObservable, makeObservable, observable, runInAction } from "mobx";
 import type { Project } from "../database/dbInterfaces";
 import { fetchProjects, fetchProjectWithImagesById } from "../database/FirebaseDb";
 import { logException } from "../utilities/exceptionUtils";
-// import type { ScrollAreaType } from "../utilities/useImageScrolling";
-
-export type ScrollParameters = {
-  mainScrollValue?: number,
-  imagesScrollValues?: [number, number, number],
-  shouldUpdateImages?: boolean,
-  //scrollAreaType?: ScrollAreaType
-}
-
-
 
 class ProjectsStore {
 
@@ -24,8 +14,8 @@ class ProjectsStore {
   setMainScrollValue = (value: number) => {
     this.mainScrollValue = value;
   }
-  setImageScrollValue = (index: number, value: number) => {
-    this.imagesScrollValues[index] = value;
+  setImageScrollValues = (value: [number, number, number]) => {
+    this.imagesScrollValues = value;
   }
 
   constructor() {
@@ -34,7 +24,7 @@ class ProjectsStore {
       mainScrollValue: observable,
       imagesScrollValues: observable,
       setMainScrollValue: action,
-      setImageScrollValue: action
+      setImageScrollValues: action
     });
     this.init();
   }
@@ -46,7 +36,10 @@ class ProjectsStore {
 
   private loadProjects = async () => {
     try {
-      this.projects = await fetchProjects();
+      const projs = await fetchProjects();
+      runInAction(() => {
+      this.projects = projs.map((proj) => makeAutoObservable(proj));
+      })
     } catch (err) {
       logException(err);
     }
@@ -58,7 +51,10 @@ class ProjectsStore {
         if (!project.images || project.images.length === 0) {
           const projectWithImages =
             await fetchProjectWithImagesById(project.id);
-          project.images = projectWithImages.images;
+          
+          runInAction(() => {
+            project.images = projectWithImages.images;
+          });
         }
       })
     );

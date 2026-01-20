@@ -4,6 +4,7 @@ import OrSegalSvg from "../assets/orSegal.svg?react";
 import type { CategoryType } from "../database/dbInterfaces";
 import { renderProjectImages } from "../utilities/projectUtils";
 import { projectsStore } from "../stores/projecrStore";
+import { observer } from "mobx-react-lite";
 
 const Page = styled.div`
   width: 100vw;
@@ -122,7 +123,7 @@ const HeaderRow = styled.div`
   grid-column: 2;
 `;
 
-export const MobilePage: React.FC = () => {
+export const MobilePage: React.FC = observer(() => {
 
   const columnRefs = useRef<HTMLDivElement[]>([]);
   const [activeIndex, setActiveIndex] = useState<number>(0);
@@ -196,4 +197,4 @@ export const MobilePage: React.FC = () => {
 
     </Page>
   )
-}
+});

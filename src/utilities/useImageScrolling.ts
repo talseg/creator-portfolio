@@ -25,10 +25,10 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
   const shouldUpdateImages = useRef(false);
   const rafScheduledRef = useRef(false);
 
-  const updateStoreScrollValue = (index: number) => {
-    if (scrollValues.current[index] !== undefined)
-      projectsStore.setImageScrollValue(index, scrollValues.current[index])
-  };
+  // const updateStoreScrollValue = (index: number) => {
+  //   if (scrollValues.current[index] !== undefined)
+  //     projectsStore.setImageScrollValue(index, scrollValues.current[index])
+  // };
 
   useLayoutEffect(() => {
 
@@ -54,26 +54,21 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
         ref.current.style.transform = `translateY(${mainScrollValue.current + val}px)`;
       });
     }
-
-
-
     // update scroll values from mobX
 
-    //console.log(`useLayoutEffect projectsStore.scrollParameters.mainScrollValue:`,
-     // projectsStore.scrollParameters.mainScrollValue);
-
-    //const scrollPrms = projectsStore.scrollParameters;
     if (mainScrollValue?.current !== undefined)
       mainScrollValue.current = projectsStore.mainScrollValue;
 
     if (scrollValues?.current)
       scrollValues.current = projectsStore.imagesScrollValues;
 
-    //console.log(`useLayoutEffect projectsStore.scrollParameters.mainScrollValue:`,
-      //projectsStore.scrollParameters.mainScrollValue);
-
-    //console.log(`useLayoutEffect mainScrollValue.current:${mainScrollValue.current}`);
     updateDomTranslates();
+
+    return (() => {
+      // Save scroll values
+      projectsStore.setMainScrollValue(mainScrollValue.current);
+      projectsStore.setImageScrollValues(scrollValues.current)
+    })
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -192,11 +187,11 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       });
     };
 
-    const setMainScrollValue = (value: number) => {
-      //console.log(`*** setMainScrollValue to ${value}`);
-      mainScrollValue.current = value;
-      projectsStore.setMainScrollValue(value);
-    }
+    // const setMainScrollValue = (value: number) => {
+    //   //console.log(`*** setMainScrollValue to ${value}`);
+    //   mainScrollValue.current = value;
+    //   projectsStore.setMainScrollValue(value);
+    // }
 
     const delta = deltaY;
     if (!middledRef.current) return;
@@ -239,23 +234,17 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       if (newValue > 0) {
 
         scrollValues.current[index] = 0;
-        updateStoreScrollValue(index);
+        //updateStoreScrollValue(index);
 
         shouldUpdateImages.current = false;
 
         if (mainScrollValue.current - delta >= 0) {
-          //console.log("** mainScrollValue.current - delta >= 0 setting setMainScrollValue to 0");
-          setMainScrollValue(0);
-          
-          //mainScrollValue.current = 0;
-          //projectsStore.setScrollParameters({ mainScrollValue: 0 });
+          //setMainScrollValue(0);
+          mainScrollValue.current = 0;
         }
         else {
-          //console.log(`** setting setMainScrollValue to ${mainScrollValue.current - delta}`);
-          setMainScrollValue(mainScrollValue.current - delta);
-          
-          //mainScrollValue.current = mainScrollValue.current - delta;
-          //projectsStore.setScrollParameters({ mainScrollValue: mainScrollValue.current - delta });
+          //setMainScrollValue(mainScrollValue.current - delta);
+          mainScrollValue.current = mainScrollValue.current - delta;
         }
       } else {
 
@@ -271,16 +260,14 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
         }
 
         scrollValues.current[index] = scrollValue;
-        updateStoreScrollValue(index);
+        //updateStoreScrollValue(index);
       }
     }
 
     // 3-b: Middle section collapses
     else if (newMain < -collapseHeight) {
-      //mainScrollValue.current = -collapseHeight;
-      //projectsStore.setScrollParameters({ mainScrollValue: -collapseHeight });
-      //console.log(`** setting setMainScrollValue to -collapseHeight: ${-collapseHeight}`);
-      setMainScrollValue( -collapseHeight);
+      //setMainScrollValue( -collapseHeight);
+      mainScrollValue.current = -collapseHeight;
       
 
       shouldUpdateImages.current = true;
@@ -289,28 +276,19 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
 
     // 3-c: Top reached
     else if (newMain > 0) {
-      //mainScrollValue.current = 0;
-      //projectsStore.setScrollParameters({ mainScrollValue: 0 });
-      //console.log(`** top reached setMainScrollValue to 0: ${0}`);
-      setMainScrollValue(0);
-      
+      //setMainScrollValue(0);
+      mainScrollValue.current = 0;
     }
 
     // 3-d: Normal scroll of middle section
     else {
-      //console.log(`** Normal scroll of middle section top setMainScrollValue to 0: ${mainScrollValue.current - delta}`);
-      setMainScrollValue(mainScrollValue.current - delta);
-      //mainScrollValue.current = mainScrollValue.current - delta;
-      //projectsStore.setScrollParameters({ mainScrollValue: mainScrollValue.current - delta });
+      //setMainScrollValue(mainScrollValue.current - delta);
+      mainScrollValue.current = mainScrollValue.current - delta;
       shouldUpdateImages.current = false;
     }
     scheduleDomUpdate();
   }, [detectAreaUnderPointer, getScrollUpValue, imageRefs, isTouchGestureActive, middleSectionHeight, middledRef, scrollArea, shouldUpdateImages]);
   
-  
-  // [detectAreaUnderPointer, getScrollUpValue, isTouchGestureActive, middleSectionHeight,
-  //   middledRef, scrollArea, shouldUpdateImages]);
-
   // -------------------------------------------
   // 5. Handlers (same API as before)
   // -------------------------------------------
