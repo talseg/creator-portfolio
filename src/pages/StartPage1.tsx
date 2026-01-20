@@ -8,6 +8,7 @@ import LabelText from "../components/labeltext/LabelText";
 import { useEffect, useRef, useState } from "react";
 import { renderProjectImages } from "../utilities/projectUtils";
 import { projectsStore } from "../stores/projecrStore";
+import { observer } from "mobx-react-lite";
 
 const WrapperStyled = styled.div`
   display: flex;
@@ -167,7 +168,7 @@ const getMiddleSectionHeight = (windowHeight: number) => {
   return windowHeight / 30;
 }
 
-export const StartPage1: React.FC = () => {
+export const StartPage1: React.FC = observer(() => {
 
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const middledRef = useRef<HTMLDivElement>(null);
@@ -341,4 +342,4 @@ export const StartPage1: React.FC = () => {
 
     </WrapperStyled>
   )
-}
+});

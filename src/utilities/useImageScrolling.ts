@@ -1,12 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 //import { useRafScrollEngine } from "./useRafScrollEngine";
 import { useVelocityFingerScroll } from "./useVelocotyFingerScroll";
+import { projectsStore } from "../stores/projecrStore";
 
-interface ImageScrollingProps {
-  imageRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
-  middledRef: React.RefObject<HTMLDivElement | null>;
-  middleSectionHeight: number;
-}
+
+
 
 // NOTE:
 // This implementation favors simplicity and clarity.
@@ -15,14 +13,65 @@ interface ImageScrollingProps {
 
 export type ScrollAreaType = undefined | "middle" | 1 | 2 | 3;
 
+const applyScrollTransforms = (
+  middleEl: HTMLDivElement | null,
+  imageEls: (HTMLDivElement | null)[],
+  mainScrollValue: number,
+  imageOffsets: [number, number, number]
+) => {
+  if (!middleEl) return;
+
+  middleEl.style.transform = `translateY(${mainScrollValue}px)`;
+  const getRemOffsetByScrollValue = (scrollValue: number): number => {
+    return ((-31 / 466.666666) * scrollValue - 3);
+  }
+  const remOffset = getRemOffsetByScrollValue(mainScrollValue);
+  middleEl.style.background =
+    `linear-gradient(180deg, #96BFC5 ${remOffset}rem, #FFF 78rem)`;
+
+  imageEls.forEach((element, index) => {
+    const val = imageOffsets[index];
+    if (!element || val === undefined) return;
+    element.style.transform = `translateY(${mainScrollValue + val}px)`;
+  });
+
+}
+
+interface ImageScrollingProps {
+  imageRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
+  middledRef: React.RefObject<HTMLDivElement | null>;
+  middleSectionHeight: number;
+}
+
+
+
 export const useImageScrolling = (props: ImageScrollingProps) => {
   const { imageRefs, middledRef, middleSectionHeight } = props;
 
   const [scrollArea, setScrollArea] = useState<ScrollAreaType>(undefined);
-  const scrollValues = useRef([0, 0, 0]);
+  const scrollValues = useRef<[number, number, number]>([0, 0, 0]);
   const mainScrollValue = useRef(0);
   const shouldUpdateImages = useRef(false);
   const rafScheduledRef = useRef(false);
+
+  useLayoutEffect(() => {
+
+    // update scroll values from MobX
+    mainScrollValue.current = projectsStore.mainScrollValue;
+    scrollValues.current = [...projectsStore.imagesScrollValues];
+
+    applyScrollTransforms(middledRef.current, 
+      imageRefs.current.map(ref => ref.current),
+      mainScrollValue.current, scrollValues.current);
+
+    return (() => {
+      // Save scroll values to MobX
+      projectsStore.setMainScrollValue(mainScrollValue.current);
+      projectsStore.setImageScrollValues(scrollValues.current)
+    })
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const { onTouchStart, onTouchMove, onTouchEnd, onTouchCancel, isTouchGestureActive } = useVelocityFingerScroll({
     onDeltaYScroll: (delta) => applyScroll(delta)
@@ -107,40 +156,21 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
 
   const applyScroll = useCallback((deltaY: number) => {
 
-    const updateDomTranslates = () => {
-
-      if (!middledRef.current) return;
-      middledRef.current.style.transform = `translateY(${mainScrollValue.current}px)`;
-
-      const getRemOffsetByScrollValue = (scrollValue: number): number => {
-        return ((-31 / 466.666666) * scrollValue - 3);
-      }
-      const remOffset = getRemOffsetByScrollValue(mainScrollValue.current);
-
-      middledRef.current.style.background =
-        `linear-gradient(180deg, #96BFC5 ${remOffset}rem, #FFF 78rem)`;
-
-      imageRefs.current.forEach((ref, index) => {
-        if (!ref.current) return;
-        const val = scrollValues.current[index];
-        if (val === undefined) return;
-        ref.current.style.transform = `translateY(${mainScrollValue.current + val}px)`;
-      });
-    }
-
     // Make sure the update run only once in each update frame
     const scheduleDomUpdate = () => {
       if (rafScheduledRef.current) return;
       rafScheduledRef.current = true;
       requestAnimationFrame(() => {
         rafScheduledRef.current = false;
-        updateDomTranslates();
+        applyScrollTransforms(middledRef.current, 
+          imageRefs.current.map(ref => ref.current),
+          mainScrollValue.current, scrollValues.current);
       });
     };
 
     const delta = deltaY;
     if (!middledRef.current) return;
-    if (!scrollValues.current) return;
+    if (scrollValues.current === undefined) return;
     if (mainScrollValue.current === undefined) return;
     const newMain = mainScrollValue.current - delta;
 
@@ -179,6 +209,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       if (newValue > 0) {
 
         scrollValues.current[index] = 0;
+
         shouldUpdateImages.current = false;
 
         if (mainScrollValue.current - delta >= 0) {
