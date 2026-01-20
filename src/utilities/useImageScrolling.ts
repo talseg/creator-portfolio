@@ -34,8 +34,6 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
 
     const updateDomTranslates = () => {
 
-      //console.log(`updateDomTranslates mainScrollValue.current: ${mainScrollValue.current}`)
-
       if (!middledRef.current) return;
       middledRef.current.style.transform = `translateY(${mainScrollValue.current}px)`;
 
@@ -54,18 +52,15 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
         ref.current.style.transform = `translateY(${mainScrollValue.current + val}px)`;
       });
     }
-    // update scroll values from mobX
 
-    if (mainScrollValue?.current !== undefined)
-      mainScrollValue.current = projectsStore.mainScrollValue;
-
-    if (scrollValues?.current)
-      scrollValues.current = projectsStore.imagesScrollValues;
+    // update scroll values from MobX
+    mainScrollValue.current = projectsStore.mainScrollValue;
+    scrollValues.current = [...projectsStore.imagesScrollValues];
 
     updateDomTranslates();
 
     return (() => {
-      // Save scroll values
+      // Save scroll values to MobX
       projectsStore.setMainScrollValue(mainScrollValue.current);
       projectsStore.setImageScrollValues(scrollValues.current)
     })
@@ -187,12 +182,6 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       });
     };
 
-    // const setMainScrollValue = (value: number) => {
-    //   //console.log(`*** setMainScrollValue to ${value}`);
-    //   mainScrollValue.current = value;
-    //   projectsStore.setMainScrollValue(value);
-    // }
-
     const delta = deltaY;
     if (!middledRef.current) return;
     if (scrollValues.current === undefined) return;
@@ -234,16 +223,13 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       if (newValue > 0) {
 
         scrollValues.current[index] = 0;
-        //updateStoreScrollValue(index);
 
         shouldUpdateImages.current = false;
 
         if (mainScrollValue.current - delta >= 0) {
-          //setMainScrollValue(0);
           mainScrollValue.current = 0;
         }
         else {
-          //setMainScrollValue(mainScrollValue.current - delta);
           mainScrollValue.current = mainScrollValue.current - delta;
         }
       } else {
@@ -260,29 +246,23 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
         }
 
         scrollValues.current[index] = scrollValue;
-        //updateStoreScrollValue(index);
       }
     }
 
     // 3-b: Middle section collapses
     else if (newMain < -collapseHeight) {
-      //setMainScrollValue( -collapseHeight);
       mainScrollValue.current = -collapseHeight;
-      
-
       shouldUpdateImages.current = true;
       setScrollArea(pointerArea); // recompute once more
     }
 
     // 3-c: Top reached
     else if (newMain > 0) {
-      //setMainScrollValue(0);
       mainScrollValue.current = 0;
     }
 
     // 3-d: Normal scroll of middle section
     else {
-      //setMainScrollValue(mainScrollValue.current - delta);
       mainScrollValue.current = mainScrollValue.current - delta;
       shouldUpdateImages.current = false;
     }
