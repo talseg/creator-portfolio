@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 //import { useRafScrollEngine } from "./useRafScrollEngine";
 import { useVelocityFingerScroll } from "./useVelocotyFingerScroll";
+import { projectsStore } from "../stores/projecrStore";
 
 interface ImageScrollingProps {
   imageRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
@@ -23,6 +24,66 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
   const mainScrollValue = useRef(0);
   const shouldUpdateImages = useRef(false);
   const rafScheduledRef = useRef(false);
+
+  const updateStoreScrollValues = () => {
+    if (scrollValues.current[0] !== undefined && scrollValues.current[1] !== undefined && scrollValues.current[2] !== undefined)
+      projectsStore.setScrollParameters({
+        imagesScrollValues:
+          [scrollValues.current[0], scrollValues.current[1], scrollValues.current[2]]
+      });
+  };
+
+
+
+
+
+  useLayoutEffect(() => {
+
+    const updateDomTranslates = () => {
+
+      //console.log(`updateDomTranslates mainScrollValue.current: ${mainScrollValue.current}`)
+
+      if (!middledRef.current) return;
+      middledRef.current.style.transform = `translateY(${mainScrollValue.current}px)`;
+
+      const getRemOffsetByScrollValue = (scrollValue: number): number => {
+        return ((-31 / 466.666666) * scrollValue - 3);
+      }
+      const remOffset = getRemOffsetByScrollValue(mainScrollValue.current);
+
+      middledRef.current.style.background =
+        `linear-gradient(180deg, #96BFC5 ${remOffset}rem, #FFF 78rem)`;
+
+      imageRefs.current.forEach((ref, index) => {
+        if (!ref.current) return;
+        const val = scrollValues.current[index];
+        if (val === undefined) return;
+        ref.current.style.transform = `translateY(${mainScrollValue.current + val}px)`;
+      });
+    }
+
+
+
+    // update scroll values from mobX
+
+    //console.log(`useLayoutEffect projectsStore.scrollParameters.mainScrollValue:`,
+     // projectsStore.scrollParameters.mainScrollValue);
+
+    const scrollPrms = projectsStore.scrollParameters;
+    if (mainScrollValue?.current !== undefined && scrollPrms.mainScrollValue !== undefined)
+      mainScrollValue.current = scrollPrms.mainScrollValue;
+
+    if (scrollValues?.current && scrollPrms.imagesScrollValues)
+      scrollValues.current = scrollPrms.imagesScrollValues;
+
+    //console.log(`useLayoutEffect projectsStore.scrollParameters.mainScrollValue:`,
+      //projectsStore.scrollParameters.mainScrollValue);
+
+    //console.log(`useLayoutEffect mainScrollValue.current:${mainScrollValue.current}`);
+    updateDomTranslates();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const { onTouchStart, onTouchMove, onTouchEnd, onTouchCancel, isTouchGestureActive } = useVelocityFingerScroll({
     onDeltaYScroll: (delta) => applyScroll(delta)
@@ -138,9 +199,15 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       });
     };
 
+    const setMainScrollValue = (value: number) => {
+      //console.log(`*** setMainScrollValue to ${value}`);
+      mainScrollValue.current = value;
+      projectsStore.setScrollParameters({ mainScrollValue: value });
+    }
+
     const delta = deltaY;
     if (!middledRef.current) return;
-    if (!scrollValues.current) return;
+    if (scrollValues.current === undefined) return;
     if (mainScrollValue.current === undefined) return;
     const newMain = mainScrollValue.current - delta;
 
@@ -179,13 +246,23 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       if (newValue > 0) {
 
         scrollValues.current[index] = 0;
+        updateStoreScrollValues();
+
         shouldUpdateImages.current = false;
 
         if (mainScrollValue.current - delta >= 0) {
-          mainScrollValue.current = 0;
+          //console.log("** mainScrollValue.current - delta >= 0 setting setMainScrollValue to 0");
+          setMainScrollValue(0);
+          
+          //mainScrollValue.current = 0;
+          //projectsStore.setScrollParameters({ mainScrollValue: 0 });
         }
         else {
-          mainScrollValue.current = mainScrollValue.current - delta;
+          //console.log(`** setting setMainScrollValue to ${mainScrollValue.current - delta}`);
+          setMainScrollValue(mainScrollValue.current - delta);
+          
+          //mainScrollValue.current = mainScrollValue.current - delta;
+          //projectsStore.setScrollParameters({ mainScrollValue: mainScrollValue.current - delta });
         }
       } else {
 
@@ -201,28 +278,45 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
         }
 
         scrollValues.current[index] = scrollValue;
+        updateStoreScrollValues();
       }
     }
 
     // 3-b: Middle section collapses
     else if (newMain < -collapseHeight) {
-      mainScrollValue.current = -collapseHeight;
+      //mainScrollValue.current = -collapseHeight;
+      //projectsStore.setScrollParameters({ mainScrollValue: -collapseHeight });
+      //console.log(`** setting setMainScrollValue to -collapseHeight: ${-collapseHeight}`);
+      setMainScrollValue( -collapseHeight);
+      
+
       shouldUpdateImages.current = true;
       setScrollArea(pointerArea); // recompute once more
     }
 
     // 3-c: Top reached
     else if (newMain > 0) {
-      mainScrollValue.current = 0;
+      //mainScrollValue.current = 0;
+      //projectsStore.setScrollParameters({ mainScrollValue: 0 });
+      //console.log(`** top reached setMainScrollValue to 0: ${0}`);
+      setMainScrollValue(0);
+      
     }
 
     // 3-d: Normal scroll of middle section
     else {
-      mainScrollValue.current = mainScrollValue.current - delta;
+      //console.log(`** Normal scroll of middle section top setMainScrollValue to 0: ${mainScrollValue.current - delta}`);
+      setMainScrollValue(mainScrollValue.current - delta);
+      //mainScrollValue.current = mainScrollValue.current - delta;
+      //projectsStore.setScrollParameters({ mainScrollValue: mainScrollValue.current - delta });
       shouldUpdateImages.current = false;
     }
     scheduleDomUpdate();
   }, [detectAreaUnderPointer, getScrollUpValue, imageRefs, isTouchGestureActive, middleSectionHeight, middledRef, scrollArea, shouldUpdateImages]);
+  
+  
+  // [detectAreaUnderPointer, getScrollUpValue, isTouchGestureActive, middleSectionHeight,
+  //   middledRef, scrollArea, shouldUpdateImages]);
 
   // -------------------------------------------
   // 5. Handlers (same API as before)
