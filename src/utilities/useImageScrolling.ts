@@ -20,22 +20,15 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
   const { imageRefs, middledRef, middleSectionHeight } = props;
 
   const [scrollArea, setScrollArea] = useState<ScrollAreaType>(undefined);
-  const scrollValues = useRef([0, 0, 0]);
+  const scrollValues = useRef<[number, number, number]>([0, 0, 0]);
   const mainScrollValue = useRef(0);
   const shouldUpdateImages = useRef(false);
   const rafScheduledRef = useRef(false);
 
-  const updateStoreScrollValues = () => {
-    if (scrollValues.current[0] !== undefined && scrollValues.current[1] !== undefined && scrollValues.current[2] !== undefined)
-      projectsStore.setScrollParameters({
-        imagesScrollValues:
-          [scrollValues.current[0], scrollValues.current[1], scrollValues.current[2]]
-      });
+  const updateStoreScrollValue = (index: number) => {
+    if (scrollValues.current[index] !== undefined)
+      projectsStore.setImageScrollValue(index, scrollValues.current[index])
   };
-
-
-
-
 
   useLayoutEffect(() => {
 
@@ -69,12 +62,12 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     //console.log(`useLayoutEffect projectsStore.scrollParameters.mainScrollValue:`,
      // projectsStore.scrollParameters.mainScrollValue);
 
-    const scrollPrms = projectsStore.scrollParameters;
-    if (mainScrollValue?.current !== undefined && scrollPrms.mainScrollValue !== undefined)
-      mainScrollValue.current = scrollPrms.mainScrollValue;
+    //const scrollPrms = projectsStore.scrollParameters;
+    if (mainScrollValue?.current !== undefined)
+      mainScrollValue.current = projectsStore.mainScrollValue;
 
-    if (scrollValues?.current && scrollPrms.imagesScrollValues)
-      scrollValues.current = scrollPrms.imagesScrollValues;
+    if (scrollValues?.current)
+      scrollValues.current = projectsStore.imagesScrollValues;
 
     //console.log(`useLayoutEffect projectsStore.scrollParameters.mainScrollValue:`,
       //projectsStore.scrollParameters.mainScrollValue);
@@ -202,7 +195,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     const setMainScrollValue = (value: number) => {
       //console.log(`*** setMainScrollValue to ${value}`);
       mainScrollValue.current = value;
-      projectsStore.setScrollParameters({ mainScrollValue: value });
+      projectsStore.setMainScrollValue(value);
     }
 
     const delta = deltaY;
@@ -246,7 +239,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       if (newValue > 0) {
 
         scrollValues.current[index] = 0;
-        updateStoreScrollValues();
+        updateStoreScrollValue(index);
 
         shouldUpdateImages.current = false;
 
@@ -278,7 +271,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
         }
 
         scrollValues.current[index] = scrollValue;
-        updateStoreScrollValues();
+        updateStoreScrollValue(index);
       }
     }
 

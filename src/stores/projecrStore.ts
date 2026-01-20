@@ -18,26 +18,26 @@ class ProjectsStore {
   // observable
   projects: Project[] = [];
 
-  scrollParameters: ScrollParameters = { };
+  mainScrollValue: number = 0;
+  imagesScrollValues: [number, number, number] = [0, 0, 0];
 
-  setScrollParameters = (update: Readonly<Partial<ScrollParameters>>): undefined => {
-    this.scrollParameters = {
-      ...this.scrollParameters,
-      ...update,
-    };
+  setMainScrollValue = (value: number) => {
+    this.mainScrollValue = value;
+  }
+  setImageScrollValue = (index: number, value: number) => {
+    this.imagesScrollValues[index] = value;
   }
 
   constructor() {
     makeObservable(this, {
       projects: observable,
-      scrollParameters: observable,
-      setScrollParameters: action
+      mainScrollValue: observable,
+      imagesScrollValues: observable,
+      setMainScrollValue: action,
+      setImageScrollValue: action
     });
     this.init();
   }
-
-
-
 
   private init = async () => {
     await this.loadProjects();
