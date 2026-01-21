@@ -3,47 +3,17 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { useVelocityFingerScroll } from "./useVelocotyFingerScroll";
 import { projectsStore } from "../stores/projecrStore";
 
-
-
-
 // NOTE:
 // This implementation favors simplicity and clarity.
 // Sub-pixel quantization and delta gating were tested and
 // did not provide meaningful UX improvement for this design.
 
 export type ScrollAreaType = undefined | "middle" | 1 | 2 | 3;
-
-const applyScrollTransforms = (
-  middleEl: HTMLDivElement | null,
-  imageEls: (HTMLDivElement | null)[],
-  mainScrollValue: number,
-  imageOffsets: [number, number, number]
-) => {
-  if (!middleEl) return;
-
-  middleEl.style.transform = `translateY(${mainScrollValue}px)`;
-  const getRemOffsetByScrollValue = (scrollValue: number): number => {
-    return ((-31 / 466.666666) * scrollValue - 3);
-  }
-  const remOffset = getRemOffsetByScrollValue(mainScrollValue);
-  middleEl.style.background =
-    `linear-gradient(180deg, #96BFC5 ${remOffset}rem, #FFF 78rem)`;
-
-  imageEls.forEach((element, index) => {
-    const val = imageOffsets[index];
-    if (!element || val === undefined) return;
-    element.style.transform = `translateY(${mainScrollValue + val}px)`;
-  });
-
-}
-
 interface ImageScrollingProps {
   imageRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
   middledRef: React.RefObject<HTMLDivElement | null>;
   middleSectionHeight: number;
 }
-
-
 
 export const useImageScrolling = (props: ImageScrollingProps) => {
   const { imageRefs, middledRef, middleSectionHeight } = props;
@@ -54,15 +24,39 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
   const shouldUpdateImages = useRef(false);
   const rafScheduledRef = useRef(false);
 
+
+  const applyScrollTransforms = useCallback((
+  ) => {
+    if (!middledRef.current) return;
+    if (mainScrollValue.current === undefined) return;
+    if (scrollValues.current === undefined) return;
+
+    middledRef.current.style.transform = `translateY(${mainScrollValue.current}px)`;
+    const getRemOffsetByScrollValue = (scrollValue: number): number => {
+      return ((-31 / 466.666666) * scrollValue - 3);
+    }
+    const remOffset = getRemOffsetByScrollValue(mainScrollValue.current);
+    middledRef.current.style.background =
+      `linear-gradient(180deg, #96BFC5 ${remOffset}rem, #FFF 78rem)`;
+
+    imageRefs.current.forEach((element, index) => {
+      const val = scrollValues.current[index];
+      if (!element.current || val === undefined) return;
+      element.current.style.transform = `translateY(${mainScrollValue.current + val}px)`;
+    });
+
+  }, [imageRefs, middledRef]);
+
   useLayoutEffect(() => {
 
     // update scroll values from MobX
     mainScrollValue.current = projectsStore.mainScrollValue;
     scrollValues.current = [...projectsStore.imagesScrollValues];
+    applyScrollTransforms();
 
-    applyScrollTransforms(middledRef.current, 
-      imageRefs.current.map(ref => ref.current),
-      mainScrollValue.current, scrollValues.current);
+    // applyScrollTransforms(middledRef.current, 
+    //   imageRefs.current.map(ref => ref.current),
+    //   mainScrollValue.current, scrollValues.current);
 
     return (() => {
       // Save scroll values to MobX
@@ -162,9 +156,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       rafScheduledRef.current = true;
       requestAnimationFrame(() => {
         rafScheduledRef.current = false;
-        applyScrollTransforms(middledRef.current, 
-          imageRefs.current.map(ref => ref.current),
-          mainScrollValue.current, scrollValues.current);
+        applyScrollTransforms();
       });
     };
 
@@ -253,7 +245,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       shouldUpdateImages.current = false;
     }
     scheduleDomUpdate();
-  }, [detectAreaUnderPointer, getScrollUpValue, imageRefs, isTouchGestureActive, middleSectionHeight, middledRef, scrollArea, shouldUpdateImages]);
+  }, [detectAreaUnderPointer, getScrollUpValue, isTouchGestureActive, middleSectionHeight, middledRef, scrollArea, shouldUpdateImages, applyScrollTransforms ]);
 
   // -------------------------------------------
   // 5. Handlers (same API as before)
