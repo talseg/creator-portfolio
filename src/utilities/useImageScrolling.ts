@@ -61,6 +61,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     if (mainScrollValue.current === undefined) return;
     if (scrollValues.current === undefined) return;
 
+    //console.log(`mainScrollValue1:${mainScrollValue1} mainScrollValue.current:${mainScrollValue.current}`)
 
     middledRef.current.style.transform = `translateY(${mainScrollValue.current}px)`;
     const getRemOffsetByScrollValue = (scrollValue: number): number => {
@@ -76,7 +77,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       element.current.style.transform = `translateY(${mainScrollValue.current + val}px)`;
     });
 
-  }, [imageRefs, middledRef])
+  }, [imageRefs, middledRef]);
 
 
   useLayoutEffect(() => {
