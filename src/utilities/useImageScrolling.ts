@@ -32,13 +32,6 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     if (scrollValues.current === undefined) return;
 
     middledRef.current.style.transform = `translateY(${mainScrollValue.current}px)`;
-    const getRemOffsetByScrollValue = (scrollValue: number): number => {
-      return ((-31 / 466.666666) * scrollValue - 3);
-    }
-    const remOffset = getRemOffsetByScrollValue(mainScrollValue.current);
-    middledRef.current.style.background =
-      `linear-gradient(180deg, #96BFC5 ${remOffset}rem, #FFF 78rem)`;
-
     imageRefs.current.forEach((element, index) => {
       const val = scrollValues.current[index];
       if (!element.current || val === undefined) return;
@@ -263,6 +256,15 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     onTouchStart(e);
   }
 
+  const onResetScrolls = () => {
+    if (mainScrollValue.current === undefined) return;
+    if (scrollValues.current === undefined) return;
+    mainScrollValue.current = 0;
+    scrollValues.current = [0, 0, 0];
+    shouldUpdateImages.current = false;
+    applyScrollTransforms();
+  }
+
   return {
     scrollArea,
     onMouseEnter,
@@ -270,7 +272,8 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     onTouchStart: handleTouchStart,
     onTouchEnd,
     onTouchMove,
-    onTouchCancel
+    onTouchCancel,
+    onResetScrolls
   };
 };
 

@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import type { Project } from "../../database/dbInterfaces";
 import LabelText from "../labeltext/LabelText";
-import { useNavigate } from "react-router-dom";
 import errorImage from "../../images/cats.png";
 
 const TOP_GAP = 0;
@@ -68,15 +67,21 @@ interface ProjectImageProps {
   isActive: boolean;
   fontSize?: string;
   className?: string;
+  onProjectSelected?: (projectId: string) => undefined;
 }
 
-const ProjectImage: React.FC<ProjectImageProps> = ({ project, isActive, fontSize = "1vw", className }) => {
+const ProjectImage: React.FC<ProjectImageProps> = ({ project, isActive, fontSize = "1vw", 
+  className, onProjectSelected
+ }) => {
 
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
   const url = project.projectImageUrl ? project.projectImageUrl : errorImage;
   return (
-    <ColumnWrapper onClick={() => navigate(`/project/${project.id}`)} className={className}>
+    <ColumnWrapper 
+      // onClick={() => navigate(`/project/${project.id}`)} 
+      onClick={() => onProjectSelected && onProjectSelected(project.id)}
+      className={className}>
       <Wrapper>
         <ImageWrapper><ImageStyled src={url} /></ImageWrapper>
         <ProjectNameWrapper>

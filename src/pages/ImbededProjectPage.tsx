@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { useParams } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 import { projectsStore } from "../stores/projecrStore";
 import styled from "styled-components";
@@ -8,8 +6,6 @@ import { observer } from "mobx-react-lite";
 const PageWrapper = styled.div`
   display: grid;
   width: 100vw;
-  min-height: 100vh;
-  background: linear-gradient(180deg, #96BFC5 0%, #96BFC5 20%, #FFF 100%);
 `;
 
 const StyledSpinner = styled(CircularProgress)`
@@ -29,7 +25,7 @@ const DataWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   margin: 0 24px;
-  min-height: 100vh;
+  //min-height: 100vh;
 `;
 
 const TitleWrapper = styled.div<{ $visible: boolean }>`
@@ -74,20 +70,20 @@ const ErrorText = styled.div`
   color: red;
 `;
 
-export const ProjectPage: React.FC = observer(() => {
+interface ImbededProjectPageProps {
+  projectId: string | undefined;
+}
 
-  const { projectId } = useParams<{ projectId: string }>();
-  const [numLoadedImages, setNumLoadedImages] = useState(0);
+export const ImbededProjectPage: React.FC<ImbededProjectPageProps> = observer(({projectId}) => {
+
+  //const { projectId } = useParams<{ projectId: string }>();
   const projects = projectsStore.projects;
   const project = projects.find((proj) => proj.id === projectId);
 
-  const onImageLoaded = (): void => {
-    setNumLoadedImages(v => v + 1);
-  }
-
   if (!projectId) return <ErrorText>❌ Wrong project ID: {projectId}</ErrorText>;
 
-  const allLoaded = Boolean(projectsStore.allLoaded && project && numLoadedImages === project.images?.length);
+  //const allLoaded = Boolean(projectsStore.allLoaded && project && numLoadedImages === project.images?.length);
+  const allLoaded = projectsStore.allLoaded;
 
   return (
 
@@ -101,13 +97,10 @@ export const ProjectPage: React.FC = observer(() => {
           </TitleWrapper>
 
           <ImagesContainer>
-            {project && project.images?.map((img, i) =>
+            {project && project.images?.map((img) =>
               <ProjectImage
                 $visible={allLoaded}
-                src={img.imageUrl} alt={`Image ${img.imageIndex}`} key={i}
-                onLoad={() => onImageLoaded()} onError={() => {
-                  onImageLoaded();
-                }} />
+                src={img.imageUrl} alt={`Image ${img.imageIndex}`} key={img.id}/>
             )}
           </ImagesContainer>
         </DataWrapper>

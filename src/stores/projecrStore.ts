@@ -10,6 +10,7 @@ class ProjectsStore {
 
   mainScrollValue: number = 0;
   imagesScrollValues: [number, number, number] = [0, 0, 0];
+  allLoaded: boolean = false;
 
   setMainScrollValue = (value: number) => {
     this.mainScrollValue = value;
@@ -23,6 +24,7 @@ class ProjectsStore {
       projects: observable,
       mainScrollValue: observable,
       imagesScrollValues: observable,
+      allLoaded: observable,
       setMainScrollValue: action,
       setImageScrollValues: action
     });
@@ -32,6 +34,10 @@ class ProjectsStore {
   private init = async () => {
     await this.loadProjects();
     await this.fetchAllProjectsImages();
+    runInAction(() => {
+      this.allLoaded = true;
+      // console.log("store setting allLoaded to true")
+    });
   }
 
   private loadProjects = async () => {
