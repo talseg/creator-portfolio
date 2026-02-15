@@ -7,7 +7,7 @@ export const renderProjectImages = (projects: Project[], category: CategoryType,
   onProjectSelected?: (projectId: string) => undefined
 ): ReactElement[] =>
   projects.filter((proj, index) => proj.category === category && index !== 11).map<ReactElement>(
-    (proj, i) =>
+    (proj) =>
       <ProjectImage project={proj}
         key={`project-${proj.id}`}
         isActive={isActive}
