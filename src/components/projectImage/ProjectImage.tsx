@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import type { Project } from "../../database/dbInterfaces";
 import LabelText from "../labeltext/LabelText";
-import { useNavigate } from "react-router-dom";
 import errorImage from "../../images/cats.png";
 
 const TOP_GAP = 0;
