@@ -6,6 +6,13 @@ import { observer } from "mobx-react-lite";
 const PageWrapper = styled.div`
   display: grid;
   width: 100vw;
+  /* background: linear-gradient(180deg, #96BFC5 0rem, #afc8cc 90rem); */
+  background: linear-gradient(
+    to right,
+    #96BFC5 0%,
+    #a3cfd5 100%
+  );
+  /* background: red; */
 `;
 
 const StyledSpinner = styled(CircularProgress)`
@@ -87,7 +94,7 @@ export const ImbededProjectPage: React.FC<ImbededProjectPageProps> = observer(({
 
   return (
 
-    <PageWrapper>
+    <PageWrapper className="imbeded">
 
       {
         <DataWrapper>

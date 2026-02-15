@@ -312,7 +312,10 @@ useLayoutEffect(() => {
         >
           {
             selectedProject ? <ImbededProjectPage projectId={selectedProject} /> : 
-            <div style={{ height: `${middleSectionHeightRem}rem`, display: "flex"}}>
+            <div style={{ height: `${middleSectionHeightRem}rem`, display: "flex",
+                  width: "100%",
+                  background: "linear-gradient(to right,#96BFC5 0%,#a3cfd5 100%)"
+            }}>
               <MainImage src={myImage} />
             </div>
           }
