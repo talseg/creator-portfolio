@@ -32,13 +32,6 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     if (scrollValues.current === undefined) return;
 
     middledRef.current.style.transform = `translateY(${mainScrollValue.current}px)`;
-    const getRemOffsetByScrollValue = (scrollValue: number): number => {
-      return ((-31 / 466.666666) * scrollValue - 3);
-    }
-    const remOffset = getRemOffsetByScrollValue(mainScrollValue.current);
-    middledRef.current.style.background =
-      `linear-gradient(180deg, #96BFC5 ${remOffset}rem, #FFF 78rem)`;
-
     imageRefs.current.forEach((element, index) => {
       const val = scrollValues.current[index];
       if (!element.current || val === undefined) return;

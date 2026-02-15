@@ -6,8 +6,6 @@ import { observer } from "mobx-react-lite";
 const PageWrapper = styled.div`
   display: grid;
   width: 100vw;
-  /* min-height: 100vh; */
-  background: linear-gradient(180deg, #96BFC5 0%, #96BFC5 20%, #FFF 100%);
 `;
 
 const StyledSpinner = styled(CircularProgress)`
