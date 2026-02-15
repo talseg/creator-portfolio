@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { useParams } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 import { projectsStore } from "../stores/projecrStore";
 import styled from "styled-components";
