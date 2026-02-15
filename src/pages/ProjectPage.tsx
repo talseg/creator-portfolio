@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 import { projectsStore } from "../stores/projecrStore";
 import styled from "styled-components";
+import { observer } from "mobx-react-lite";
 
 const PageWrapper = styled.div`
   display: grid;
@@ -73,7 +74,7 @@ const ErrorText = styled.div`
   color: red;
 `;
 
-export const ProjectPage: React.FC = () => {
+export const ProjectPage: React.FC = observer(() => {
 
   const { projectId } = useParams<{ projectId: string }>();
   const [numLoadedImages, setNumLoadedImages] = useState(0);
@@ -86,21 +87,21 @@ export const ProjectPage: React.FC = () => {
 
   if (!projectId) return <ErrorText>❌ Wrong project ID: {projectId}</ErrorText>;
 
-  const allLoaded = Boolean(project && numLoadedImages === project.images?.length);
+  const allLoaded = Boolean(projectsStore.allLoaded && project && numLoadedImages === project.images?.length);
 
   return (
 
     <PageWrapper>
 
-      {project &&
+      {
         <DataWrapper>
 
-          <TitleWrapper $visible={allLoaded}>
-            <ProjectTitle>{project.projectName}</ProjectTitle>
+          <TitleWrapper $visible={Boolean(project?.projectName)}>
+            <ProjectTitle>{project && project.projectName}</ProjectTitle>
           </TitleWrapper>
 
           <ImagesContainer>
-            {project.images?.map((img, i) =>
+            {project && project.images?.map((img, i) =>
               <ProjectImage
                 $visible={allLoaded}
                 src={img.imageUrl} alt={`Image ${img.imageIndex}`} key={i}
@@ -117,4 +118,4 @@ export const ProjectPage: React.FC = () => {
     </PageWrapper>
   );
 
-}
+});
