@@ -1,14 +1,14 @@
 import styled, { css } from "styled-components";
-import pkg from "../../package.json";
 import OrSegalSvg from "../assets/orSegal.svg?react";
 import myImage from "../images/MainPicture.png";
 import type { CategoryType } from "../database/dbInterfaces";
 import { useImageScrolling, type ScrollAreaType } from "../utilities/useImageScrolling";
 import LabelText from "../components/labeltext/LabelText";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { renderProjectImages } from "../utilities/projectUtils";
 import { projectsStore } from "../stores/projecrStore";
 import { observer } from "mobx-react-lite";
+import { ImbededProjectPage } from "./ImbededProjectPage";
 
 const WrapperStyled = styled.div`
   display: flex;
@@ -102,11 +102,10 @@ const HorizontalLongLine = styled.div`
   grid-column: 1 / -1;
 `;
 
-const MiddleSection = styled.div<{ height: number }>`
+const MiddleSection = styled.div`
   display: flex;
   width: 100%;
-  height: ${({ height }) => `${height}rem`};
-  grid-column: 2 / -1;
+  grid-column: 1 / -1;
   margin-left: -8rem;
   z-index: 10;
   justify-self: self-end;
@@ -164,18 +163,42 @@ const HeaderTextStyled = styled(LabelText) <{ $isActive: boolean }>`
 `;
 
 
-const getMiddleSectionHeight = (windowHeight: number) => {
-  return windowHeight / 30;
-}
-
 export const StartPage1: React.FC = observer(() => {
 
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+  const [selectedProject, setSelectedProject] = useState<string | undefined>(undefined);
   const middledRef = useRef<HTMLDivElement>(null);
   const imageRef1 = useRef<HTMLDivElement>(null);
   const imageRef2 = useRef<HTMLDivElement>(null);
   const imageRef3 = useRef<HTMLDivElement>(null);
   const imageRefs = useRef([imageRef1, imageRef2, imageRef3]);
+  const [middleSectionHeightRem, setMiddleSectionHeightRem] = useState(window.innerHeight / 30);
+
+useLayoutEffect(() => {
+  const el = middledRef.current;
+  if (!el || !selectedProject) 
+  {
+    setMiddleSectionHeightRem(window.innerHeight / 30);
+    return;
+  }
+    
+  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+
+  const update = () => {
+    const hPx = el.getBoundingClientRect().height;
+    const hRem = hPx / rem;
+    // Safety: never let it be too small
+    setMiddleSectionHeightRem(Math.max(hRem, windowHeight / (30)));
+  };
+
+  update();
+
+  const ro = new ResizeObserver(() => update());
+  ro.observe(el);
+
+  return () => ro.disconnect();
+}, [selectedProject, windowHeight]);
+
   const projects = projectsStore.projects;
 
   useEffect(() => {
@@ -187,15 +210,14 @@ export const StartPage1: React.FC = observer(() => {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  const middleSectionHeight = getMiddleSectionHeight(windowHeight);
 
   const { onMouseEnter, onMouseLeave, scrollArea,
     onTouchStart, onTouchEnd,
-    onTouchMove, onTouchCancel } = useImageScrolling(
+    onTouchMove, onTouchCancel, onResetScrolls } = useImageScrolling(
       {
         imageRefs,
         middledRef,
-        middleSectionHeight: middleSectionHeight
+        middleSectionHeight: middleSectionHeightRem
       }
     );
 
@@ -221,6 +243,16 @@ export const StartPage1: React.FC = observer(() => {
     onTouchMove(e);
   }
 
+  const onProjectSelected = (projectId: string) : undefined => {
+    setSelectedProject(projectId);
+    onResetScrolls();
+  }
+
+  const removeSelectedProject = () => {
+    setSelectedProject(undefined);
+    onResetScrolls();
+  } 
+
   return (
     <WrapperStyled>
 
@@ -238,21 +270,21 @@ export const StartPage1: React.FC = observer(() => {
             </LogoBox>
           </HeaderBox>
 
-          <HeaderBox>
+          <HeaderBox onClick={() => removeSelectedProject()}>
             <HeaderTextBox $isActive={isColumnActive("designer")}>
               <HeaderTextStyled $isActive={isColumnActive("designer")}>Designer</HeaderTextStyled>
             </HeaderTextBox>
             <VerticalLine />
           </HeaderBox>
 
-          <HeaderBox>
+          <HeaderBox  onClick={() => removeSelectedProject()}>
             <HeaderTextBox $isActive={isColumnActive("artist")}>
               <HeaderTextStyled $isActive={isColumnActive("artist")}>Artist</HeaderTextStyled>
             </HeaderTextBox>
             <VerticalLine />
           </HeaderBox>
 
-          <HeaderBox>
+          <HeaderBox  onClick={() => removeSelectedProject()}>
             <HeaderTextBox $isActive={isColumnActive("illustrator")}>
               <HeaderTextStyled $isActive={isColumnActive("illustrator")}>Illustrator</HeaderTextStyled>
             </HeaderTextBox>
@@ -270,9 +302,7 @@ export const StartPage1: React.FC = observer(() => {
 
         </HeaderRow>
 
-        <div style={{ gridRow: 2, gridColumn: 1, color: "black" }}>{pkg.version}</div>
-
-        <MiddleSection height={middleSectionHeight} ref={middledRef}
+        <MiddleSection ref={middledRef} className="middle-section"
           onMouseEnter={() => onMouseEnter("middle")}
           onMouseLeave={() => onMouseLeave()}
           onTouchStart={(e) => handleTouchStart("middle", e)}
@@ -280,7 +310,12 @@ export const StartPage1: React.FC = observer(() => {
           onTouchMove={(e) => handleTouchMove(e)}
           onTouchCancel={onTouchCancel}
         >
-          <MainImage src={myImage}></MainImage>
+          {
+            selectedProject ? <ImbededProjectPage projectId={selectedProject} /> : 
+            <div style={{ height: `${middleSectionHeightRem}rem`, display: "flex"}}>
+              <MainImage src={myImage} />
+            </div>
+          }
         </MiddleSection>
 
         <ImagesColumn ref={imageRef1}
@@ -294,7 +329,8 @@ export const StartPage1: React.FC = observer(() => {
         >
           <ImagesContainer $isActive={scrollArea === 1}>
             {
-              renderProjectImages(projects, "designer", isColumnActive("designer"))
+              renderProjectImages(projects, "designer", 
+                isColumnActive("designer"), undefined, onProjectSelected)
             }
           </ImagesContainer>
 
@@ -313,7 +349,7 @@ export const StartPage1: React.FC = observer(() => {
 
           <ImagesContainer $isActive={scrollArea === 2}>
             {
-              renderProjectImages(projects, "artist", isColumnActive("artist"))
+              renderProjectImages(projects, "artist", isColumnActive("artist"), undefined, onProjectSelected)
             }
           </ImagesContainer>
 
@@ -332,7 +368,7 @@ export const StartPage1: React.FC = observer(() => {
         >
           <ImagesContainer $isActive={scrollArea === 3}>
             {
-              renderProjectImages(projects, "illustrator", isColumnActive("illustrator"))
+              renderProjectImages(projects, "illustrator", isColumnActive("illustrator"), undefined, onProjectSelected)
             }
 
           </ImagesContainer>

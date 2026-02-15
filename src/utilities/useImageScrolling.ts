@@ -263,6 +263,15 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     onTouchStart(e);
   }
 
+  const onResetScrolls = () => {
+    if (mainScrollValue.current === undefined) return;
+    if (scrollValues.current === undefined) return;
+    mainScrollValue.current = 0;
+    scrollValues.current = [0, 0, 0];
+    shouldUpdateImages.current = false;
+    applyScrollTransforms();
+  }
+
   return {
     scrollArea,
     onMouseEnter,
@@ -270,7 +279,8 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     onTouchStart: handleTouchStart,
     onTouchEnd,
     onTouchMove,
-    onTouchCancel
+    onTouchCancel,
+    onResetScrolls
   };
 };
 
