@@ -187,8 +187,7 @@ useLayoutEffect(() => {
   const update = () => {
     const hPx = el.getBoundingClientRect().height;
     const hRem = hPx / rem;
-    // Safety: never let it be too small
-    setMiddleSectionHeightRem(Math.max(hRem, windowHeight / (30)));
+    setMiddleSectionHeightRem(hRem);
   };
 
   update();
