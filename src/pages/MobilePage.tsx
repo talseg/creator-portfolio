@@ -5,6 +5,7 @@ import type { CategoryType } from "../database/dbInterfaces";
 import { renderProjectImages } from "../utilities/projectUtils";
 import { projectsStore } from "../stores/projecrStore";
 import { observer } from "mobx-react-lite";
+import { useNavigate } from "react-router-dom";
 
 const Page = styled.div`
   width: 100vw;
@@ -154,6 +155,12 @@ export const MobilePage: React.FC = observer(() => {
     return () => observer.disconnect();
   }, []);
 
+  const navigate = useNavigate();
+
+  const handleProjectSelected = (projectId: string) : undefined => {
+    navigate(`/project/${projectId}`)
+  }
+
   return (
 
     <Page>
@@ -184,7 +191,7 @@ export const MobilePage: React.FC = observer(() => {
                 <VerticalLine />
 
                 <div style={{ gridColumn: 2 }}>
-                  {renderProjectImages(projects, category, isActive, "1rem")}
+                  {renderProjectImages(projects, category, isActive, "1rem", handleProjectSelected)}
                 </div>
 
                 <VerticalLine1 />
