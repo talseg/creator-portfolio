@@ -28,15 +28,8 @@ const HeaderTextBox = styled.div<{ $isActive: boolean }>`
   align-items: center;
   justify-content: center;
 
-  background-color: transparent;
+  background-color: ${({ $isActive }) => $isActive ? "#FFFDB4" : "transparent"};
   transition: background-color 400ms ease-out;
-
-  ${({ $isActive }) =>
-    $isActive ? css`
-       background: #FFFDB4;` :
-      css`
-       transition: none;`
-  }
 `;
 
 const LogoBox = styled.div`
@@ -87,12 +80,25 @@ const HeaderRow = styled.div`
   height: calc(100% + 5px);
 `;
 
+const HeaderTextStyled = styled(LabelText) <{ $isActive: boolean }>`
+  font-weight: ${({ $isActive }) =>
+    $isActive ? "bold" : "normal"};
+`;
+
 const HeaderBox = styled.div`
   display: flex;
   background: #6205db53;
   width: 100%;
   height: 100%;
   background: white;
+
+  &:hover  ${HeaderTextBox} {
+    background: #FFFDB4;
+  }
+
+  &:hover ${HeaderTextStyled} {
+    font-weight: bold;
+  }
 `
 
 const HorizontalLongLine = styled.div`
@@ -157,10 +163,7 @@ const SimpleDot = styled.div`
   transform: translate(2px, -3px);
 `;
 
-const HeaderTextStyled = styled(LabelText) <{ $isActive: boolean }>`
-  font-weight: ${({ $isActive: $isActibe }) =>
-    $isActibe ? "bold" : "normal"};
-`;
+
 
 
 export const StartPage1: React.FC = observer(() => {
