@@ -19,6 +19,6 @@ export const ProjectPage: React.FC = observer(() => {
   const { projectId } = useParams<{ projectId: string }>();
   return (
     projectsStore.allLoaded ?
-    <ImbededProjectPage projectId={projectId} /> : <StyledSpinner />
+    <ImbededProjectPage projectId={projectId} pageWidthVw={99}/> : <StyledSpinner />
   );
 });

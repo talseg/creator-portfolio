@@ -310,7 +310,7 @@ useLayoutEffect(() => {
           onTouchCancel={onTouchCancel}
         >
           {
-            selectedProject ? <ImbededProjectPage projectId={selectedProject} /> : 
+            selectedProject ? <ImbededProjectPage projectId={selectedProject} pageWidthVw={100}/> : 
             <div style={{ height: `${middleSectionHeightRem}rem`, display: "flex",
                   width: "100%",
                   background: "linear-gradient(to right,#96BFC5 0%,#a3cfd5 100%)"

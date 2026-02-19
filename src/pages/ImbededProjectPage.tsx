@@ -3,9 +3,14 @@ import { projectsStore } from "../stores/projecrStore";
 import styled from "styled-components";
 import { observer } from "mobx-react-lite";
 
-const PageWrapper = styled.div`
+
+/* width: ${({ $pageWidthVw }) => `${90}vw`}; */
+
+const PageWrapper = styled.div<{ $pageWidthVw: number }>`
   display: grid;
-  width: 100vw;
+  
+  width: ${({ $pageWidthVw }) => `${$pageWidthVw}vw`};
+  height: 100%;
   /* background: linear-gradient(180deg, #96BFC5 0rem, #afc8cc 90rem); */
   background: linear-gradient(
     to right,
@@ -13,11 +18,14 @@ const PageWrapper = styled.div`
     #a3cfd5 100%
   );
   /* background: red; */
+  overflow-x: hidden;
 `;
 
 const StyledSpinner = styled(CircularProgress)`
   grid-row: 1;
   grid-column: 1;
+  height: 100%;
+  width: 100%;
   align-self: center;
   justify-self: center;
 `;
@@ -28,16 +36,21 @@ const DataWrapper = styled.div`
   align-self: start;
   justify-self: start;
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0 24px;
+  display: grid;
+  grid-template-columns:  1fr 55vw;
+  column-gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem;
+  box-sizing: border-box;
+  /* place-self: stretch; */
   //min-height: 100vh;
 `;
 
-const TitleWrapper = styled.div<{ $visible: boolean }>`
+const ProjectText = styled.div<{ $visible: boolean }>`
   opacity: ${props => (props.$visible ? 1 : 0)};
   transition: opacity 2.5s ease;
+  width: 100%;
+  grid-column: 1;
 `;
 
 const ProjectTitle = styled.h1`
@@ -51,23 +64,24 @@ const ProjectTitle = styled.h1`
 const ImagesContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 0.5rem;
+  grid-column: 2;
 `;
 
 const ProjectImage = styled.img<{ $visible: boolean }>`
-  max-width: 30rem;
+  /* max-width: 58rem; */
   width: 100%;
   height: auto;
   display: block;
-  border-radius: 8px;
+  /* border-radius: 8px; */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease;
   opacity: ${props => (props.$visible ? 1 : 0)};
   transition: opacity 1.5s ease;
 
-  &:hover {
+  /* &:hover {
     transform: scale(1.03);
-  }
+  } */
 `;
 
 const ErrorText = styled.div`
@@ -79,9 +93,10 @@ const ErrorText = styled.div`
 
 interface ImbededProjectPageProps {
   projectId: string | undefined;
+  pageWidthVw: number;
 }
 
-export const ImbededProjectPage: React.FC<ImbededProjectPageProps> = observer(({projectId}) => {
+export const ImbededProjectPage: React.FC<ImbededProjectPageProps> = observer(({projectId, pageWidthVw}) => {
 
   //const { projectId } = useParams<{ projectId: string }>();
   const projects = projectsStore.projects;
@@ -94,23 +109,23 @@ export const ImbededProjectPage: React.FC<ImbededProjectPageProps> = observer(({
 
   return (
 
-    <PageWrapper className="imbeded">
+    <PageWrapper $pageWidthVw={pageWidthVw} className="imbeded">
 
-      {
-        <DataWrapper>
+      { allLoaded &&
+          <DataWrapper >
 
-          <TitleWrapper $visible={Boolean(project?.projectName)}>
-            <ProjectTitle>{project && project.projectName}</ProjectTitle>
-          </TitleWrapper>
+            <ProjectText $visible={Boolean(project?.projectName)}>
+              <ProjectTitle>{project && project.projectName}</ProjectTitle>
+            </ProjectText>
 
-          <ImagesContainer>
-            {project && project.images?.map((img) =>
-              <ProjectImage
-                $visible={allLoaded}
-                src={img.imageUrl} alt={`Image ${img.imageIndex}`} key={img.id}/>
-            )}
-          </ImagesContainer>
-        </DataWrapper>
+            <ImagesContainer>
+              {project && project.images?.map((img) =>
+                <ProjectImage
+                  $visible={allLoaded}
+                  src={img.imageUrl} alt={`Image ${img.imageIndex}`} key={img.id}/>
+              )}
+            </ImagesContainer>
+          </DataWrapper>
       }
 
       {!allLoaded && <StyledSpinner />}
