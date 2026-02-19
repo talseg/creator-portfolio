@@ -143,7 +143,8 @@ export const ImbededProjectPage: React.FC<ImbededProjectPageProps> = observer(({
                 <div style={{ display: "flex", marginLeft: "-1.7rem" }} className="title-wrapper">
                   <StarSvg />
                   <ProjectTitle>{project && project.projectName}</ProjectTitle>
-                  {/* {project && project.id} */} {/* this is for debug, identifiying the project */}
+                  {/* this is for debug, identifiying the project */}
+                  {/* {project && project.id} */}
                 </div>
                 <ProjectHeader>{project && project.header}</ProjectHeader>
               </InfoBox>
