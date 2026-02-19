@@ -99,6 +99,7 @@ const HeaderBox = styled.div`
   &:hover ${HeaderTextStyled} {
     font-weight: bold;
   }
+  cursor: pointer;
 `
 
 const HorizontalLongLine = styled.div`
