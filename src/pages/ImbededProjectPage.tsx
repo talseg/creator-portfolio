@@ -143,36 +143,26 @@ export const ImbededProjectPage: React.FC<ImbededProjectPageProps> = observer(({
                 <div style={{ display: "flex", marginLeft: "-1.7rem" }} className="title-wrapper">
                   <StarSvg />
                   <ProjectTitle>{project && project.projectName}</ProjectTitle>
-                  {/* {project && project.id} */ } {/* this is for debug, identifiying the project */}
+                  {/* {project && project.id} */} {/* this is for debug, identifiying the project */}
                 </div>
                 <ProjectHeader>{project && project.header}</ProjectHeader>
               </InfoBox>
 
-              <div style={{ display: "flex", width: "100%" }}>
+              <div style={{ display: "flex" }}>
                 <HorizontalLine />
                 <SimpleDot className="dot" />
               </div>
 
             </InfoWrapper>
 
-            {/* <ProjectTitle>{project && project.projectName}</ProjectTitle> */}
-
-
-
           </ProjectInfoWrapper>
 
-          {/* <ImagesContainer> */}
           {project && project.images?.map((img, i) => {
-
-
-
-
             return <ProjectImage
               $visible={allLoaded}
               src={img.imageUrl} alt={`Image ${img.imageIndex}`} key={img.id} />
           }
           )}
-          {/* </ImagesContainer> */}
         </DataWrapper>
       }
 
