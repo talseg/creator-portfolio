@@ -157,7 +157,7 @@ export const ImbededProjectPage: React.FC<ImbededProjectPageProps> = observer(({
 
           </ProjectInfoWrapper>
 
-          {project && project.images?.map((img, i) => {
+          {project && project.images?.map((img) => {
             return <ProjectImage
               $visible={allLoaded}
               src={img.imageUrl} alt={`Image ${img.imageIndex}`} key={img.id} />
