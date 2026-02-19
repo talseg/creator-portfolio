@@ -28,15 +28,8 @@ const HeaderTextBox = styled.div<{ $isActive: boolean }>`
   align-items: center;
   justify-content: center;
 
-  background-color: transparent;
+  background-color: ${({ $isActive }) => $isActive ? "#FFFDB4" : "transparent"};
   transition: background-color 400ms ease-out;
-
-  ${({ $isActive }) =>
-    $isActive ? css`
-       background: #FFFDB4;` :
-      css`
-       transition: none;`
-  }
 `;
 
 const LogoBox = styled.div`
@@ -87,12 +80,26 @@ const HeaderRow = styled.div`
   height: calc(100% + 5px);
 `;
 
+const HeaderTextStyled = styled(LabelText) <{ $isActive: boolean }>`
+  font-weight: ${({ $isActive }) =>
+    $isActive ? "bold" : "normal"};
+`;
+
 const HeaderBox = styled.div`
   display: flex;
   background: #6205db53;
   width: 100%;
   height: 100%;
   background: white;
+
+  &:hover  ${HeaderTextBox} {
+    background: #FFFDB4;
+  }
+
+  &:hover ${HeaderTextStyled} {
+    font-weight: bold;
+  }
+  cursor: pointer;
 `
 
 const HorizontalLongLine = styled.div`
@@ -157,10 +164,7 @@ const SimpleDot = styled.div`
   transform: translate(2px, -3px);
 `;
 
-const HeaderTextStyled = styled(LabelText) <{ $isActive: boolean }>`
-  font-weight: ${({ $isActive: $isActibe }) =>
-    $isActibe ? "bold" : "normal"};
-`;
+
 
 
 export const StartPage1: React.FC = observer(() => {
@@ -174,29 +178,28 @@ export const StartPage1: React.FC = observer(() => {
   const imageRefs = useRef([imageRef1, imageRef2, imageRef3]);
   const [middleSectionHeightRem, setMiddleSectionHeightRem] = useState(window.innerHeight / 30);
 
-useLayoutEffect(() => {
-  const el = middledRef.current;
-  if (!el || !selectedProject) 
-  {
-    setMiddleSectionHeightRem(window.innerHeight / 30);
-    return;
-  }
-    
-  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+  useLayoutEffect(() => {
+    const el = middledRef.current;
+    if (!el || !selectedProject) {
+      setMiddleSectionHeightRem(window.innerHeight / 30);
+      return;
+    }
 
-  const update = () => {
-    const hPx = el.getBoundingClientRect().height;
-    const hRem = hPx / rem;
-    setMiddleSectionHeightRem(hRem);
-  };
+    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
 
-  update();
+    const update = () => {
+      const hPx = el.getBoundingClientRect().height;
+      const hRem = hPx / rem;
+      setMiddleSectionHeightRem(hRem);
+    };
 
-  const ro = new ResizeObserver(() => update());
-  ro.observe(el);
+    update();
 
-  return () => ro.disconnect();
-}, [selectedProject, windowHeight]);
+    const ro = new ResizeObserver(() => update());
+    ro.observe(el);
+
+    return () => ro.disconnect();
+  }, [selectedProject, windowHeight]);
 
   const projects = projectsStore.projects;
 
@@ -242,7 +245,7 @@ useLayoutEffect(() => {
     onTouchMove(e);
   }
 
-  const onProjectSelected = (projectId: string) : undefined => {
+  const onProjectSelected = (projectId: string): undefined => {
     setSelectedProject(projectId);
     onResetScrolls();
   }
@@ -250,7 +253,7 @@ useLayoutEffect(() => {
   const removeSelectedProject = () => {
     setSelectedProject(undefined);
     onResetScrolls();
-  } 
+  }
 
   return (
     <WrapperStyled>
@@ -276,14 +279,14 @@ useLayoutEffect(() => {
             <VerticalLine />
           </HeaderBox>
 
-          <HeaderBox  onClick={() => removeSelectedProject()}>
+          <HeaderBox onClick={() => removeSelectedProject()}>
             <HeaderTextBox $isActive={isColumnActive("artist")}>
               <HeaderTextStyled $isActive={isColumnActive("artist")}>Artist</HeaderTextStyled>
             </HeaderTextBox>
             <VerticalLine />
           </HeaderBox>
 
-          <HeaderBox  onClick={() => removeSelectedProject()}>
+          <HeaderBox onClick={() => removeSelectedProject()}>
             <HeaderTextBox $isActive={isColumnActive("illustrator")}>
               <HeaderTextStyled $isActive={isColumnActive("illustrator")}>Illustrator</HeaderTextStyled>
             </HeaderTextBox>
@@ -310,13 +313,14 @@ useLayoutEffect(() => {
           onTouchCancel={onTouchCancel}
         >
           {
-            selectedProject ? <ImbededProjectPage projectId={selectedProject} /> : 
-            <div style={{ height: `${middleSectionHeightRem}rem`, display: "flex",
-                  width: "100%",
-                  background: "linear-gradient(to right,#96BFC5 0%,#a3cfd5 100%)"
-            }}>
-              <MainImage src={myImage} />
-            </div>
+            selectedProject ? <ImbededProjectPage projectId={selectedProject} pageWidthVw={100} /> :
+              <div style={{
+                height: `${middleSectionHeightRem}rem`, display: "flex",
+                width: "100%",
+                background: "linear-gradient(to right,#96BFC5 0%,#a3cfd5 100%)"
+              }}>
+                <MainImage src={myImage} />
+              </div>
           }
         </MiddleSection>
 
@@ -331,7 +335,7 @@ useLayoutEffect(() => {
         >
           <ImagesContainer $isActive={scrollArea === 1}>
             {
-              renderProjectImages(projects, "designer", 
+              renderProjectImages(projects, "designer",
                 isColumnActive("designer"), undefined, onProjectSelected)
             }
           </ImagesContainer>

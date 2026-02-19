@@ -25,6 +25,7 @@ const ImageWrapper = styled.div`
   height: 100%;
   grid-row: 2;
   grid-column: 2;
+  cursor: pointer;
 `
 const ProjectNameWrapper = styled.div`
   display: flex;
@@ -74,12 +75,9 @@ const ProjectImage: React.FC<ProjectImageProps> = ({ project, isActive, fontSize
   className, onProjectSelected
  }) => {
 
-  //const navigate = useNavigate();
-
   const url = project.projectImageUrl ? project.projectImageUrl : errorImage;
   return (
     <ColumnWrapper 
-      // onClick={() => navigate(`/project/${project.id}`)} 
       onClick={() => onProjectSelected && onProjectSelected(project.id)}
       className={className}>
       <Wrapper>
@@ -93,8 +91,6 @@ const ProjectImage: React.FC<ProjectImageProps> = ({ project, isActive, fontSize
         </ProjectNameWrapper>
         
       </Wrapper>
-
-      {/* <VerticalLine/> */}
       
     </ColumnWrapper>
   )
