@@ -167,7 +167,7 @@ const SimpleDot = styled.div`
 
 
 
-export const StartPage1: React.FC = observer(() => {
+export const DesktopPage: React.FC = observer(() => {
 
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const [selectedProject, setSelectedProject] = useState<string | undefined>(undefined);
