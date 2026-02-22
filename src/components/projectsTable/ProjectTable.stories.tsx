@@ -48,6 +48,8 @@ const createMockProjectData = (index: number): Project => {
     projectImageUrl: "url " + index,
     projectIndex: index,
     images: createImages(4),
+    projectYear: 2025,
+    designedAt: "Or Segal inc.",
     category: "designer"
   }
 } 

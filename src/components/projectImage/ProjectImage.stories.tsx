@@ -32,7 +32,9 @@ const createMockProject: () => Project = () => {
             header: 'project-header',
             projectImageUrl: "https://firebasestorage.googleapis.com/v0/b/creator-portfolio-f2b93.firebasestorage.app/o/project1%2Fproject.jpg?alt=media&token=20c96aa4-d7a2-41e4-96dc-5e801e1e1ff8",
             projectIndex: 1,
-            category: "designer"
+            category: "designer",
+            projectYear: 2025,
+            designedAt: "Or's Studio"
         }
     );
 }
