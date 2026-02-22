@@ -17,8 +17,8 @@ export const addNewProjectByName = async (projectName: string,
     category: "designer",
     projectIndex: projectIndex,
     images: [],
-    projectYear: 2023,
-    designedAt: "THE STUDIO (Avigail Reiner)"
+    projectYear: 0,
+    designedAt: ""
   };
   await setDoc(docRef, newProject);
   return newProject;
