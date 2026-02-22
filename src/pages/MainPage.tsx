@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { StartPage1 } from "./StartPage1";
+import { DesktopPage } from "./DesktopPage";
 import { MobilePage } from "./MobilePage";
 
 export type InteractionMode = "desktop-columns" | "mobile-swipe";
@@ -29,7 +29,7 @@ export const MainPage: React.FC = () => {
 
   return (
     mode === "desktop-columns" ?
-      <StartPage1 /> :
+      <DesktopPage /> :
       <MobilePage />
   );
 }
