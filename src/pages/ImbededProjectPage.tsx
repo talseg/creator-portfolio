@@ -98,8 +98,7 @@ const ProjectHeader = styled.div`
   color: #222;
   font-size: 0.9375rem;
   font-style: italic;
-  margin-top: 0.3rem;
-  margin-bottom: 0.3rem;
+  margin: 0.4rem 0;
 `;
 
 const HorizontalLine = styled.div`
@@ -131,6 +130,13 @@ const YearText = styled.div`
   font-weight: bold;
   margin-left: .6em;
 `;
+
+const DesignedAt = styled.div`
+  display: flex;
+  align-items: center;
+  font-size: 0.9375rem;
+  margin: 0.4rem 0;
+`
 
 const SimpleDot = styled.div`
   width: 5px;
@@ -187,6 +193,21 @@ export const ImbededProjectPage: React.FC<ImbededProjectPageProps> = observer(({
 
                 <ProjectHeader>{project && project.header}</ProjectHeader>
               </InfoBox>
+
+              <div style={{ display: "flex" }}>
+                <HorizontalLine />
+                <SimpleDot className="dot" />
+              </div>
+
+              <DesignedAt>
+                <div>Designed at</div>
+                <div style={{ width: "1rem" }}></div>
+                <PreYearDot className="dot" />
+                <PreYearLine />
+                <PreYearDot className="dot" />
+                <div style={{ width: "1rem" }}></div>
+                <div>THE STUDIO (Avigail Reiner)</div>
+              </DesignedAt>
 
               <div style={{ display: "flex" }}>
                 <HorizontalLine />
