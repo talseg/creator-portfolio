@@ -162,12 +162,6 @@ export const ImbededProjectPage: React.FC<ImbededProjectPageProps> = observer(({
   //const allLoaded = Boolean(projectsStore.allLoaded && project && numLoadedImages === project.images?.length);
   const allLoaded = projectsStore.allLoaded;
 
-  // if (project) 
-  //   {
-  //     project.projectYear = 2023;
-  //     project.designedAt = "THE STUDIO (Avigail Reiner)"
-  //   }
-
   return (
 
     <PageWrapper $pageWidthVw={pageWidthVw} className="imbeded-project-page">
@@ -185,7 +179,7 @@ export const ImbededProjectPage: React.FC<ImbededProjectPageProps> = observer(({
                   <StarSvg />
                   <ProjectTitle>{project && project.projectName}</ProjectTitle>
 
-                  {project && project.projectYear &&
+                  {project && project.projectYear !== 0 &&
                     <YearSection>
                       <PreYearDot className="dot" />
                       <PreYearLine />
