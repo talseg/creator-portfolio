@@ -107,6 +107,31 @@ const HorizontalLine = styled.div`
   width: 100%;
 `;
 
+const YearSection = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 0 0 0 .6em;
+`
+
+const PreYearLine = styled.div`
+  border-bottom: 1px solid black;
+  width: 1.1em;
+`;
+
+const PreYearDot = styled.div`
+  width: 5px;
+  height: 5px;
+  background: black;
+  border-radius: 50%;
+`;
+
+const YearText = styled.div`
+  font-size: 0.9375rem;
+  font-style: italic;
+  font-weight: bold;
+  margin-left: .6em;
+`;
+
 const SimpleDot = styled.div`
   width: 5px;
   height: 5px;
@@ -147,9 +172,19 @@ export const ImbededProjectPage: React.FC<ImbededProjectPageProps> = observer(({
                 <div style={{ display: "flex", marginLeft: "-1.7rem" }} className="title-wrapper">
                   <StarSvg />
                   <ProjectTitle>{project && project.projectName}</ProjectTitle>
-                  {/* this is for debug, identifiying the project */}
-                  {/* {project && project.id} */}
+
+                  <YearSection>
+                    <PreYearDot className="dot" />
+                    <PreYearLine />
+                    <PreYearDot className="dot" />
+                    <YearText>2023</YearText>
+                  </YearSection>
+
                 </div>
+
+                {/* this is for debug, identifiying the project */}
+                {/* {project && project.id} */}
+
                 <ProjectHeader>{project && project.header}</ProjectHeader>
               </InfoBox>
 
