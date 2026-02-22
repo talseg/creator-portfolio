@@ -33,11 +33,11 @@ const DataWrapper = styled.div`
   justify-self: start;
 
   display: grid;
-  grid-template-columns:  1fr 55vw;
-  column-gap: 0.5rem;
+  grid-template-columns:  1fr 1fr;
+  column-gap: 0rem;
   row-gap: 0.5rem;
   width: 100%;
-  padding: 0.75rem;
+  padding: 1.2% 1.2% 1% 3.7%;
   box-sizing: border-box;
 `;
 
@@ -67,12 +67,16 @@ const ProjectInfoWrapper = styled.div<{ $visible: boolean }>`
   display: flex;
   height: auto;
   font-family: EditorSans;
+  /* background-color: red; */
+  max-height: 80vh;
+  
 `;
 
 const InfoWrapper = styled.div`
   align-self: flex-end;
   width: 100%;
-   margin-left: 2.6rem;
+  padding: 0 5% 0 0;
+  /* background-color: red; */
 `;
 
 const InfoBox = styled.div`
@@ -129,10 +133,10 @@ export const ImbededProjectPage: React.FC<ImbededProjectPageProps> = observer(({
 
   return (
 
-    <PageWrapper $pageWidthVw={pageWidthVw} className="imbeded">
+    <PageWrapper $pageWidthVw={pageWidthVw} className="imbeded-project-page">
 
       {allLoaded &&
-        <DataWrapper >
+        <DataWrapper className="imbeded-project-data-wrapper">
 
           <ProjectInfoWrapper $visible={Boolean(project?.projectName)}>
 
