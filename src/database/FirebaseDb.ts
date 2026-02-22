@@ -132,9 +132,6 @@ export const fetchProjectsWithImages = async (): Promise<Project[]> => {
 
 const addProjectToBatch = (project: Project, batch: WriteBatch): void => {
   const { id, ...data } = project;
-  project.projectYear = 0;
-  project.designedAt = "";
-  console.log("project: ", project);
   delete data.images;
   const projectRef = doc(db, "projects", id);
   batch.update(projectRef, data);
