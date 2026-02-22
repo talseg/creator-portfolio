@@ -113,9 +113,8 @@ const MiddleSection = styled.div`
   display: flex;
   width: 100%;
   grid-column: 1 / -1;
-  margin-left: -8rem;
   z-index: 10;
-  justify-self: self-end;
+  justify-self: end;
 `;
 
 const MainImage = styled.img`

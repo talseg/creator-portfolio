@@ -16,7 +16,9 @@ export const addNewProjectByName = async (projectName: string,
     projectImageUrl: "",
     category: "designer",
     projectIndex: projectIndex,
-    images: []
+    images: [],
+    projectYear: 0,
+    designedAt: ""
   };
   await setDoc(docRef, newProject);
   return newProject;

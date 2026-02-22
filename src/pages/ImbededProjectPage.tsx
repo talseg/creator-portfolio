@@ -33,11 +33,11 @@ const DataWrapper = styled.div`
   justify-self: start;
 
   display: grid;
-  grid-template-columns:  1fr 55vw;
-  column-gap: 0.5rem;
+  grid-template-columns:  1fr 1fr;
+  column-gap: 0rem;
   row-gap: 0.5rem;
   width: 100%;
-  padding: 0.75rem;
+  padding: 1.2% 1.2% 1% 3.7%;
   box-sizing: border-box;
 `;
 
@@ -67,12 +67,16 @@ const ProjectInfoWrapper = styled.div<{ $visible: boolean }>`
   display: flex;
   height: auto;
   font-family: EditorSans;
+  /* background-color: red; */
+  max-height: 80vh;
+  
 `;
 
 const InfoWrapper = styled.div`
   align-self: flex-end;
   width: 100%;
-   margin-left: 2.6rem;
+  padding: 0 5% 0 0;
+  /* background-color: red; */
 `;
 
 const InfoBox = styled.div`
@@ -94,14 +98,45 @@ const ProjectHeader = styled.div`
   color: #222;
   font-size: 0.9375rem;
   font-style: italic;
-  margin-top: 0.3rem;
-  margin-bottom: 0.3rem;
+  margin: 0.4rem 0;
 `;
 
 const HorizontalLine = styled.div`
   border-bottom: 1px solid black;
   width: 100%;
 `;
+
+const YearSection = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 0 0 0 .6em;
+`
+
+const PreYearLine = styled.div`
+  border-bottom: 1px solid black;
+  width: 1.1em;
+`;
+
+const PreYearDot = styled.div`
+  width: 5px;
+  height: 5px;
+  background: black;
+  border-radius: 50%;
+`;
+
+const YearText = styled.div`
+  font-size: 0.9375rem;
+  font-style: italic;
+  font-weight: bold;
+  margin-left: .6em;
+`;
+
+const DesignedAt = styled.div`
+  display: flex;
+  align-items: center;
+  font-size: 0.9375rem;
+  margin: 0.4rem 0;
+`
 
 const SimpleDot = styled.div`
   width: 5px;
@@ -129,10 +164,10 @@ export const ImbededProjectPage: React.FC<ImbededProjectPageProps> = observer(({
 
   return (
 
-    <PageWrapper $pageWidthVw={pageWidthVw} className="imbeded">
+    <PageWrapper $pageWidthVw={pageWidthVw} className="imbeded-project-page">
 
       {allLoaded &&
-        <DataWrapper >
+        <DataWrapper className="imbeded-project-data-wrapper">
 
           <ProjectInfoWrapper $visible={Boolean(project?.projectName)}>
 
@@ -143,9 +178,21 @@ export const ImbededProjectPage: React.FC<ImbededProjectPageProps> = observer(({
                 <div style={{ display: "flex", marginLeft: "-1.7rem" }} className="title-wrapper">
                   <StarSvg />
                   <ProjectTitle>{project && project.projectName}</ProjectTitle>
-                  {/* this is for debug, identifiying the project */}
-                  {/* {project && project.id} */}
+
+                  {project && project.projectYear !== 0 &&
+                    <YearSection>
+                      <PreYearDot className="dot" />
+                      <PreYearLine />
+                      <PreYearDot className="dot" />
+                      <YearText>{project.projectYear}</YearText>
+                    </YearSection>
+                  }
+
                 </div>
+
+                {/* this is for debug, identifiying the project */}
+                {/* {project && project.id} */}
+
                 <ProjectHeader>{project && project.header}</ProjectHeader>
               </InfoBox>
 
@@ -153,6 +200,24 @@ export const ImbededProjectPage: React.FC<ImbededProjectPageProps> = observer(({
                 <HorizontalLine />
                 <SimpleDot className="dot" />
               </div>
+              {project && project.designedAt &&
+                <DesignedAt>
+                  <div>Designed at</div>
+                  <div style={{ width: "1rem" }}></div>
+                  <PreYearDot className="dot" />
+                  <PreYearLine />
+                  <PreYearDot className="dot" />
+                  <div style={{ width: "1rem" }}></div>
+                  <div>{project.designedAt}</div>
+                </DesignedAt>
+              }
+
+              {project && project.designedAt &&
+                <div style={{ display: "flex" }}>
+                  <HorizontalLine />
+                  <SimpleDot className="dot" />
+                </div>
+              }
 
             </InfoWrapper>
 
