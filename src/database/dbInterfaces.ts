@@ -14,4 +14,6 @@ export interface Project {
     projectIndex: number;
     category: CategoryType;
     images?: Image[];
+    projectYear: number;
+    designedAt: string;
 }

@@ -162,6 +162,12 @@ export const ImbededProjectPage: React.FC<ImbededProjectPageProps> = observer(({
   //const allLoaded = Boolean(projectsStore.allLoaded && project && numLoadedImages === project.images?.length);
   const allLoaded = projectsStore.allLoaded;
 
+  // if (project) 
+  //   {
+  //     project.projectYear = 2023;
+  //     project.designedAt = "THE STUDIO (Avigail Reiner)"
+  //   }
+
   return (
 
     <PageWrapper $pageWidthVw={pageWidthVw} className="imbeded-project-page">
@@ -179,12 +185,14 @@ export const ImbededProjectPage: React.FC<ImbededProjectPageProps> = observer(({
                   <StarSvg />
                   <ProjectTitle>{project && project.projectName}</ProjectTitle>
 
-                  <YearSection>
-                    <PreYearDot className="dot" />
-                    <PreYearLine />
-                    <PreYearDot className="dot" />
-                    <YearText>2023</YearText>
-                  </YearSection>
+                  {project && project.projectYear &&
+                    <YearSection>
+                      <PreYearDot className="dot" />
+                      <PreYearLine />
+                      <PreYearDot className="dot" />
+                      <YearText>{project.projectYear}</YearText>
+                    </YearSection>
+                  }
 
                 </div>
 
@@ -198,21 +206,24 @@ export const ImbededProjectPage: React.FC<ImbededProjectPageProps> = observer(({
                 <HorizontalLine />
                 <SimpleDot className="dot" />
               </div>
+              {project && project.designedAt &&
+                <DesignedAt>
+                  <div>Designed at</div>
+                  <div style={{ width: "1rem" }}></div>
+                  <PreYearDot className="dot" />
+                  <PreYearLine />
+                  <PreYearDot className="dot" />
+                  <div style={{ width: "1rem" }}></div>
+                  <div>{project.designedAt}</div>
+                </DesignedAt>
+              }
 
-              <DesignedAt>
-                <div>Designed at</div>
-                <div style={{ width: "1rem" }}></div>
-                <PreYearDot className="dot" />
-                <PreYearLine />
-                <PreYearDot className="dot" />
-                <div style={{ width: "1rem" }}></div>
-                <div>THE STUDIO (Avigail Reiner)</div>
-              </DesignedAt>
-
-              <div style={{ display: "flex" }}>
-                <HorizontalLine />
-                <SimpleDot className="dot" />
-              </div>
+              {project && project.designedAt &&
+                <div style={{ display: "flex" }}>
+                  <HorizontalLine />
+                  <SimpleDot className="dot" />
+                </div>
+              }
 
             </InfoWrapper>
 
