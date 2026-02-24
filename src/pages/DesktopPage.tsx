@@ -273,7 +273,7 @@ export const DesktopPage: React.FC = observer(() => {
             </LogoBox>
           </HeaderBox>
 
-          <HeaderBox onClick={() => { removeSelectedProject(); }}>
+          <HeaderBox onClick={() => removeSelectedProject()}>
             <HeaderTextBox $isActive={isColumnActive("designer")}>
               <HeaderTextStyled $isActive={isColumnActive("designer")}>Designer</HeaderTextStyled>
             </HeaderTextBox>
