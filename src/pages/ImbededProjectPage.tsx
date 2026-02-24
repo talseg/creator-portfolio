@@ -14,7 +14,6 @@ const PageWrapper = styled.div<{ $pageWidthVw: number }>`
     #96BFC5 0%,
     #a3cfd5 100%
   );
-  overflow-x: hidden;
 `;
 
 const StyledSpinner = styled(CircularProgress)`

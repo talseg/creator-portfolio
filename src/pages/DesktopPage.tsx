@@ -92,12 +92,14 @@ const HeaderBox = styled.div`
   height: 100%;
   background: white;
 
+  @media (hover: hover) and (pointer: fine) {
   &:hover  ${HeaderTextBox} {
     background: #FFFDB4;
   }
 
   &:hover ${HeaderTextStyled} {
     font-weight: bold;
+  }
   }
   cursor: pointer;
 `
