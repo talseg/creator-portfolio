@@ -92,12 +92,14 @@ const HeaderBox = styled.div`
   height: 100%;
   background: white;
 
+  @media (hover: hover) and (pointer: fine) {
   &:hover  ${HeaderTextBox} {
     background: #FFFDB4;
   }
 
   &:hover ${HeaderTextStyled} {
     font-weight: bold;
+  }
   }
   cursor: pointer;
 `
@@ -271,7 +273,7 @@ export const DesktopPage: React.FC = observer(() => {
             </LogoBox>
           </HeaderBox>
 
-          <HeaderBox onClick={() => removeSelectedProject()}>
+          <HeaderBox onClick={() => { removeSelectedProject(); }}>
             <HeaderTextBox $isActive={isColumnActive("designer")}>
               <HeaderTextStyled $isActive={isColumnActive("designer")}>Designer</HeaderTextStyled>
             </HeaderTextBox>
