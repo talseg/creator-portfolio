@@ -49,7 +49,7 @@ const MainGridStyled = styled.div`
   display: grid;
   font-size: 20px;
   width: 100%;
-  grid-template-columns: 5.5fr 10fr 10fr 10fr;
+  grid-template-columns: 5.4fr 10fr 10fr 10fr;
   grid-template-rows: 4.625rem auto auto;
   justify-items: center;
 
