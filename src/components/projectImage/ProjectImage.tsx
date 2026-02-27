@@ -79,7 +79,7 @@ const ProjectImage: React.FC<ProjectImageProps> = ({ project, isActive, fontSize
   return (
     <ColumnWrapper 
       onClick={() => onProjectSelected && onProjectSelected(project.id)}
-      className={className}>
+      className={className + " image-column-wrapper"}>
       <Wrapper>
         <ImageWrapper><ImageStyled src={url} /></ImageWrapper>
         <ProjectNameWrapper>

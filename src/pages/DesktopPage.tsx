@@ -49,7 +49,7 @@ const MainGridStyled = styled.div`
   display: grid;
   font-size: 20px;
   width: 100%;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 5.4fr 10fr 10fr 10fr;
   grid-template-rows: 4.625rem auto auto;
   justify-items: center;
 
@@ -71,7 +71,7 @@ const HeaderRow = styled.div`
   grid-column: 1 / -1;
   grid-row: 1;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 5.4fr 10fr 10fr 10fr;
   grid-template-rows: 1fr auto;
   position: sticky;
   top: 0;
@@ -128,7 +128,7 @@ const ImagesContainer = styled.div<{ $isActive: boolean }>`
   display: flex;
   grid-column: 1;
   flex-direction: column;
-  padding: 0 5% 0 5%;
+  padding: 0 6% 0 6%;
   
   img {
     filter: grayscale(100%) brightness(0.9);
@@ -148,7 +148,7 @@ const ImagesColumn = styled.div<{ $column: number }>`
   display: grid;
   grid-template-columns: 1fr auto;
   width: 100%;
-   align-self: flex-start;
+  align-self: flex-start;
 `
 
 const VerticalLine = styled.div<{ gridColumn?: number }>`
@@ -265,7 +265,7 @@ export const DesktopPage: React.FC = observer(() => {
         onTouchMove={(e) => handleTouchMove(e)}
       >
 
-        <HeaderRow>
+        <HeaderRow className="header-row">
 
           <HeaderBox>
             <LogoBox>
@@ -325,7 +325,7 @@ export const DesktopPage: React.FC = observer(() => {
           }
         </MiddleSection>
 
-        <ImagesColumn ref={imageRef1}
+        <ImagesColumn ref={imageRef1} className="images-column-1"
           $column={2}
           onMouseEnter={() => onMouseEnter(1)}
           onMouseLeave={() => onMouseLeave()}
@@ -344,7 +344,7 @@ export const DesktopPage: React.FC = observer(() => {
           <VerticalLine />
         </ImagesColumn>
 
-        <ImagesColumn ref={imageRef2}
+        <ImagesColumn ref={imageRef2} className="images-column-2"
           $column={3}
           onMouseEnter={() => onMouseEnter(2)}
           onMouseLeave={() => onMouseLeave()}
@@ -364,7 +364,7 @@ export const DesktopPage: React.FC = observer(() => {
 
         </ImagesColumn>
 
-        <ImagesColumn ref={imageRef3}
+        <ImagesColumn ref={imageRef3} className="images-column-3"
           $column={4}
           onMouseEnter={() => onMouseEnter(3)}
           onMouseLeave={() => onMouseLeave()}
