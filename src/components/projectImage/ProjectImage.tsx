@@ -60,7 +60,7 @@ const ColumnWrapper = styled.div`
 // `;
 
 const ProjectNameStyled = styled(LabelText)<{ $isActive: boolean }>`
-  color: ${({ $isActive }) => $isActive ? "black" : "#797979" };
+  color: ${({ $isActive }) => $isActive ? "black" : "#454545" };
 `;
 
 interface ProjectImageProps {
