@@ -129,19 +129,15 @@ const ImagesContainer = styled.div<{ $isActive: boolean }>`
   grid-column: 1;
   flex-direction: column;
   padding: 0 6% 0 6%;
+
   opacity: ${({ $isActive }) => ($isActive ? 1 : 0.55)};
   transition: opacity 250ms ease;
-  
-  img {
-    filter: grayscale(100%) brightness(0.9);
-  };
 
-  ${({ $isActive }) => $isActive && css`
-   img {
-    filter: grayscale(0%);
+  img {
+    filter: ${({ $isActive }) =>
+      $isActive ? "grayscale(0%)" : "grayscale(100%) brightness(0.9)"};
     transition: filter 250ms ease;
-   }
-  `}
+  }
 `;
 
 const ImagesColumn = styled.div<{ $column: number }>`
