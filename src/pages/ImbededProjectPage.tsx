@@ -32,11 +32,11 @@ const DataWrapper = styled.div`
   justify-self: start;
 
   display: grid;
-  grid-template-columns:  7.6fr 10fr;
+  grid-template-columns:  7.8fr 10fr;
   column-gap: 0rem;
   row-gap: 0.5rem;
   width: 100%;
-  padding: 1.2% 1.2% 7% 3.7%;
+  padding: 1.5% 1.5% 7% 3.7%;
   box-sizing: border-box;
 `;
 
