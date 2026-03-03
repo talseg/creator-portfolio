@@ -1,84 +1,127 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import type { Image } from "./../../database/dbInterfaces";
 
-interface ImagesPreloadProps {
-  imagesToLoadList: Image[];
-  onAllLoaded: (successImages: Image[], failedImages: Image[]) => void;
+type PreloadStatus = "idle" | "loading" | "done";
+
+interface UseImagesPreloadResult {
+  status: PreloadStatus;
+  successImages: Image[];
+  failedImages: Image[];
+  handled: number;
+  total: number;
 }
 
-interface ImageInfo {
-  image: Image;
-  isLoadedOK: boolean;
-}
+export function useImagesPreload(
+  imagesToLoadList: Image[],
+  decode: boolean = false
+): UseImagesPreloadResult {
 
-// hold images for one crousel;
-// loads the images one by one and updates a loaded images array.
-// for now - notify the user when all images are loaded.
+  const total = imagesToLoadList.length;
 
-// startup
-export const useImagesPreload = (props: ImagesPreloadProps) => {
+  const [handled, setHandled] = useState(0);
+  const [successIds, setSuccessIds] = useState<Set<string>>(new Set());
+  const [failedIds, setFailedIds] = useState<Set<string>>(new Set());
 
-  const { imagesToLoadList, onAllLoaded } = props;
-  const [loadedOrErrorImages, setLoadedOrErrorImages] = useState<Map<string, ImageInfo>>(new Map());
-  const imageObjects = useRef<Map<string, HTMLImageElement | undefined>>(new Map());
-  const done = useRef<boolean>(false);
+  // Stable container: we mutate this array, we never replace it
+  const createdImagesRef = useRef<HTMLImageElement[]>([]);
 
-  // startup
   useEffect(() => {
-    const handleImageLoadedOrError = (image: Image, isOK: boolean) => {
-      if (done.current) return;
-      setLoadedOrErrorImages((prev) => {
-        const newImageInfo: ImageInfo = {
-          image: image,
-          isLoadedOK: isOK
-        }
-        const next = new Map(prev);
-        next.set(image.id, newImageInfo);
-        return next;
-      });
-    }
+    setHandled(0);
+    setSuccessIds(new Set());
+    setFailedIds(new Set());
 
-    const registerOnImageUpdate = (image: Image, imageData: HTMLImageElement) => {
-      imageData.onload = () => handleImageLoadedOrError(image, true);
-      imageData.onerror = () => handleImageLoadedOrError(image, false);
-    }
-    const unregisterOnImageUpdates = (imageData: HTMLImageElement) => {
-      imageData.onload = null;
-      imageData.onerror = null;
-    }
+    let cancelled = false;
+
+    // Clear without replacing the array object
+    createdImagesRef.current.length = 0;
 
     const cleanup = () => {
-      done.current = true;
-      imageObjects.current.forEach((img) => img && unregisterOnImageUpdates(img));
-      imageObjects.current.clear();
+      cancelled = true;
+      for (const el of createdImagesRef.current) {
+        el.onload = null;
+        el.onerror = null;
+      }
+      // Clear without replacing (keeps the container stable)
+      createdImagesRef.current.length = 0;
+    };
+
+    if (total === 0) {
+      return cleanup;
     }
 
-    done.current = false;
-    imagesToLoadList.forEach((image) => {
-      const imageData: HTMLImageElement = new Image();
-      registerOnImageUpdate(image, imageData);
-      imageData.src = image.imageUrl;
-      imageObjects.current.set(image.id, imageData)
-    });
+    const markHandled = (el: HTMLImageElement) => {
+      // prevent any double-fire
+      el.onload = null;
+      el.onerror = null;
+      setHandled(h => h + 1);
+    };
+
+    const markSuccess = (id: string) => {
+      setSuccessIds(prev => {
+        const next = new Set(prev);
+        next.add(id);
+        return next;
+      });
+    };
+
+    const markFail = (id: string) => {
+      setFailedIds(prev => {
+        const next = new Set(prev);
+        next.add(id);
+        return next;
+      });
+    };
+
+    for (const img of imagesToLoadList) {
+      const el = new Image();
+      createdImagesRef.current.push(el);
+
+      el.onload = async () => {
+
+        if (cancelled) return;
+        if (decode) {
+          try {
+            await el.decode();
+          } catch {
+            if (cancelled) return;
+            markFail(img.id);
+            markHandled(el);
+            return;
+          }
+          if (cancelled) return;
+        }
+        markSuccess(img.id);
+        markHandled(el);
+      };
+
+      el.onerror = () => {
+        if (cancelled) return;
+        markFail(img.id);
+        markHandled(el);
+      };
+
+      el.src = img.imageUrl;
+    }
 
     return cleanup;
+  }, [imagesToLoadList, total, decode]);
 
-  }, [imagesToLoadList]);
+  const { successImages, failedImages } = useMemo(() => {
+    const success: Image[] = [];
+    const failed: Image[] = [];
 
-  // exit condition
-  useEffect(() => {
-    if (done.current) return;
-    if (loadedOrErrorImages.size === imagesToLoadList.length) {
-      const successImages: Image[] = [];
-      const failedImages: Image[] = [];
-      imagesToLoadList.forEach(img => {
-        const info = loadedOrErrorImages.get(img.id);
-        if (!info) return;
-        (info.isLoadedOK ? successImages : failedImages).push(info.image);
-      });
-      onAllLoaded(successImages, failedImages);
-      done.current = true;
+    for (const img of imagesToLoadList) {
+      if (successIds.has(img.id)) success.push(img);
+      else if (failedIds.has(img.id)) failed.push(img);
     }
 
-  }, [imagesToLoadList, loadedOrErrorImages, onAllLoaded]);
+    return { successImages: success, failedImages: failed };
+  }, [imagesToLoadList, successIds, failedIds]);
+
+  const status: PreloadStatus =
+    total === 0 ? "done" :
+      handled < total ? "loading" :
+        "done";
+
+  return { status, successImages, failedImages, handled, total };
 }
