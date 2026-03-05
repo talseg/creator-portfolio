@@ -1,18 +1,15 @@
 
 import type { Image } from "./../../database/dbInterfaces";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useImagesPreload } from "./useImagePreload";
 import styled, { keyframes } from "styled-components";
 
 const SWAP_INTERVAL = 2500;
 
-
-// Adjust all the images height to the first image height
-const ImagesWrapper = styled.div<{ $height: number | undefined }>`
+const ImagesWrapper = styled.div`
   display: flex;
   width: 100%;
-
-  ${({ $height }) => $height ? `height: ${$height}px;` : ""}
+  height: auto;
   position: relative;
   overflow: hidden;
 `;
@@ -37,7 +34,7 @@ const SlidingImage = styled.img`
 
 const FirstImage = styled.img`
   width: 100%;
-  height: 100%;
+  height: auto;
 `
 
 const SingleImage = styled.img`
@@ -47,6 +44,14 @@ const SingleImage = styled.img`
   top: 0;
   left: 0;
 `
+
+const SizerImage = styled.img`
+  width: 100%;
+  height: auto;
+  display: block;
+  opacity: 0;        /* invisible */
+  pointer-events: none;
+`;
 
 export interface ImageSwapperProps {
   images: Image[];
@@ -59,11 +64,9 @@ export const ImageSwapper: React.FC<ImageSwapperProps> = ({ images, showNext, sh
   // Image index is the index of the currently displayed index
   const [imageIndex, setimageIndex] = useState(0);
   const [displayTwoImages, setDisplayTwoImages] = useState(false);
-  const [firstImageHeight, setFirstImageHeight] = useState<number | undefined>(undefined);
 
   const shouldDecode = true;
   const { successImages, status } = useImagesPreload(images, shouldDecode);
-  const firstImageRef = useRef<HTMLImageElement | null>(null);
 
   // Startup
   useEffect(() => {
@@ -90,20 +93,13 @@ export const ImageSwapper: React.FC<ImageSwapperProps> = ({ images, showNext, sh
   }, [successImages.length, imageIndex, showNext, showNextDone]);
 
 
-  const handleFirstImageLoad = () => {
-    if (firstImageRef.current) {
-      setFirstImageHeight(firstImageRef.current.clientHeight);
-    }
-  }
-
   // until all images are loaded and the first image height was set - display just the first one
-  if (status !== "done" || firstImageHeight === undefined || successImages.length === 1)
+  if (status !== "done" || successImages.length === 1)
     return (
-      <ImagesWrapper $height={firstImageHeight}>
+      <ImagesWrapper>
         <FirstImage src={images[0]?.imageUrl} 
-          ref={firstImageRef} 
-          key={images[0]?.id}
-          onLoad={handleFirstImageLoad} />
+          key={"first-image-" + images[0]?.id}
+           />
       </ImagesWrapper>
     );
 
@@ -116,8 +112,10 @@ export const ImageSwapper: React.FC<ImageSwapperProps> = ({ images, showNext, sh
   }
 
   return (
-    <ImagesWrapper $height={firstImageHeight}>
-      {
+    <ImagesWrapper>
+      
+        <SizerImage src={images[0]?.imageUrl ?? images[0]?.imageUrl} />
+        {
         displayTwoImages ?
           <div >
             <SingleImage src={successImages[prevImageIndex]?.imageUrl} key={successImages[prevImageIndex]?.id} />
