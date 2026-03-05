@@ -24,8 +24,6 @@ export const ImageSwapperTester: React.FC = observer(() => {
   const [projectIndex, setProjectIndex] = useState(startProj);
   const [nextImage, setShowNext] = useState(false);
   
-  
-
   const projects = projectsStore.projects;
 
   if (!projectsStore.allLoaded)

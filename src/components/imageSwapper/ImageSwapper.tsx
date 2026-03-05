@@ -32,7 +32,7 @@ const SlidingImage = styled.img`
   position: absolute;
   top: 0;
   left: 0;
-  animation: ${slideIn} 400ms ease-out forwards;
+  animation: ${slideIn} 500ms ease-out forwards;
 `;
 
 const FirstImage = styled.img`
@@ -69,7 +69,7 @@ export const ImageSwapper: React.FC<ImageSwapperProps> = ({ images, showNext, sh
   useEffect(() => {
     const n = successImages.length;
     if (n <= 1) return;
-    
+
     const triggerAnimation = () => {
       setDisplayTwoImages(true);
       setimageIndex(prev => {
@@ -81,13 +81,13 @@ export const ImageSwapper: React.FC<ImageSwapperProps> = ({ images, showNext, sh
     if (showNext) {
       triggerAnimation();
       showNextDone?.();
+      return;
     }
-      
 
     const id = setTimeout(triggerAnimation, SWAP_INTERVAL);
 
     return () => clearTimeout(id);
-  }, [successImages.length, imageIndex, showNext]);
+  }, [successImages.length, imageIndex, showNext, showNextDone]);
 
 
   const handleFirstImageLoad = () => {
@@ -99,9 +99,12 @@ export const ImageSwapper: React.FC<ImageSwapperProps> = ({ images, showNext, sh
   // until all images are loaded and the first image height was set - display just the first one
   if (status !== "done" || firstImageHeight === undefined || successImages.length === 1)
     return (
-    <ImagesWrapper $height={firstImageHeight}>
-      <FirstImage src={images[0]?.imageUrl} ref={firstImageRef} onLoad={handleFirstImageLoad} />
-    </ImagesWrapper>
+      <ImagesWrapper $height={firstImageHeight}>
+        <FirstImage src={images[0]?.imageUrl} 
+          ref={firstImageRef} 
+          key={images[0]?.id}
+          onLoad={handleFirstImageLoad} />
+      </ImagesWrapper>
     );
 
   let prevImageIndex: number = 0;
@@ -117,15 +120,15 @@ export const ImageSwapper: React.FC<ImageSwapperProps> = ({ images, showNext, sh
       {
         displayTwoImages ?
           <div >
-            <SingleImage src={successImages[prevImageIndex]?.imageUrl} id={successImages[prevImageIndex]?.id} />
+            <SingleImage src={successImages[prevImageIndex]?.imageUrl} key={successImages[prevImageIndex]?.id} />
             <SlidingImage
               src={successImages[imageIndex]?.imageUrl}
               onAnimationEnd={handleAnimationEnd}
-              id={successImages[imageIndex]?.id} />
+              key={successImages[imageIndex]?.id} />
           </div>
           :
           <SingleImage src={successImages[imageIndex]?.imageUrl}
-            id={successImages[imageIndex]?.id} />
+            key={successImages[imageIndex]?.id} />
       }
     </ImagesWrapper>
   );
