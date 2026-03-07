@@ -11,12 +11,20 @@ const NextWrapper = styled.div`
   position: absolute;
   top: 50%;
   right: 1rem;
-  transform: translateY(-50%) translateX(10px);
-
-  opacity: 0;
+  transform: translateY(-50%);
   transition: opacity 250ms ease, transform 250ms ease;
+  color: black;
 
-  pointer-events: none;
+  /* default: visible, for touch devices */
+  opacity: 1;
+  pointer-events: auto;
+
+  /* only devices that truly support hover get the hover behavior */
+  @media (hover: hover) and (pointer: fine) {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-50%) translateX(10px);
+  }
 `;
 
 const ImagesWrapper = styled.div`
