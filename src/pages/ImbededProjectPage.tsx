@@ -3,6 +3,7 @@ import { projectsStore } from "../stores/projecrStore";
 import { observer } from "mobx-react-lite";
 import StarSvg from "../assets/star.svg?react";
 import styled from "styled-components";
+import { ImageSwapper } from "../components/imageSwapper/ImageSwapper";
 
 const PageWrapper = styled.div<{ $pageWidthVw: number }>`
   display: grid;
@@ -32,24 +33,19 @@ const DataWrapper = styled.div`
   justify-self: start;
 
   display: grid;
-  grid-template-columns:  1fr 1fr;
+  grid-template-columns:  7.8fr 10fr;
   column-gap: 0rem;
   row-gap: 0.5rem;
   width: 100%;
-  padding: 1.2% 1.2% 1% 3.7%;
+  padding: 1.5% 1.5% 7% 3.7%;
   box-sizing: border-box;
 `;
 
-const ProjectImage = styled.img<{ $visible: boolean }>`
+const SwapperWrapper = styled.div`
   width: 100%;
+  display: flex;
   height: auto;
-  display: block;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
-  opacity: ${props => (props.$visible ? 1 : 0)};
-  transition: opacity 1.5s ease;
-  grid-column: 2;
-`;
+`
 
 const ErrorText = styled.div`
   padding: 40px;
@@ -222,12 +218,11 @@ export const ImbededProjectPage: React.FC<ImbededProjectPageProps> = observer(({
 
           </ProjectInfoWrapper>
 
-          {project && project.images?.map((img) => {
-            return <ProjectImage
-              $visible={allLoaded}
-              src={img.imageUrl} alt={`Image ${img.imageIndex}`} key={img.id} />
+          {project && project.images && 
+            <SwapperWrapper key={"swapper-wrapper-" + project.id}>
+              <ImageSwapper images={project.images} key={"swapper-" + project.id}/>
+            </SwapperWrapper>
           }
-          )}
         </DataWrapper>
       }
 
