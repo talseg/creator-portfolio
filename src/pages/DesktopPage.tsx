@@ -123,6 +123,7 @@ const MiddleSection = styled.div`
 const MainImage = styled.img`
   object-fit: cover;
   justify-content: center;
+  margin-left: 7rem;
 `;
 
 const ImagesContainer = styled.div<{ $isActive: boolean }>`
@@ -165,7 +166,7 @@ const SimpleDot = styled.div`
 `;
 
 
-
+const MAIN_IMAGE_HEIGHT_SCALE = 20;
 
 export const DesktopPage: React.FC = observer(() => {
 
@@ -176,12 +177,12 @@ export const DesktopPage: React.FC = observer(() => {
   const imageRef2 = useRef<HTMLDivElement>(null);
   const imageRef3 = useRef<HTMLDivElement>(null);
   const imageRefs = useRef([imageRef1, imageRef2, imageRef3]);
-  const [middleSectionHeightRem, setMiddleSectionHeightRem] = useState(window.innerHeight / 30);
+  const [middleSectionHeightRem, setMiddleSectionHeightRem] = useState(window.innerHeight / MAIN_IMAGE_HEIGHT_SCALE);
 
   useLayoutEffect(() => {
     const el = middledRef.current;
     if (!el || !selectedProject) {
-      setMiddleSectionHeightRem(window.innerHeight / 30);
+      setMiddleSectionHeightRem(window.innerHeight / MAIN_IMAGE_HEIGHT_SCALE);
       return;
     }
 
