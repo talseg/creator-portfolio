@@ -21,6 +21,8 @@ const LogoLinkWrapper = styled.a`
   margin-top: 10px;
 `;
 
+const TAB_BACKGROUND = "#B8DDE3"
+
 const HeaderTextBox = styled.div<{ $isActive: boolean }>`
   display: flex;
   width: 100%;
@@ -28,7 +30,7 @@ const HeaderTextBox = styled.div<{ $isActive: boolean }>`
   align-items: center;
   justify-content: center;
 
-  background-color: ${({ $isActive }) => $isActive ? "#FFFDB4" : "transparent"};
+  background-color: ${({ $isActive }) => $isActive ? TAB_BACKGROUND : "transparent"};
   transition: background-color 400ms ease-out;
 `;
 
@@ -87,14 +89,13 @@ const HeaderTextStyled = styled(LabelText) <{ $isActive: boolean }>`
 
 const HeaderBox = styled.div`
   display: flex;
-  background: #6205db53;
   width: 100%;
   height: 100%;
   background: white;
 
   @media (hover: hover) and (pointer: fine) {
   &:hover  ${HeaderTextBox} {
-    background: #FFFDB4;
+    background: ${TAB_BACKGROUND};
   }
 
   &:hover ${HeaderTextStyled} {
@@ -122,6 +123,7 @@ const MiddleSection = styled.div`
 const MainImage = styled.img`
   object-fit: cover;
   justify-content: center;
+  margin-left: 7rem;
 `;
 
 const ImagesContainer = styled.div<{ $isActive: boolean }>`
@@ -164,7 +166,7 @@ const SimpleDot = styled.div`
 `;
 
 
-
+const MAIN_IMAGE_HEIGHT_SCALE = 20;
 
 export const DesktopPage: React.FC = observer(() => {
 
@@ -175,12 +177,12 @@ export const DesktopPage: React.FC = observer(() => {
   const imageRef2 = useRef<HTMLDivElement>(null);
   const imageRef3 = useRef<HTMLDivElement>(null);
   const imageRefs = useRef([imageRef1, imageRef2, imageRef3]);
-  const [middleSectionHeightRem, setMiddleSectionHeightRem] = useState(window.innerHeight / 30);
+  const [middleSectionHeightRem, setMiddleSectionHeightRem] = useState(window.innerHeight / MAIN_IMAGE_HEIGHT_SCALE);
 
   useLayoutEffect(() => {
     const el = middledRef.current;
     if (!el || !selectedProject) {
-      setMiddleSectionHeightRem(window.innerHeight / 30);
+      setMiddleSectionHeightRem(window.innerHeight / MAIN_IMAGE_HEIGHT_SCALE);
       return;
     }
 
