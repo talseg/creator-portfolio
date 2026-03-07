@@ -10,9 +10,16 @@ const TransparentButton = styled.button`
   background-color: transparent;
   border: none;
   outline: none;
+  box-shadow: none;
   padding: .4rem;
+
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+
   cursor: pointer;
-  &:focus {
+  &:focus,
+  &:focus-visible,
+  &:active {
     outline: none;
     box-shadow: none;
   }
