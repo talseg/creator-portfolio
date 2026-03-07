@@ -21,6 +21,8 @@ const LogoLinkWrapper = styled.a`
   margin-top: 10px;
 `;
 
+const TAB_BACKGROUND = "#B8DDE3"
+
 const HeaderTextBox = styled.div<{ $isActive: boolean }>`
   display: flex;
   width: 100%;
@@ -28,7 +30,7 @@ const HeaderTextBox = styled.div<{ $isActive: boolean }>`
   align-items: center;
   justify-content: center;
 
-  background-color: ${({ $isActive }) => $isActive ? "#FFFDB4" : "transparent"};
+  background-color: ${({ $isActive }) => $isActive ? TAB_BACKGROUND : "transparent"};
   transition: background-color 400ms ease-out;
 `;
 
@@ -87,14 +89,13 @@ const HeaderTextStyled = styled(LabelText) <{ $isActive: boolean }>`
 
 const HeaderBox = styled.div`
   display: flex;
-  background: #6205db53;
   width: 100%;
   height: 100%;
   background: white;
 
   @media (hover: hover) and (pointer: fine) {
   &:hover  ${HeaderTextBox} {
-    background: #FFFDB4;
+    background: ${TAB_BACKGROUND};
   }
 
   &:hover ${HeaderTextStyled} {
