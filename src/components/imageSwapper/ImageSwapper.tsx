@@ -3,8 +3,21 @@ import type { Image } from "./../../database/dbInterfaces";
 import { useEffect, useState } from "react";
 import { useImagesPreload } from "./useImagePreload";
 import styled, { keyframes } from "styled-components";
+import { NextButton } from "../nextButton/NextButton";
 
 const SWAP_INTERVAL = 2500;
+
+const NextWrapper = styled.div`
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%) translateX(10px);
+
+  opacity: 0;
+  transition: opacity 250ms ease, transform 250ms ease;
+
+  pointer-events: none;
+`;
 
 const ImagesWrapper = styled.div`
   display: flex;
@@ -12,6 +25,12 @@ const ImagesWrapper = styled.div`
   height: auto;
   position: relative;
   overflow: hidden;
+
+  &:hover ${NextWrapper} {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+    pointer-events: auto;
+  }
 `;
 
 const slideIn = keyframes`
@@ -55,15 +74,14 @@ const SizerImage = styled.img`
 
 export interface ImageSwapperProps {
   images: Image[];
-  showNext?: boolean;
-  showNextDone?: () => void;
 }
 
-export const ImageSwapper: React.FC<ImageSwapperProps> = ({ images, showNext, showNextDone }) => {
+export const ImageSwapper: React.FC<ImageSwapperProps> = ({ images }) => {
 
   // Image index is the index of the currently displayed index
   const [imageIndex, setimageIndex] = useState(0);
   const [displayTwoImages, setDisplayTwoImages] = useState(false);
+  const [doNext, setDoNext] = useState(false);
 
   const shouldDecode = true;
   const { successImages, status } = useImagesPreload(images, shouldDecode);
@@ -81,25 +99,24 @@ export const ImageSwapper: React.FC<ImageSwapperProps> = ({ images, showNext, sh
       });
     }
 
-    if (showNext) {
+    if (doNext) {
       triggerAnimation();
-      showNextDone?.();
+      setDoNext(false);
       return;
     }
 
     const id = setTimeout(triggerAnimation, SWAP_INTERVAL);
 
     return () => clearTimeout(id);
-  }, [successImages.length, imageIndex, showNext, showNextDone]);
+  }, [successImages.length, imageIndex, doNext]);
 
 
   // until all images are loaded and the first image height was set - display just the first one
   if (status !== "done" || successImages.length === 1)
     return (
       <ImagesWrapper>
-        <FirstImage src={images[0]?.imageUrl} 
-          key={"first-image-" + images[0]?.id}
-           />
+        <FirstImage src={images[0]?.imageUrl}
+          key={"first-image-" + images[0]?.id} />
       </ImagesWrapper>
     );
 
@@ -113,9 +130,8 @@ export const ImageSwapper: React.FC<ImageSwapperProps> = ({ images, showNext, sh
 
   return (
     <ImagesWrapper>
-      
-        <SizerImage src={images[0]?.imageUrl ?? images[0]?.imageUrl} />
-        {
+      <SizerImage src={images[0]?.imageUrl ?? images[0]?.imageUrl} />
+      {
         displayTwoImages ?
           <div >
             <SingleImage src={successImages[prevImageIndex]?.imageUrl} key={successImages[prevImageIndex]?.id} />
@@ -128,6 +144,11 @@ export const ImageSwapper: React.FC<ImageSwapperProps> = ({ images, showNext, sh
           <SingleImage src={successImages[imageIndex]?.imageUrl}
             key={successImages[imageIndex]?.id} />
       }
+
+      <NextWrapper className="next-wrapper">
+        <NextButton onClick={() => { setDoNext(true) }} />
+      </NextWrapper>
+
     </ImagesWrapper>
   );
 };

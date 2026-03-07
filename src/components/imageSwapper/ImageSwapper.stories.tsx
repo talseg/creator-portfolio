@@ -22,7 +22,6 @@ export const ImageSwapperTester: React.FC = observer(() => {
   const startProj = 0;
 
   const [projectIndex, setProjectIndex] = useState(startProj);
-  const [nextImage, setShowNext] = useState(false);
   
   const projects = projectsStore.projects;
 
@@ -40,13 +39,11 @@ export const ImageSwapperTester: React.FC = observer(() => {
 
   return (
     <Wrapper>
-      <ImageSwapper images={images} showNext={nextImage} showNextDone={() => setShowNext(false)}/>
+      <ImageSwapper images={images}/>
       <button style={{ marginTop: "30px", width: "20%"}}
         onClick={() => setProjectIndex(
           (prev) => prev+ 1
         )}>{projectIndex} Next Project</button>
-      <button style={{ marginTop: "30px", width: "20%"}}
-        onClick={() => setShowNext(true)}>Next Image</button>
     </Wrapper>
   );
     
