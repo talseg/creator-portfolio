@@ -62,7 +62,8 @@ const ColumnWrapper = styled.div`
 // `;
 
 const ProjectYearStyled = styled.span`
-  padding: 0 0 0 0.2rem;
+  padding: 0 0 0 0.8rem;
+  font-style: normal;
 `;
 
 interface ProjectImageProps {
