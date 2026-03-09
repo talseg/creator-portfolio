@@ -1,7 +1,7 @@
 import {
   Box, Collapse, IconButton, Input, MenuItem, Paper,
   Select, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, TextField, Typography, type SelectChangeEvent
+  TableHead, TableRow, Typography, type SelectChangeEvent
 } from "@mui/material";
 import type { Project, Image, CategoryType } from "../../database/dbInterfaces";
 import { useState, type FormEvent } from "react";
