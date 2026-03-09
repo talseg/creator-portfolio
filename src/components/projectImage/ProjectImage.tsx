@@ -69,12 +69,11 @@ const ProjectYearStyled = styled.span`
 interface ProjectImageProps {
   project: Project;
   isActive: boolean;
-  fontSize?: string;
   className?: string;
   onProjectSelected?: (projectId: string) => undefined;
 }
 
-const ProjectImage: React.FC<ProjectImageProps> = ({ project, isActive, fontSize = "1vw", 
+const ProjectImage: React.FC<ProjectImageProps> = ({ project, isActive, 
   className, onProjectSelected
  }) => {
 
