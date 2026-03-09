@@ -27,13 +27,15 @@ const ImageWrapper = styled.div`
   grid-column: 2;
   cursor: pointer;
 `
-const ProjectNameWrapper = styled.div`
+const ProjectNameWrapper = styled(LabelText)<{ $isActive: boolean }>`
   display: flex;
   width: 100%;
   justify-content: start;
   grid-row: 4;
   grid-column: 2 / -1;
   position: relative;
+  align-items: center;
+  color: ${({ $isActive }) => $isActive ? "black" : "#454545" };
 `;
 
 const ImageStyled = styled.img`
@@ -59,8 +61,8 @@ const ColumnWrapper = styled.div`
 //   position: relative;
 // `;
 
-const ProjectNameStyled = styled(LabelText)<{ $isActive: boolean }>`
-  color: ${({ $isActive }) => $isActive ? "black" : "#454545" };
+const ProjectYearStyled = styled.span`
+  padding: 0 0 0 0.2rem;
 `;
 
 interface ProjectImageProps {
@@ -82,12 +84,11 @@ const ProjectImage: React.FC<ProjectImageProps> = ({ project, isActive, fontSize
       className={className + " image-column-wrapper"}>
       <Wrapper>
         <ImageWrapper><ImageStyled src={url} /></ImageWrapper>
-        <ProjectNameWrapper>
-
-          <ProjectNameStyled fontSize={fontSize} $isActive={isActive}>
-            {project.projectName}
-          </ProjectNameStyled>
-
+        <ProjectNameWrapper $isActive={isActive}>
+          <span>
+            {project.projectName} 
+            {(project.projectYear !== 0) && <ProjectYearStyled>{project.projectYear}</ProjectYearStyled>}
+          </span>
         </ProjectNameWrapper>
         
       </Wrapper>
