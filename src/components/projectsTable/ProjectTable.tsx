@@ -4,7 +4,7 @@ import {
   TableHead, TableRow, Typography, type SelectChangeEvent
 } from "@mui/material";
 import type { Project, Image, CategoryType } from "../../database/dbInterfaces";
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
 import { ImageTable } from "./ImageTable";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
