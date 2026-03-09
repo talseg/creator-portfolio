@@ -1,8 +1,10 @@
-import { Box, Collapse, IconButton, Input, MenuItem, Paper, 
-  Select, Table, TableBody, TableCell, TableContainer, 
-  TableHead, TableRow, Typography, type SelectChangeEvent } from "@mui/material";
+import {
+  Box, Collapse, IconButton, Input, MenuItem, Paper,
+  Select, Table, TableBody, TableCell, TableContainer,
+  TableHead, TableRow, TextField, Typography, type SelectChangeEvent
+} from "@mui/material";
 import type { Project, Image, CategoryType } from "../../database/dbInterfaces";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { ImageTable } from "./ImageTable";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -104,6 +106,16 @@ const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen,
     updateProject(updated)
   }
 
+
+
+  const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const updated: Project = {
+      ...project,
+      projectYear: Number(e.target.value)
+    };
+    updateProject(updated)
+  }
+
   return (
     <TableRow key={project.id}>
 
@@ -130,6 +142,20 @@ const ProjectRow: React.FC<ProjectRowProps> = ({ project, imageRowOpen,
           }} />
       </TableCell>
       <TableCell>{project.projectIndex}</TableCell>
+      <TableCell>
+        <InputStyled
+          value={project.projectYear}
+          onChange={handleYearChange}
+          type="number"
+          sx={{
+            width: "3rem"
+          }}
+          inputProps={{
+            min: 2000,
+            max: 2100
+          }}
+        />
+      </TableCell>
       <TableCell>
         <SelectStyled
           labelId="demo-simple-select-standard-label"
@@ -201,6 +227,7 @@ export const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
               <TableCell>Images</TableCell>
               <TableCell>Project Name</TableCell>
               <TableCell>Project Index</TableCell>
+              <TableCell>Year</TableCell>
               <TableCell>Category</TableCell>
               <TableCell align="center">
                 Image
