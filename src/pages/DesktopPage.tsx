@@ -337,7 +337,7 @@ export const DesktopPage: React.FC = observer(() => {
           <ImagesContainer $isActive={scrollArea === 1}>
             {
               renderProjectImages(projects, "designer",
-                isColumnActive("designer"), undefined, onProjectSelected)
+                isColumnActive("designer"), onProjectSelected)
             }
           </ImagesContainer>
 
@@ -356,7 +356,7 @@ export const DesktopPage: React.FC = observer(() => {
 
           <ImagesContainer $isActive={scrollArea === 2}>
             {
-              renderProjectImages(projects, "artist", isColumnActive("artist"), undefined, onProjectSelected)
+              renderProjectImages(projects, "artist", isColumnActive("artist"), onProjectSelected)
             }
           </ImagesContainer>
 
@@ -375,9 +375,8 @@ export const DesktopPage: React.FC = observer(() => {
         >
           <ImagesContainer $isActive={scrollArea === 3}>
             {
-              renderProjectImages(projects, "illustrator", isColumnActive("illustrator"), undefined, onProjectSelected)
+              renderProjectImages(projects, "illustrator", isColumnActive("illustrator"), onProjectSelected)
             }
-
           </ImagesContainer>
         </ImagesColumn>
 

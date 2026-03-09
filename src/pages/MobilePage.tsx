@@ -191,7 +191,7 @@ export const MobilePage: React.FC = observer(() => {
                 <VerticalLine />
 
                 <div style={{ gridColumn: 2 }}>
-                  {renderProjectImages(projects, category, isActive, "1rem", handleProjectSelected)}
+                  {renderProjectImages(projects, category, isActive, handleProjectSelected)}
                 </div>
 
                 <VerticalLine1 />
