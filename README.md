@@ -18,7 +18,6 @@ A React + Vite project for showcasing creative work.
 git clone https://github.com/talseg/creator-portfolio.git
 cd creator-portfolio
 
-
 # Install dependencies
 npm install
 # or
