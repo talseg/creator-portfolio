@@ -82,9 +82,10 @@ const SizerImage = styled.img`
 
 export interface ImageSwapperProps {
   images: Image[];
+  className?: string;
 }
 
-export const ImageSwapper: React.FC<ImageSwapperProps> = ({ images }) => {
+export const ImageSwapper: React.FC<ImageSwapperProps> = ({ images, className }) => {
 
   // Image index is the index of the currently displayed index
   const [imageIndex, setimageIndex] = useState(0);
@@ -137,7 +138,7 @@ export const ImageSwapper: React.FC<ImageSwapperProps> = ({ images }) => {
   }
 
   return (
-    <ImagesWrapper>
+    <ImagesWrapper className={className}>
       <SizerImage src={images[0]?.imageUrl ?? images[0]?.imageUrl} />
       {
         displayTwoImages ?

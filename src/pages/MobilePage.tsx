@@ -158,7 +158,7 @@ export const MobilePage: React.FC = observer(() => {
   const navigate = useNavigate();
 
   const handleProjectSelected = (projectId: string) : undefined => {
-    navigate(`/project/${projectId}`)
+    navigate(`/mobile-project/${projectId}`);
   }
 
   return (
