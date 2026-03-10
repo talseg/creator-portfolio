@@ -4,6 +4,7 @@ import { ProjectPage } from './pages/ProjectPage';
 import { StartPage } from './pages/StartPage';
 import { HashRouter, Routes, Route, useLocation } from "react-router-dom";
 import { MainPage } from './pages/MainPage';
+import { MobileProjectPage } from './pages/MobileProjectPage';
 
 function NotFound() {
   const loc = useLocation();
@@ -19,6 +20,7 @@ function App() {
         <Route path="/" element={<MainPage />} />
         
         <Route path="/project/:projectId" element={<ProjectPage />} />
+        <Route path="/mobile-project/:projectId" element={<MobileProjectPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </HashRouter>
