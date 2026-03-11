@@ -1,21 +1,33 @@
 import './App.css'
 import { AdminPage } from './pages/AdminPage';
 import { ProjectPage } from './pages/ProjectPage';
-import { StartPage } from './pages/StartPage';
+import { PrevStartPage } from './pages/PrevStartPage';
 import { HashRouter, Routes, Route, useLocation } from "react-router-dom";
 import { MainPage } from './pages/MainPage';
 import { MobileProjectPage } from './pages/MobileProjectPage';
+import styled from 'styled-components';
+
+const ErrorWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  font-size: 2rem;
+  white-space: pre;
+  color: red;
+`;
 
 function NotFound() {
   const loc = useLocation();
-  return <div style={{padding:16}}>No match for: <code>{loc.pathname}</code></div>;
+  return <ErrorWrapper>{"Wrong address: "}<code>{loc.pathname}</code></ErrorWrapper>;
 }
 
 function App() {
   return (
     <HashRouter>
       <Routes>
-        <Route path="/prev" element={<StartPage />} />
+        <Route path="/prev" element={<PrevStartPage />} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/" element={<MainPage />} />
         
