@@ -11,12 +11,13 @@ import { projectsStore } from "../stores/projecrStore";
 export type ScrollAreaType = undefined | "middle" | 1 | 2 | 3;
 interface ImageScrollingProps {
   imageRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
+  imageContainerRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
   middledRef: React.RefObject<HTMLDivElement | null>;
   middleSectionHeight: number;
 }
 
 export const useImageScrolling = (props: ImageScrollingProps) => {
-  const { imageRefs, middledRef, middleSectionHeight } = props;
+  const { imageRefs, imageContainerRefs, middledRef, middleSectionHeight } = props;
 
   const [scrollArea, setScrollArea] = useState<ScrollAreaType>(undefined);
   const scrollValues = useRef<[number, number, number]>([0, 0, 0]);
@@ -40,13 +41,20 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
 
 
     middledRef.current.style.transform = `translateY(${mainScrollValue.current}px)`;
+
+    imageContainerRefs.current.forEach((element, index) => {
+      const val = scrollValues.current[index];
+      if (!element.current || val === undefined) return;
+      element.current.style.transform = `translateY(${mainScrollValue.current}px)`;
+    });
+
     imageRefs.current.forEach((element, index) => {
       const val = scrollValues.current[index];
       if (!element.current || val === undefined) return;
-      element.current.style.transform = `translateY(${mainScrollValue.current + val}px)`;
+      element.current.style.transform = `translateY(${val}px)`;
     });
 
-  }, [imageRefs, middledRef]);
+  }, [imageRefs, imageContainerRefs, middledRef]);
 
   useLayoutEffect(() => {
 
