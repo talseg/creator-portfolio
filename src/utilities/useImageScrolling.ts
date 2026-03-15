@@ -10,9 +10,12 @@ import { projectsStore } from "../stores/projecrStore";
 
 export type ScrollAreaType = undefined | "middle" | 1 | 2 | 3;
 interface ImageScrollingProps {
-  imageRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
-  imageContainerRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
+  // Top moving container
   middledRef: React.RefObject<HTMLDivElement | null>;
+  // bottom images containers
+  imageContainerRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
+  // moving images inside the bottom container
+  imageRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
   middleSectionHeight: number;
 }
 

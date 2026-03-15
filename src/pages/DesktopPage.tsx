@@ -143,7 +143,7 @@ const ImagesContainer = styled.div<{ $isActive: boolean }>`
 
   img {
     filter: ${({ $isActive }) =>
-      $isActive ? "grayscale(0%)" : "grayscale(100%) brightness(0.9)"};
+    $isActive ? "grayscale(0%)" : "grayscale(100%) brightness(0.9)"};
     transition: filter 250ms ease;
   }
 `;
@@ -229,9 +229,9 @@ export const DesktopPage: React.FC = observer(() => {
     onTouchStart, onTouchEnd,
     onTouchMove, onTouchCancel, onResetScrolls } = useImageScrolling(
       {
-        imageRefs,
-        imageContainerRefs,
         middledRef,
+        imageContainerRefs,
+        imageRefs,
         middleSectionHeight: middleSectionHeightRem
       }
     );
@@ -317,7 +317,9 @@ export const DesktopPage: React.FC = observer(() => {
 
         </HeaderRow>
 
-        <MiddleSection ref={middledRef} className="middle-section"
+        <MiddleSection className="middle-section"
+          // Top Moving section
+          ref={middledRef}
           onMouseEnter={() => onMouseEnter("middle")}
           onMouseLeave={() => onMouseLeave()}
           onTouchStart={(e) => handleTouchStart("middle", e)}
@@ -337,7 +339,9 @@ export const DesktopPage: React.FC = observer(() => {
           }
         </MiddleSection>
 
-        <ImagesColumn className="images-column-1" ref={imageContainerRef1}
+        <ImagesColumn className="images-column-1"
+          // bottom moving section
+          ref={imageContainerRef1}
           $column={2}
           onMouseEnter={() => onMouseEnter(1)}
           onMouseLeave={() => onMouseLeave()}
@@ -346,7 +350,10 @@ export const DesktopPage: React.FC = observer(() => {
           onTouchMove={(e) => handleTouchMove(e)}
           onTouchCancel={onTouchCancel}
         >
-          <ImagesContainer $isActive={scrollArea === 1} ref={imageRef1} >
+          <ImagesContainer $isActive={scrollArea === 1}
+            // Moving images section inside the bottom section
+            ref={imageRef1}
+          >
             {
               renderProjectImages(projects, "designer",
                 isColumnActive("designer"), onProjectSelected)
