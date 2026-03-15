@@ -137,6 +137,8 @@ export const ImageSwapper: React.FC<ImageSwapperProps> = ({ images, className })
     setDisplayTwoImages(false);
   }
 
+  const showNextButton = successImages.length >= 2;
+
   return (
     <ImagesWrapper className={className}>
       <SizerImage src={images[0]?.imageUrl ?? images[0]?.imageUrl} />
@@ -154,9 +156,11 @@ export const ImageSwapper: React.FC<ImageSwapperProps> = ({ images, className })
             key={successImages[imageIndex]?.id} />
       }
 
-      <NextWrapper className="next-wrapper">
-        <NextButton onClick={() => { setDoNext(true) }} />
-      </NextWrapper>
+      { showNextButton &&
+        <NextWrapper className="next-wrapper">
+          <NextButton onClick={() => { setDoNext(true) }} />
+        </NextWrapper>
+      }
 
     </ImagesWrapper>
   );
