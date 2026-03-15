@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import OrSegalSvg from "../assets/orSegal.svg?react";
-import myImage from "../images/MainPicture.png";
+import MainImagePng from "../images/MainPicture.png";
 import type { CategoryType } from "../database/dbInterfaces";
 import { useImageScrolling, type ScrollAreaType } from "../utilities/useImageScrolling";
 import LabelText from "../components/labeltext/LabelText";
@@ -336,7 +336,7 @@ export const DesktopPage: React.FC = observer(() => {
             selectedProject ?
               <ImbededProjectPage projectId={selectedProject} pageWidthVw={100} /> :
               <MainImageWrapper $height={middleSectionHeightRem}>
-                <MainImage src={myImage} />
+                <MainImage src={MainImagePng} />
               </MainImageWrapper>
           }
         </MiddleSection>
