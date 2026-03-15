@@ -126,6 +126,12 @@ const MiddleSection = styled.div`
   justify-self: end;
 `;
 
+const MainImageWrapper = styled.div<{ $height: number }>`
+    height: ${({ $height }) => $height}rem;
+    display: flex;
+    width: 100%;
+`;
+
 const MainImage = styled.img`
   object-fit: cover;
   justify-content: center;
@@ -325,17 +331,13 @@ export const DesktopPage: React.FC = observer(() => {
           onTouchStart={(e) => handleTouchStart("middle", e)}
           onTouchEnd={(e) => handleTouchEnd(e)}
           onTouchMove={(e) => handleTouchMove(e)}
-          onTouchCancel={onTouchCancel}
-        >
+          onTouchCancel={onTouchCancel}>
           {
-            selectedProject ? <ImbededProjectPage projectId={selectedProject} pageWidthVw={100} /> :
-              <div style={{
-                height: `${middleSectionHeightRem}rem`, display: "flex",
-                width: "100%",
-                // background: "linear-gradient(to right,#96BFC5 0%,#a3cfd5 100%)"
-              }}>
+            selectedProject ?
+              <ImbededProjectPage projectId={selectedProject} pageWidthVw={100} /> :
+              <MainImageWrapper $height={middleSectionHeightRem}>
                 <MainImage src={myImage} />
-              </div>
+              </MainImageWrapper>
           }
         </MiddleSection>
 
