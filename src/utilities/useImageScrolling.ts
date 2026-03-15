@@ -10,13 +10,17 @@ import { projectsStore } from "../stores/projecrStore";
 
 export type ScrollAreaType = undefined | "middle" | 1 | 2 | 3;
 interface ImageScrollingProps {
-  imageRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
+  // Top moving container
   middledRef: React.RefObject<HTMLDivElement | null>;
+  // bottom images containers
+  imageContainerRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
+  // moving images inside the bottom container
+  imageRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
   middleSectionHeight: number;
 }
 
 export const useImageScrolling = (props: ImageScrollingProps) => {
-  const { imageRefs, middledRef, middleSectionHeight } = props;
+  const { imageRefs, imageContainerRefs, middledRef, middleSectionHeight } = props;
 
   const [scrollArea, setScrollArea] = useState<ScrollAreaType>(undefined);
   const scrollValues = useRef<[number, number, number]>([0, 0, 0]);
@@ -40,13 +44,20 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
 
 
     middledRef.current.style.transform = `translateY(${mainScrollValue.current}px)`;
+
+    imageContainerRefs.current.forEach((element, index) => {
+      const val = scrollValues.current[index];
+      if (!element.current || val === undefined) return;
+      element.current.style.transform = `translateY(${mainScrollValue.current}px)`;
+    });
+
     imageRefs.current.forEach((element, index) => {
       const val = scrollValues.current[index];
       if (!element.current || val === undefined) return;
-      element.current.style.transform = `translateY(${mainScrollValue.current + val}px)`;
+      element.current.style.transform = `translateY(${val}px)`;
     });
 
-  }, [imageRefs, middledRef]);
+  }, [imageRefs, imageContainerRefs, middledRef]);
 
   useLayoutEffect(() => {
 
@@ -109,8 +120,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     }
 
     // Image columns
-    const refs = imageRefs.current;
-    if (!refs) return;
+    const refs = imageContainerRefs.current;
     for (let i = 0; i < refs.length; i++) {
       const ref = refs[i];
       if (!ref?.current) continue;
@@ -122,7 +132,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     }
 
     return undefined;
-  }, [imageRefs, middledRef]);
+  }, [imageContainerRefs, middledRef]);
 
   const getScrollUpValue = useCallback((
     index: number,

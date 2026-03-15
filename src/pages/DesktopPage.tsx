@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import OrSegalSvg from "../assets/orSegal.svg?react";
-import myImage from "../images/MainPicture.png";
+import MainImagePng from "../images/MainPicture.png";
 import type { CategoryType } from "../database/dbInterfaces";
 import { useImageScrolling, type ScrollAreaType } from "../utilities/useImageScrolling";
 import LabelText from "../components/labeltext/LabelText";
@@ -14,6 +14,12 @@ const WrapperStyled = styled.div`
   display: flex;
   min-height: 100vh;
   min-width: 100vw;
+
+  background: linear-gradient(
+    to bottom,
+    #ffffff 0%,
+    #b8dde3 100%
+  );
 `;
 
 const LogoLinkWrapper = styled.a`
@@ -120,6 +126,12 @@ const MiddleSection = styled.div`
   justify-self: end;
 `;
 
+const MainImageWrapper = styled.div<{ $height: number }>`
+    height: ${({ $height }) => $height}rem;
+    display: flex;
+    width: 100%;
+`;
+
 const MainImage = styled.img`
   object-fit: cover;
   justify-content: center;
@@ -137,7 +149,7 @@ const ImagesContainer = styled.div<{ $isActive: boolean }>`
 
   img {
     filter: ${({ $isActive }) =>
-      $isActive ? "grayscale(0%)" : "grayscale(100%) brightness(0.9)"};
+    $isActive ? "grayscale(0%)" : "grayscale(100%) brightness(0.9)"};
     transition: filter 250ms ease;
   }
 `;
@@ -149,6 +161,7 @@ const ImagesColumn = styled.div<{ $column: number }>`
   grid-template-columns: 1fr auto;
   width: 100%;
   align-self: flex-start;
+  overflow: hidden;
 `
 
 const VerticalLine = styled.div<{ gridColumn?: number }>`
@@ -176,7 +189,11 @@ export const DesktopPage: React.FC = observer(() => {
   const imageRef1 = useRef<HTMLDivElement>(null);
   const imageRef2 = useRef<HTMLDivElement>(null);
   const imageRef3 = useRef<HTMLDivElement>(null);
+  const imageContainerRef1 = useRef<HTMLDivElement>(null);
+  const imageContainerRef2 = useRef<HTMLDivElement>(null);
+  const imageContainerRef3 = useRef<HTMLDivElement>(null);
   const imageRefs = useRef([imageRef1, imageRef2, imageRef3]);
+  const imageContainerRefs = useRef([imageContainerRef1, imageContainerRef2, imageContainerRef3]);
   const [middleSectionHeightRem, setMiddleSectionHeightRem] = useState(window.innerHeight / MAIN_IMAGE_HEIGHT_SCALE);
 
   useLayoutEffect(() => {
@@ -218,8 +235,9 @@ export const DesktopPage: React.FC = observer(() => {
     onTouchStart, onTouchEnd,
     onTouchMove, onTouchCancel, onResetScrolls } = useImageScrolling(
       {
-        imageRefs,
         middledRef,
+        imageContainerRefs,
+        imageRefs,
         middleSectionHeight: middleSectionHeightRem
       }
     );
@@ -305,27 +323,27 @@ export const DesktopPage: React.FC = observer(() => {
 
         </HeaderRow>
 
-        <MiddleSection ref={middledRef} className="middle-section"
+        <MiddleSection className="middle-section"
+          // Top Moving section
+          ref={middledRef}
           onMouseEnter={() => onMouseEnter("middle")}
           onMouseLeave={() => onMouseLeave()}
           onTouchStart={(e) => handleTouchStart("middle", e)}
           onTouchEnd={(e) => handleTouchEnd(e)}
           onTouchMove={(e) => handleTouchMove(e)}
-          onTouchCancel={onTouchCancel}
-        >
+          onTouchCancel={onTouchCancel}>
           {
-            selectedProject ? <ImbededProjectPage projectId={selectedProject} pageWidthVw={100} /> :
-              <div style={{
-                height: `${middleSectionHeightRem}rem`, display: "flex",
-                width: "100%",
-                background: "linear-gradient(to right,#96BFC5 0%,#a3cfd5 100%)"
-              }}>
-                <MainImage src={myImage} />
-              </div>
+            selectedProject ?
+              <ImbededProjectPage projectId={selectedProject} pageWidthVw={100} /> :
+              <MainImageWrapper $height={middleSectionHeightRem}>
+                <MainImage src={MainImagePng} />
+              </MainImageWrapper>
           }
         </MiddleSection>
 
-        <ImagesColumn ref={imageRef1} className="images-column-1"
+        <ImagesColumn className="images-column-1"
+          // bottom moving section
+          ref={imageContainerRef1}
           $column={2}
           onMouseEnter={() => onMouseEnter(1)}
           onMouseLeave={() => onMouseLeave()}
@@ -334,7 +352,10 @@ export const DesktopPage: React.FC = observer(() => {
           onTouchMove={(e) => handleTouchMove(e)}
           onTouchCancel={onTouchCancel}
         >
-          <ImagesContainer $isActive={scrollArea === 1}>
+          <ImagesContainer $isActive={scrollArea === 1}
+            // Moving images section inside the bottom section
+            ref={imageRef1}
+          >
             {
               renderProjectImages(projects, "designer",
                 isColumnActive("designer"), onProjectSelected)
@@ -344,7 +365,7 @@ export const DesktopPage: React.FC = observer(() => {
           <VerticalLine />
         </ImagesColumn>
 
-        <ImagesColumn ref={imageRef2} className="images-column-2"
+        <ImagesColumn className="images-column-2" ref={imageContainerRef2}
           $column={3}
           onMouseEnter={() => onMouseEnter(2)}
           onMouseLeave={() => onMouseLeave()}
@@ -354,7 +375,7 @@ export const DesktopPage: React.FC = observer(() => {
           onTouchCancel={onTouchCancel}
         >
 
-          <ImagesContainer $isActive={scrollArea === 2}>
+          <ImagesContainer $isActive={scrollArea === 2} ref={imageRef2} >
             {
               renderProjectImages(projects, "artist", isColumnActive("artist"), onProjectSelected)
             }
@@ -364,7 +385,7 @@ export const DesktopPage: React.FC = observer(() => {
 
         </ImagesColumn>
 
-        <ImagesColumn ref={imageRef3} className="images-column-3"
+        <ImagesColumn className="images-column-3" ref={imageContainerRef3}
           $column={4}
           onMouseEnter={() => onMouseEnter(3)}
           onMouseLeave={() => onMouseLeave()}
@@ -373,7 +394,7 @@ export const DesktopPage: React.FC = observer(() => {
           onTouchMove={(e) => handleTouchMove(e)}
           onTouchCancel={onTouchCancel}
         >
-          <ImagesContainer $isActive={scrollArea === 3}>
+          <ImagesContainer $isActive={scrollArea === 3} ref={imageRef3} >
             {
               renderProjectImages(projects, "illustrator", isColumnActive("illustrator"), onProjectSelected)
             }

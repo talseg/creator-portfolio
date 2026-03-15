@@ -10,11 +10,11 @@ const PageWrapper = styled.div<{ $pageWidthVw: number }>`
   
   width: ${({ $pageWidthVw }) => `${$pageWidthVw}vw`};
   height: 100%;
-  background: linear-gradient(
+  /* background: linear-gradient(
     to right,
     #96BFC5 0%,
     #a3cfd5 100%
-  );
+  ); */
 `;
 
 const StyledSpinner = styled(CircularProgress)`
