@@ -117,8 +117,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     }
 
     // Image columns
-    const refs = imageRefs.current;
-    if (!refs) return;
+    const refs = imageContainerRefs.current;
     for (let i = 0; i < refs.length; i++) {
       const ref = refs[i];
       if (!ref?.current) continue;
@@ -130,7 +129,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     }
 
     return undefined;
-  }, [imageRefs, middledRef]);
+  }, [imageContainerRefs, middledRef]);
 
   const getScrollUpValue = useCallback((
     index: number,
