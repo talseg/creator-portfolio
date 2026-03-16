@@ -9,6 +9,7 @@ import { projectsStore } from "../stores/projecrStore";
 // did not provide meaningful UX improvement for this design.
 
 export type ScrollAreaType = undefined | "middle" | 1 | 2 | 3;
+type ActiveScrollTarget = "main" | "images";
 
 interface ImageScrollingProps {
   // Top moving container
@@ -20,55 +21,66 @@ interface ImageScrollingProps {
   middleSectionHeight: number;
 }
 
-type StateKey =
-  | "none_open"
-  | "none_collapsed"
-  | "middle_open"
-  | "middle_collapsed"
-  | "1_open"
-  | "1_collapsed"
-  | "2_open"
-  | "2_collapsed"
-  | "3_open"
-  | "3_collapsed";
+const SCROLL_STATE = {
+  NONE_OPEN: "none_open",
+  NONE_COLLAPSED: "none_collapsed",
+  MIDDLE_OPEN: "middle_open",
+  MIDDLE_COLLAPSED: "middle_collapsed",
+  COLUMN_1_OPEN: "1_open",
+  COLUMN_1_COLLAPSED: "1_collapsed",
+  COLUMN_2_OPEN: "2_open",
+  COLUMN_2_COLLAPSED: "2_collapsed",
+  COLUMN_3_OPEN: "3_open",
+  COLUMN_3_COLLAPSED: "3_collapsed",
+} as const;
+
+type StateKey = (typeof SCROLL_STATE)[keyof typeof SCROLL_STATE];
+
+interface ScrollContext {
+  delta: number;
+  proposedMainScrollValue: number;
+  collapseHeight: number;
+  pointerArea: ScrollAreaType;
+  activeColumnIndex: number | undefined;
+  isMiddleCollapsed: boolean;
+  stateKey: StateKey;
+}
 
 export const useImageScrolling = (props: ImageScrollingProps) => {
   const { imageRefs, imageContainerRefs, middledRef, middleSectionHeight } = props;
 
   const [scrollArea, setScrollArea] = useState<ScrollAreaType>(undefined);
 
-  const scrollValues = useRef<[number, number, number]>([0, 0, 0]);
-  const mainScrollValue = useRef(0);
-  const shouldUpdateImages = useRef(false);
+  const imageScrollValuesRef = useRef<[number, number, number]>([0, 0, 0]);
+  const mainScrollValueRef = useRef(0);
+  const activeScrollTargetRef = useRef<ActiveScrollTarget>("main");
   const rafScheduledRef = useRef(false);
 
   const applyScrollTransforms = useCallback(() => {
     if (!middledRef.current) return;
 
-    middledRef.current.style.transform = `translateY(${mainScrollValue.current}px)`;
+    middledRef.current.style.transform = `translateY(${mainScrollValueRef.current}px)`;
 
-    imageContainerRefs.current.forEach((element) => {
-      if (!element.current) return;
-      element.current.style.transform = `translateY(${mainScrollValue.current}px)`;
+    imageContainerRefs.current.forEach((elementRef) => {
+      if (!elementRef.current) return;
+      elementRef.current.style.transform = `translateY(${mainScrollValueRef.current}px)`;
     });
 
-    imageRefs.current.forEach((element, index) => {
-      const val = scrollValues.current[index];
-      if (!element.current || val === undefined) return;
-      element.current.style.transform = `translateY(${val}px)`;
+    imageRefs.current.forEach((elementRef, index) => {
+      const imageScrollValue = imageScrollValuesRef.current[index];
+      if (!elementRef.current || imageScrollValue === undefined) return;
+      elementRef.current.style.transform = `translateY(${imageScrollValue}px)`;
     });
   }, [imageRefs, imageContainerRefs, middledRef]);
 
   useLayoutEffect(() => {
-    // Restore scroll values from MobX
-    mainScrollValue.current = projectsStore.mainScrollValue;
-    scrollValues.current = [...projectsStore.imagesScrollValues];
+    mainScrollValueRef.current = projectsStore.mainScrollValue;
+    imageScrollValuesRef.current = [...projectsStore.imagesScrollValues];
     applyScrollTransforms();
 
     return () => {
-      // Save scroll values to MobX
-      projectsStore.setMainScrollValue(mainScrollValue.current);
-      projectsStore.setImageScrollValues(scrollValues.current);
+      projectsStore.setMainScrollValue(mainScrollValueRef.current);
+      projectsStore.setImageScrollValues(imageScrollValuesRef.current);
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -79,20 +91,12 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       onDeltaYScroll: (delta) => applyScroll(delta),
     });
 
-  // const { onTouchStart, onTouchMove, onTouchEnd, onTouchCancel, isTouchGestureActive } =
-  //   useRafScrollEngine({
-  //     onDeltaYScroll: (delta) => applyScroll(delta),
-  //   });
-
   // Store last mouse position so we can use it on scroll
   const mousePosRef = useRef<{ x: number; y: number } | null>(null);
 
   const getPixelSizeByRem = () =>
     parseFloat(getComputedStyle(document.documentElement).fontSize);
 
-  // -------------------------------
-  // 1. Keep mouse position updated
-  // -------------------------------
   const onMouseMove = (e: MouseEvent) => {
     mousePosRef.current = { x: e.clientX, y: e.clientY };
   };
@@ -103,55 +107,57 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
   }, []);
 
   const detectAreaUnderPointer = useCallback((): ScrollAreaType => {
-    const pos = mousePosRef.current;
-    if (!pos) return undefined;
+    const position = mousePosRef.current;
+    if (!position) return undefined;
 
-    const { x, y } = pos;
+    const { x, y } = position;
 
-    // Middle section
     if (middledRef.current) {
-      const r = middledRef.current.getBoundingClientRect();
-      if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) {
+      const rect = middledRef.current.getBoundingClientRect();
+      if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
         return "middle";
       }
     }
 
-    // Image columns
     const refs = imageContainerRefs.current;
-    for (let i = 0; i < refs.length; i++) {
-      const ref = refs[i];
+    for (let index = 0; index < refs.length; index++) {
+      const ref = refs[index];
       if (!ref?.current) continue;
 
-      const r = ref.current.getBoundingClientRect();
-      if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) {
-        return (i + 1) as ScrollAreaType;
+      const rect = ref.current.getBoundingClientRect();
+      if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+        return (index + 1) as ScrollAreaType;
       }
     }
 
     return undefined;
   }, [imageContainerRefs, middledRef]);
 
-  const getScrollUpValue = useCallback(
-    (index: number, proposedValue: number, currentValue: number): number => {
-      const colRef = imageRefs.current[index];
-      if (!colRef?.current) return currentValue;
+  const getClampedImageScrollValue = useCallback(
+    (
+      columnIndex: number,
+      proposedImageScrollValue: number,
+      currentImageScrollValue: number
+    ): number => {
+      const columnRef = imageRefs.current[columnIndex];
+      if (!columnRef?.current) return currentImageScrollValue;
 
-      const rect = colRef.current.getBoundingClientRect();
+      const rect = columnRef.current.getBoundingClientRect();
 
       // Prevent a short list of images from scrolling
       if (rect.height < window.innerHeight) {
-        return currentValue;
+        return currentImageScrollValue;
       }
 
-      const projectedBottom = rect.bottom + (proposedValue - currentValue);
+      const projectedBottom = rect.bottom + (proposedImageScrollValue - currentImageScrollValue);
 
       // Regular image scrolling - accept the proposed value
       if (projectedBottom >= window.innerHeight) {
-        return proposedValue;
+        return proposedImageScrollValue;
       }
 
-      // Return the max allowed scroll up
-      return window.innerHeight - rect.bottom + currentValue;
+      // Return the maximum allowed upward scroll
+      return window.innerHeight - rect.bottom + currentImageScrollValue;
     },
     [imageRefs]
   );
@@ -164,149 +170,186 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     []
   );
 
+  const getScrollContext = useCallback((): ScrollContext => {
+    const rem = getPixelSizeByRem();
+    const collapseHeight = middleSectionHeight * rem;
+
+    let pointerArea: ScrollAreaType;
+
+    if (!isTouchGestureActive) {
+      pointerArea = detectAreaUnderPointer();
+      if (pointerArea !== scrollArea) {
+        setScrollArea(pointerArea);
+      }
+    } else {
+      pointerArea = scrollArea;
+    }
+
+    const activeColumnIndex =
+      pointerArea === 1 || pointerArea === 2 || pointerArea === 3
+        ? pointerArea - 1
+        : undefined;
+
+    const isMiddleCollapsed = mainScrollValueRef.current <= -collapseHeight;
+    const stateKey = getStateKey(pointerArea, isMiddleCollapsed);
+
+    return {
+      delta: 0,
+      proposedMainScrollValue: 0,
+      collapseHeight,
+      pointerArea,
+      activeColumnIndex,
+      isMiddleCollapsed,
+      stateKey,
+    };
+  }, [detectAreaUnderPointer, getStateKey, isTouchGestureActive, middleSectionHeight, scrollArea]);
+
+  const scheduleDomUpdate = useCallback(() => {
+    if (rafScheduledRef.current) return;
+    rafScheduledRef.current = true;
+    requestAnimationFrame(() => {
+      rafScheduledRef.current = false;
+      applyScrollTransforms();
+    });
+  }, [applyScrollTransforms]);
+
+  const collapseMainToLimit = useCallback((collapseHeight: number) => {
+    mainScrollValueRef.current = -collapseHeight;
+    activeScrollTargetRef.current = "images";
+  }, []);
+
+  const clampMainToTop = useCallback(() => {
+    mainScrollValueRef.current = 0;
+    activeScrollTargetRef.current = "main";
+  }, []);
+
+  const scrollMainNormally = useCallback((proposedMainScrollValue: number) => {
+    mainScrollValueRef.current = proposedMainScrollValue;
+    activeScrollTargetRef.current = "main";
+  }, []);
+
   const applyMainScroll = useCallback(
-    (
-      newMain: number,
-      collapseHeight: number,
-      nextShouldUpdateImages: boolean = false
-    ) => {
-      if (newMain < -collapseHeight) {
-        mainScrollValue.current = -collapseHeight;
-        shouldUpdateImages.current = true;
-      } else if (newMain > 0) {
-        mainScrollValue.current = 0;
-        shouldUpdateImages.current = false;
+    (proposedMainScrollValue: number, collapseHeight: number) => {
+      if (proposedMainScrollValue < -collapseHeight) {
+        collapseMainToLimit(collapseHeight);
+      } else if (proposedMainScrollValue > 0) {
+        clampMainToTop();
       } else {
-        mainScrollValue.current = newMain;
-        shouldUpdateImages.current = nextShouldUpdateImages;
+        scrollMainNormally(proposedMainScrollValue);
+      }
+    },
+    [clampMainToTop, collapseMainToLimit, scrollMainNormally]
+  );
+
+  const switchFromImageScrollBackToMain = useCallback(
+    (columnIndex: number, delta: number) => {
+      imageScrollValuesRef.current[columnIndex] = 0;
+      activeScrollTargetRef.current = "main";
+
+      if (mainScrollValueRef.current - delta >= 0) {
+        mainScrollValueRef.current = 0;
+      } else {
+        mainScrollValueRef.current = mainScrollValueRef.current - delta;
       }
     },
     []
   );
 
-  const applyScroll = useCallback(
-    (deltaY: number) => {
-      const scheduleDomUpdate = () => {
-        if (rafScheduledRef.current) return;
-        rafScheduledRef.current = true;
-        requestAnimationFrame(() => {
-          rafScheduledRef.current = false;
-          applyScrollTransforms();
-        });
-      };
+  const scrollActiveImageColumn = useCallback(
+    (columnIndex: number, delta: number) => {
+      const currentImageScrollValue = imageScrollValuesRef.current[columnIndex];
+      if (currentImageScrollValue === undefined) return;
 
-      if (!middledRef.current) return;
+      const proposedImageScrollValue = currentImageScrollValue - delta;
 
-      const delta = deltaY;
-      const newMain = mainScrollValue.current - delta;
-
-      const rem = getPixelSizeByRem();
-      const collapseHeight = middleSectionHeight * rem;
-
-      // Always recompute scroll area from pointer, except during touch gesture
-      let pointerArea: ScrollAreaType;
-      if (!isTouchGestureActive) {
-        pointerArea = detectAreaUnderPointer();
-        if (pointerArea !== scrollArea) {
-          setScrollArea(pointerArea);
-        }
-      } else {
-        pointerArea = scrollArea;
+      // Hit upper limit -> switch back to main scroll
+      if (proposedImageScrollValue > 0) {
+        switchFromImageScrollBackToMain(columnIndex, delta);
+        return;
       }
 
-      const isMiddleCollapsed = mainScrollValue.current <= -collapseHeight;
-      const stateKey = getStateKey(pointerArea, isMiddleCollapsed);
+      let nextImageScrollValue = proposedImageScrollValue;
 
-      const columnIndex =
-        pointerArea === 1 || pointerArea === 2 || pointerArea === 3
-          ? pointerArea - 1
-          : undefined;
+      // Keep original behavior:
+      // when the proposed value moves the image further up,
+      // clamp it so the last image does not scroll too far.
+      if (proposedImageScrollValue < currentImageScrollValue) {
+        nextImageScrollValue = getClampedImageScrollValue(
+          columnIndex,
+          proposedImageScrollValue,
+          currentImageScrollValue
+        );
+      }
+
+      imageScrollValuesRef.current[columnIndex] = nextImageScrollValue;
+    },
+    [getClampedImageScrollValue, switchFromImageScrollBackToMain]
+  );
+
+  const applyScroll = useCallback(
+    (deltaY: number) => {
+      if (!middledRef.current) return;
+
+      const baseContext = getScrollContext();
+
+      const scrollContext: ScrollContext = {
+        ...baseContext,
+        delta: deltaY,
+        proposedMainScrollValue: mainScrollValueRef.current - deltaY,
+      };
+
+      const {
+        delta,
+        proposedMainScrollValue,
+        collapseHeight,
+        pointerArea,
+        activeColumnIndex,
+        stateKey,
+      } = scrollContext;
 
       switch (stateKey) {
         // -------------------------------------------
-        // Pointer is not in an image column
+        // Main-area scrolling states
         // -------------------------------------------
-        case "none_open":
-        case "none_collapsed":
-        case "middle_open":
-        case "middle_collapsed": {
-          applyMainScroll(newMain, collapseHeight, false);
+        case SCROLL_STATE.NONE_OPEN:
+        case SCROLL_STATE.NONE_COLLAPSED:
+        case SCROLL_STATE.MIDDLE_OPEN:
+        case SCROLL_STATE.MIDDLE_COLLAPSED: {
+          applyMainScroll(proposedMainScrollValue, collapseHeight);
           break;
         }
 
         // -------------------------------------------
-        // Pointer is in an image column,
-        // but middle area is not collapsed yet.
-        // Old behavior: still scroll main area.
+        // Column is hovered, but main still owns scrolling
         // -------------------------------------------
-        case "1_open":
-        case "2_open":
-        case "3_open": {
-          if (newMain < -collapseHeight) {
-            mainScrollValue.current = -collapseHeight;
-            shouldUpdateImages.current = true;
-          } else if (newMain > 0) {
-            mainScrollValue.current = 0;
-            shouldUpdateImages.current = false;
-          } else {
-            mainScrollValue.current = newMain;
-            shouldUpdateImages.current = false;
-          }
-
+        case SCROLL_STATE.COLUMN_1_OPEN:
+        case SCROLL_STATE.COLUMN_2_OPEN:
+        case SCROLL_STATE.COLUMN_3_OPEN: {
+          applyMainScroll(proposedMainScrollValue, collapseHeight);
           break;
         }
 
         // -------------------------------------------
-        // Pointer is in an image column
-        // and middle is collapsed
+        // Column is hovered, and image list may own scrolling
         // -------------------------------------------
-        case "1_collapsed":
-        case "2_collapsed":
-        case "3_collapsed": {
-          if (columnIndex === undefined) {
+        case SCROLL_STATE.COLUMN_1_COLLAPSED:
+        case SCROLL_STATE.COLUMN_2_COLLAPSED:
+        case SCROLL_STATE.COLUMN_3_COLLAPSED: {
+          if (activeColumnIndex === undefined) {
             break;
           }
 
-          const current = scrollValues.current[columnIndex];
-          if (current === undefined) {
+          const shouldScrollImages =
+            activeScrollTargetRef.current === "images" &&
+            pointerArea !== undefined &&
+            pointerArea !== "middle";
+
+          if (!shouldScrollImages) {
+            applyMainScroll(proposedMainScrollValue, collapseHeight);
             break;
           }
 
-          const isImageScroll =
-            shouldUpdateImages.current && pointerArea !== undefined && pointerArea !== "middle";
-
-          // Match old behavior:
-          // if shouldUpdateImages is false, continue scrolling main
-          if (!isImageScroll) {
-            applyMainScroll(newMain, collapseHeight, false);
-            break;
-          }
-
-          const proposed = current - delta;
-
-          // Hit upper limit -> switch back to main scroll
-          if (proposed > 0) {
-            scrollValues.current[columnIndex] = 0;
-            shouldUpdateImages.current = false;
-
-            if (mainScrollValue.current - delta >= 0) {
-              mainScrollValue.current = 0;
-            } else {
-              mainScrollValue.current = mainScrollValue.current - delta;
-            }
-          } else {
-            let nextImageScrollValue = proposed;
-
-            // Keep original behavior:
-            // when the proposed value moves the image further up,
-            // clamp it so the last image does not scroll too far.
-            if (proposed < current) {
-              nextImageScrollValue = getScrollUpValue(columnIndex, proposed, current);
-            }
-
-            scrollValues.current[columnIndex] = nextImageScrollValue;
-          }
-
+          scrollActiveImageColumn(activeColumnIndex, delta);
           break;
         }
       }
@@ -315,20 +358,13 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     },
     [
       applyMainScroll,
-      applyScrollTransforms,
-      detectAreaUnderPointer,
-      getScrollUpValue,
-      getStateKey,
-      isTouchGestureActive,
-      middleSectionHeight,
+      getScrollContext,
       middledRef,
-      scrollArea,
+      scheduleDomUpdate,
+      scrollActiveImageColumn,
     ]
   );
 
-  // -------------------------------------------
-  // 5. Handlers
-  // -------------------------------------------
   const onMouseEnter = (area: ScrollAreaType) => {
     setScrollArea(area);
   };
@@ -343,9 +379,9 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
   };
 
   const onResetScrolls = () => {
-    mainScrollValue.current = 0;
-    scrollValues.current = [0, 0, 0];
-    shouldUpdateImages.current = false;
+    mainScrollValueRef.current = 0;
+    imageScrollValuesRef.current = [0, 0, 0];
+    activeScrollTargetRef.current = "main";
     setScrollArea(undefined);
     applyScrollTransforms();
   };
