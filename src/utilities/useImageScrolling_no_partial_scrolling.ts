@@ -44,13 +44,15 @@ interface ScrollContext {
 export const useImageScrolling = (props: ImageScrollingProps) => {
   const { imageRefs, imageContainerRefs, middledRef, middleSectionHeight } = props;
 
+  // UI-facing hover state
   const [hoveredArea, setHoveredArea] = useState<ScrollAreaType>(undefined);
 
+  // High-frequency motion values stay in refs
   const mainScrollValueRef = useRef(0);
   const imageScrollValuesRef = useRef<[number, number, number]>([0, 0, 0]);
 
-  // Original mode switch:
-  // once the main section fully collapses, scrolling can move to image columns.
+  // Keeps the old behavior explicit:
+  // after the main area fully collapses, scrolling can move to image columns.
   const activeScrollTargetRef = useRef<ActiveScrollTarget>("main");
 
   const rafScheduledRef = useRef(false);
@@ -248,7 +250,8 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
 
       let nextImageScrollValue = proposedImageScrollValue;
 
-      // Keep the original clamp behavior when moving further upward in the image list.
+      // Keep the original behavior:
+      // clamp upward image movement so the last image does not overshoot upward.
       if (proposedImageScrollValue < currentImageScrollValue) {
         nextImageScrollValue = getClampedImageScrollValue(
           columnIndex,
@@ -260,26 +263,6 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       imageScrollValuesRef.current[columnIndex] = nextImageScrollValue;
     },
     [getClampedImageScrollValue, switchFromImageScrollToMain]
-  );
-
-  const canRevealPreviousImageBeforeCollapse = useCallback(
-    (columnIndex: number | undefined, delta: number): boolean => {
-      if (columnIndex === undefined) return false;
-
-      // In this hook's sign convention, this is the specific direction
-      // that means: "show me the image above".
-      if (delta >= 0) return false;
-
-      const currentImageScrollValue = imageScrollValuesRef.current[columnIndex];
-      if (currentImageScrollValue === undefined) return false;
-
-      const proposedImageScrollValue = currentImageScrollValue - delta;
-
-      // Only allow this special case while the column can still move
-      // without crossing back above zero.
-      return proposedImageScrollValue <= 0;
-    },
-    []
   );
 
   const { onTouchStart, onTouchMove, onTouchEnd, onTouchCancel, isTouchGestureActive } =
@@ -301,6 +284,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
 
       const pointerArea = getEffectivePointerArea();
 
+      // Keep the render-facing hover state in sync with the latest pointer detection.
       if (!isTouchGestureActive && pointerArea !== hoveredArea) {
         setHoveredArea(pointerArea);
       }
@@ -326,19 +310,12 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
           break;
         }
 
-        // Pointer is over a column, but the middle section is not collapsed yet.
-        // Special case:
-        // if the user is asking to reveal the image above, keep the middle fixed
-        // and scroll the image column instead.
+        // Pointer is over a column, but the middle section is not collapsed yet:
+        // old behavior says main still owns the scroll.
         case SCROLL_STATE.COLUMN_1_OPEN:
         case SCROLL_STATE.COLUMN_2_OPEN:
         case SCROLL_STATE.COLUMN_3_OPEN: {
-          if (canRevealPreviousImageBeforeCollapse(activeColumnIndex, delta)) {
-            scrollActiveImageColumn(activeColumnIndex!, delta);
-          } else {
-            applyMainScroll(proposedMainScrollValue, collapseHeight);
-          }
-
+          applyMainScroll(proposedMainScrollValue, collapseHeight);
           break;
         }
 
@@ -371,7 +348,6 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     [
       applyMainScroll,
       buildScrollContext,
-      canRevealPreviousImageBeforeCollapse,
       getEffectivePointerArea,
       hoveredArea,
       isTouchGestureActive,
