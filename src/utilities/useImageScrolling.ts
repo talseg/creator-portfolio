@@ -262,11 +262,13 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     [getClampedImageScrollValue, switchFromImageScrollToMain]
   );
 
-  const USE_PARTIAL_SCROLL = true;
+  
 
   const canRevealPreviousImageBeforeCollapse = useCallback(
     (columnIndex: number | undefined, delta: number): boolean => {
 
+      const USE_PARTIAL_SCROLL = true;
+      
       if (!USE_PARTIAL_SCROLL)
         return false;
 
