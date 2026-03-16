@@ -3,6 +3,31 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { useVelocityFingerScroll } from "./useVelocotyFingerScroll";
 import { projectsStore } from "../stores/projecrStore";
 
+/**
+ * useImageScrolling
+ *
+ * Custom scroll engine for the portfolio desktop layout.
+ *
+ * The page contains two independent vertical scroll layers:
+ *
+ * 1. Main section (top content)
+ *    - Scrolls upward until it collapses.
+ *
+ * 2. Image columns (bottom section)
+ *    - Each column contains a vertical list of images.
+ *    - Images can scroll independently.
+ *
+ * Scroll routing depends on:
+ * - pointer location (middle / column / outside)
+ * - whether the middle section is collapsed
+ * - which layer currently "owns" the scroll interaction
+ *
+ * Special UX behavior:
+ * When the pointer is over an image column and the user scrolls
+ * upward to reveal the previous image, the column may scroll even
+ * before the middle section collapses.
+ */
+
 export type ScrollAreaType = undefined | "middle" | 1 | 2 | 3;
 type ActiveScrollTarget = "main" | "images";
 
@@ -13,6 +38,18 @@ interface ImageScrollingProps {
   middleSectionHeight: number;
 }
 
+/**
+ * Encodes scroll routing state.
+ *
+ * Format: "<pointerArea>_<collapseState>"
+ *
+ * pointerArea:
+ *   none | middle | 1 | 2 | 3
+ *
+ * collapseState:
+ *   open      -> middle section not yet collapsed
+ *   collapsed -> middle section fully collapsed
+ */
 const SCROLL_STATE = {
   NONE_OPEN: "none_open",
   NONE_COLLAPSED: "none_collapsed",
@@ -35,8 +72,18 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
 
   const [hoveredArea, setHoveredArea] = useState<ScrollAreaType>(undefined);
 
+  // Current vertical offset of the middle section
   const mainScrollValueRef = useRef(0);
+
+  // Vertical offsets of each image column
   const imageScrollValuesRef = useRef<[number, number, number]>([0, 0, 0]);
+
+  /**
+   * Determines which layer currently "owns" scrolling.
+   *
+   * "main"   -> scrolling affects the middle section
+   * "images" -> scrolling affects image columns
+   */
   const activeScrollTargetRef = useRef<ActiveScrollTarget>("main");
 
   const rafScheduledRef = useRef(false);
@@ -45,6 +92,12 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
   const getPixelSizeByRem = () =>
     parseFloat(getComputedStyle(document.documentElement).fontSize);
 
+  /**
+   * Applies the current scroll offsets to the DOM.
+   *
+   * The middle section and image containers move together,
+   * while the images inside the containers move independently.
+   */
   const applyScrollTransforms = useCallback(() => {
     if (!middledRef.current) return;
 
@@ -58,13 +111,18 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     imageRefs.current.forEach((imageRef, index) => {
       const imageScrollValue = imageScrollValuesRef.current[index];
       if (!imageRef.current || imageScrollValue === undefined) return;
+
       imageRef.current.style.transform = `translateY(${imageScrollValue}px)`;
     });
   }, [imageContainerRefs, imageRefs, middledRef]);
 
+  /**
+   * Initialize scroll values from MobX store
+   */
   useLayoutEffect(() => {
     mainScrollValueRef.current = projectsStore.mainScrollValue;
     imageScrollValuesRef.current = [...projectsStore.imagesScrollValues];
+
     applyScrollTransforms();
 
     return () => {
@@ -75,6 +133,10 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  /**
+   * Track pointer position globally so scroll routing can
+   * detect which element is under the pointer.
+   */
   useEffect(() => {
     const onMouseMove = (e: MouseEvent) => {
       mousePosRef.current = { x: e.clientX, y: e.clientY };
@@ -84,6 +146,12 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     return () => window.removeEventListener("mousemove", onMouseMove);
   }, []);
 
+  /**
+   * Determines which layout area is currently under the pointer.
+   *
+   * Wheel events themselves do not provide reliable element
+   * information when custom scrolling is used.
+   */
   const detectAreaUnderPointer = useCallback((): ScrollAreaType => {
     const position = mousePosRef.current;
     if (!position) return undefined;
@@ -110,6 +178,9 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     return undefined;
   }, [imageContainerRefs, middledRef]);
 
+  /**
+   * Prevents an image column from scrolling beyond its last image.
+   */
   const getClampedImageScrollValue = useCallback(
     (columnIndex: number, proposedImageScrollValue: number, currentImageScrollValue: number) => {
       const columnRef = imageRefs.current[columnIndex];
@@ -143,6 +214,9 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     });
   }, [applyScrollTransforms]);
 
+  /**
+   * Handles normal middle-section scrolling.
+   */
   const applyMainScroll = useCallback((proposedMainScrollValue: number, collapseHeight: number) => {
     if (proposedMainScrollValue < -collapseHeight) {
       mainScrollValueRef.current = -collapseHeight;
@@ -164,6 +238,9 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     mainScrollValueRef.current = proposedMainScrollValue >= 0 ? 0 : proposedMainScrollValue;
   }, []);
 
+  /**
+   * Scrolls an active image column.
+   */
   const scrollActiveImageColumn = useCallback(
     (columnIndex: number, delta: number) => {
       const currentImageScrollValue = imageScrollValuesRef.current[columnIndex];
@@ -191,6 +268,12 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     [getClampedImageScrollValue, switchFromImageScrollToMain]
   );
 
+  /**
+   * Partial scroll behavior.
+   *
+   * Allows scrolling the image column upward even before the
+   * middle section collapses.
+   */
   const canRevealPreviousImageBeforeCollapse = useCallback(
     (columnIndex: number | undefined, delta: number): boolean => {
       if (!USE_PARTIAL_SCROLL) return false;
@@ -215,6 +298,13 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     return isTouchGestureActive ? hoveredArea : detectAreaUnderPointer();
   }, [detectAreaUnderPointer, hoveredArea, isTouchGestureActive]);
 
+  /**
+   * Core scroll routing algorithm.
+   *
+   * Determines whether the scroll should affect:
+   * - the middle section
+   * - an image column
+   */
   const applyScroll = useCallback(
     (deltaY: number) => {
       if (!middledRef.current) return;
@@ -226,15 +316,21 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       }
 
       const collapseHeight = middleSectionHeight * getPixelSizeByRem();
+
       const activeColumnIndex =
         pointerArea === 1 || pointerArea === 2 || pointerArea === 3
           ? pointerArea - 1
           : undefined;
+
       const isMiddleCollapsed = mainScrollValueRef.current <= -collapseHeight;
       const proposedMainScrollValue = mainScrollValueRef.current - deltaY;
-      const stateKey = `${pointerArea ?? "none"}_${isMiddleCollapsed ? "collapsed" : "open"}` as StateKey;
+
+      const stateKey =
+        `${pointerArea ?? "none"}_${isMiddleCollapsed ? "collapsed" : "open"}` as StateKey;
 
       switch (stateKey) {
+
+        // Pointer outside image columns or over middle section.
         case SCROLL_STATE.NONE_OPEN:
         case SCROLL_STATE.NONE_COLLAPSED:
         case SCROLL_STATE.MIDDLE_OPEN:
@@ -243,6 +339,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
           break;
         }
 
+        // Pointer over column while middle still open.
         case SCROLL_STATE.COLUMN_1_OPEN:
         case SCROLL_STATE.COLUMN_2_OPEN:
         case SCROLL_STATE.COLUMN_3_OPEN: {
@@ -254,6 +351,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
           break;
         }
 
+        // Pointer over column and middle collapsed.
         case SCROLL_STATE.COLUMN_1_COLLAPSED:
         case SCROLL_STATE.COLUMN_2_COLLAPSED:
         case SCROLL_STATE.COLUMN_3_COLLAPSED: {
