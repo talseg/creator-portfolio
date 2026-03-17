@@ -185,6 +185,7 @@ export const DesktopPage: React.FC = observer(() => {
 
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const [selectedProject, setSelectedProject] = useState<string | undefined>(undefined);
+  const [hoveredTab, setHoveredTab] = useState<number| undefined>(undefined);
   const middledRef = useRef<HTMLDivElement>(null);
   const imageRef1 = useRef<HTMLDivElement>(null);
   const imageRef2 = useRef<HTMLDivElement>(null);
@@ -291,21 +292,31 @@ export const DesktopPage: React.FC = observer(() => {
             </LogoBox>
           </HeaderBox>
 
-          <HeaderBox onClick={() => removeSelectedProject()}>
+          <HeaderBox
+            onClick={() => removeSelectedProject()}
+            onMouseEnter={() => setHoveredTab(0)}
+            onMouseLeave={() => setHoveredTab(undefined)}
+          >
             <HeaderTextBox $isActive={isColumnActive("designer")}>
               <HeaderTextStyled $isActive={isColumnActive("designer")}>Designer</HeaderTextStyled>
             </HeaderTextBox>
             <VerticalLine />
           </HeaderBox>
 
-          <HeaderBox onClick={() => removeSelectedProject()}>
+          <HeaderBox onClick={() => removeSelectedProject()}
+            onMouseEnter={() => setHoveredTab(1)}
+            onMouseLeave={() => setHoveredTab(undefined)}
+          >
             <HeaderTextBox $isActive={isColumnActive("artist")}>
               <HeaderTextStyled $isActive={isColumnActive("artist")}>Artist</HeaderTextStyled>
             </HeaderTextBox>
             <VerticalLine />
           </HeaderBox>
 
-          <HeaderBox onClick={() => removeSelectedProject()}>
+          <HeaderBox onClick={() => removeSelectedProject()}
+            onMouseEnter={() => setHoveredTab(2)}
+            onMouseLeave={() => setHoveredTab(undefined)}
+          >
             <HeaderTextBox $isActive={isColumnActive("illustrator")}>
               <HeaderTextStyled $isActive={isColumnActive("illustrator")}>Illustrator</HeaderTextStyled>
             </HeaderTextBox>
@@ -352,7 +363,7 @@ export const DesktopPage: React.FC = observer(() => {
           onTouchMove={(e) => handleTouchMove(e)}
           onTouchCancel={onTouchCancel}
         >
-          <ImagesContainer $isActive={scrollArea === 1}
+          <ImagesContainer $isActive={scrollArea === 1 || hoveredTab === 0}
             // Moving images section inside the bottom section
             ref={imageRef1}
           >
@@ -375,7 +386,7 @@ export const DesktopPage: React.FC = observer(() => {
           onTouchCancel={onTouchCancel}
         >
 
-          <ImagesContainer $isActive={scrollArea === 2} ref={imageRef2} >
+          <ImagesContainer $isActive={scrollArea === 2 || hoveredTab === 1} ref={imageRef2} >
             {
               renderProjectImages(projects, "artist", isColumnActive("artist"), onProjectSelected)
             }
@@ -394,7 +405,7 @@ export const DesktopPage: React.FC = observer(() => {
           onTouchMove={(e) => handleTouchMove(e)}
           onTouchCancel={onTouchCancel}
         >
-          <ImagesContainer $isActive={scrollArea === 3} ref={imageRef3} >
+          <ImagesContainer $isActive={scrollArea === 3 || hoveredTab === 2} ref={imageRef3} >
             {
               renderProjectImages(projects, "illustrator", isColumnActive("illustrator"), onProjectSelected)
             }
