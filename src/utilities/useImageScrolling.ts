@@ -317,11 +317,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
 
       const collapseHeight = middleSectionHeight * getPixelSizeByRem();
 
-      const activeColumnIndex =
-        pointerArea === 0 || pointerArea === 1 || pointerArea === 2
-          ? pointerArea
-          : undefined;
-
+      const activeColumnIndex = typeof pointerArea === "number" ? pointerArea : undefined;
       const isMiddleCollapsed = mainScrollValueRef.current <= -collapseHeight;
       const proposedMainScrollValue = mainScrollValueRef.current - deltaY;
 
@@ -358,9 +354,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
           if (activeColumnIndex === undefined) break;
 
           const shouldScrollImages =
-            activeScrollTargetRef.current === "images" &&
-            pointerArea !== undefined &&
-            pointerArea !== "middle";
+            activeScrollTargetRef.current === "images" && typeof pointerArea === "number";
 
           if (!shouldScrollImages) {
             applyMainScroll(proposedMainScrollValue, collapseHeight);
