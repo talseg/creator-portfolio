@@ -185,16 +185,16 @@ export const DesktopPage: React.FC = observer(() => {
 
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const [selectedProject, setSelectedProject] = useState<string | undefined>(undefined);
-  const [hoveredTab, setHoveredTab] = useState<number| undefined>(undefined);
+  const [hoveredTab, setHoveredTab] = useState<number | undefined>(undefined);
   const middledRef = useRef<HTMLDivElement>(null);
+  const imageRef0 = useRef<HTMLDivElement>(null);
   const imageRef1 = useRef<HTMLDivElement>(null);
   const imageRef2 = useRef<HTMLDivElement>(null);
-  const imageRef3 = useRef<HTMLDivElement>(null);
+  const imageContainerRef0 = useRef<HTMLDivElement>(null);
   const imageContainerRef1 = useRef<HTMLDivElement>(null);
   const imageContainerRef2 = useRef<HTMLDivElement>(null);
-  const imageContainerRef3 = useRef<HTMLDivElement>(null);
-  const imageRefs = useRef([imageRef1, imageRef2, imageRef3]);
-  const imageContainerRefs = useRef([imageContainerRef1, imageContainerRef2, imageContainerRef3]);
+  const imageRefs = useRef([imageRef0, imageRef1, imageRef2]);
+  const imageContainerRefs = useRef([imageContainerRef0, imageContainerRef1, imageContainerRef2]);
   const [middleSectionHeightRem, setMiddleSectionHeightRem] = useState(window.innerHeight / MAIN_IMAGE_HEIGHT_SCALE);
 
   useLayoutEffect(() => {
@@ -244,9 +244,9 @@ export const DesktopPage: React.FC = observer(() => {
     );
 
   const isColumnActive = (area: CategoryType): boolean => {
-    if (area === "designer") return scrollArea === 1;
-    if (area === "artist") return scrollArea === 2;
-    if (area === "illustrator") return scrollArea === 3;
+    if (area === "designer") return scrollArea === 0;
+    if (area === "artist") return scrollArea === 1;
+    if (area === "illustrator") return scrollArea === 2;
     return false;
   }
 
@@ -352,20 +352,20 @@ export const DesktopPage: React.FC = observer(() => {
           }
         </MiddleSection>
 
-        <ImagesColumn className="images-column-1"
+        <ImagesColumn className="images-column-0"
           // bottom moving section
-          ref={imageContainerRef1}
+          ref={imageContainerRef0}
           $column={2}
-          onMouseEnter={() => onMouseEnter(1)}
+          onMouseEnter={() => onMouseEnter(0)}
           onMouseLeave={() => onMouseLeave()}
-          onTouchStart={(e) => handleTouchStart(1, e)}
+          onTouchStart={(e) => handleTouchStart(0, e)}
           onTouchEnd={(e) => handleTouchEnd(e)}
           onTouchMove={(e) => handleTouchMove(e)}
           onTouchCancel={onTouchCancel}
         >
-          <ImagesContainer $isActive={scrollArea === 1 || hoveredTab === 0}
+          <ImagesContainer $isActive={scrollArea === 0 || hoveredTab === 0}
             // Moving images section inside the bottom section
-            ref={imageRef1}
+            ref={imageRef0}
           >
             {
               renderProjectImages(projects, "designer",
@@ -376,17 +376,17 @@ export const DesktopPage: React.FC = observer(() => {
           <VerticalLine />
         </ImagesColumn>
 
-        <ImagesColumn className="images-column-2" ref={imageContainerRef2}
+        <ImagesColumn className="images-column-1" ref={imageContainerRef1}
           $column={3}
-          onMouseEnter={() => onMouseEnter(2)}
+          onMouseEnter={() => onMouseEnter(1)}
           onMouseLeave={() => onMouseLeave()}
-          onTouchStart={(e) => handleTouchStart(2, e)}
+          onTouchStart={(e) => handleTouchStart(1, e)}
           onTouchEnd={(e) => handleTouchEnd(e)}
           onTouchMove={(e) => handleTouchMove(e)}
           onTouchCancel={onTouchCancel}
         >
 
-          <ImagesContainer $isActive={scrollArea === 2 || hoveredTab === 1} ref={imageRef2} >
+          <ImagesContainer $isActive={scrollArea === 1 || hoveredTab === 1} ref={imageRef1} >
             {
               renderProjectImages(projects, "artist", isColumnActive("artist"), onProjectSelected)
             }
@@ -396,16 +396,16 @@ export const DesktopPage: React.FC = observer(() => {
 
         </ImagesColumn>
 
-        <ImagesColumn className="images-column-3" ref={imageContainerRef3}
+        <ImagesColumn className="images-column-2" ref={imageContainerRef2}
           $column={4}
-          onMouseEnter={() => onMouseEnter(3)}
+          onMouseEnter={() => onMouseEnter(2)}
           onMouseLeave={() => onMouseLeave()}
-          onTouchStart={(e) => handleTouchStart(3, e)}
+          onTouchStart={(e) => handleTouchStart(2, e)}
           onTouchEnd={(e) => handleTouchEnd(e)}
           onTouchMove={(e) => handleTouchMove(e)}
           onTouchCancel={onTouchCancel}
         >
-          <ImagesContainer $isActive={scrollArea === 3 || hoveredTab === 2} ref={imageRef3} >
+          <ImagesContainer $isActive={scrollArea === 2 || hoveredTab === 2} ref={imageRef2} >
             {
               renderProjectImages(projects, "illustrator", isColumnActive("illustrator"), onProjectSelected)
             }

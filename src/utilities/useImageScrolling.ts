@@ -28,7 +28,7 @@ import { projectsStore } from "../stores/projecrStore";
  * before the middle section collapses.
  */
 
-export type ScrollAreaType = undefined | "middle" | 1 | 2 | 3;
+export type ScrollAreaType = undefined | "middle" | 0 | 1 | 2;
 type ActiveScrollTarget = "main" | "images";
 
 interface ImageScrollingProps {
@@ -44,7 +44,7 @@ interface ImageScrollingProps {
  * Format: "<pointerArea>_<collapseState>"
  *
  * pointerArea:
- *   none | middle | 1 | 2 | 3
+ *   none | middle | 0 | 1 | 2
  *
  * collapseState:
  *   open      -> middle section not yet collapsed
@@ -55,12 +55,12 @@ const SCROLL_STATE = {
   NONE_COLLAPSED: "none_collapsed",
   MIDDLE_OPEN: "middle_open",
   MIDDLE_COLLAPSED: "middle_collapsed",
+  COLUMN_0_OPEN: "0_open",
+  COLUMN_0_COLLAPSED: "0_collapsed",
   COLUMN_1_OPEN: "1_open",
   COLUMN_1_COLLAPSED: "1_collapsed",
   COLUMN_2_OPEN: "2_open",
   COLUMN_2_COLLAPSED: "2_collapsed",
-  COLUMN_3_OPEN: "3_open",
-  COLUMN_3_COLLAPSED: "3_collapsed",
 } as const;
 
 type StateKey = (typeof SCROLL_STATE)[keyof typeof SCROLL_STATE];
@@ -171,7 +171,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
 
       const rect = containerRef.current.getBoundingClientRect();
       if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
-        return (index + 1) as ScrollAreaType;
+        return index as ScrollAreaType;
       }
     }
 
@@ -318,8 +318,8 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       const collapseHeight = middleSectionHeight * getPixelSizeByRem();
 
       const activeColumnIndex =
-        pointerArea === 1 || pointerArea === 2 || pointerArea === 3
-          ? pointerArea - 1
+        pointerArea === 0 || pointerArea === 1 || pointerArea === 2
+          ? pointerArea
           : undefined;
 
       const isMiddleCollapsed = mainScrollValueRef.current <= -collapseHeight;
@@ -340,9 +340,9 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
         }
 
         // Pointer over column while middle still open.
+        case SCROLL_STATE.COLUMN_0_OPEN:
         case SCROLL_STATE.COLUMN_1_OPEN:
-        case SCROLL_STATE.COLUMN_2_OPEN:
-        case SCROLL_STATE.COLUMN_3_OPEN: {
+        case SCROLL_STATE.COLUMN_2_OPEN: {
           if (canRevealPreviousImageBeforeCollapse(activeColumnIndex, deltaY)) {
             scrollActiveImageColumn(activeColumnIndex!, deltaY);
           } else {
@@ -352,9 +352,9 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
         }
 
         // Pointer over column and middle collapsed.
+        case SCROLL_STATE.COLUMN_0_COLLAPSED:
         case SCROLL_STATE.COLUMN_1_COLLAPSED:
-        case SCROLL_STATE.COLUMN_2_COLLAPSED:
-        case SCROLL_STATE.COLUMN_3_COLLAPSED: {
+        case SCROLL_STATE.COLUMN_2_COLLAPSED: {
           if (activeColumnIndex === undefined) break;
 
           const shouldScrollImages =
