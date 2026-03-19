@@ -154,11 +154,6 @@ const MainInfoWrapper = styled.div`
   grid-template-columns: minmax(3.5rem, 15%) auto;
 `;
 
-const LineWithStar = styled.div`
-  grid-column: 1;
-  grid-row: 2;
-`;
-
 const IsMyBlock = styled.div`
   width: 100%;
   height: 100%;
@@ -379,20 +374,15 @@ export const DesktopPage: React.FC = observer(() => {
               <ImbededProjectPage projectId={selectedProject} pageWidthVw={100} /> :
               <MainImageWrapper className="main-image-wrapper">
 
-                
-
                 <MainInfoWrapper>
 
-                  <LineWithStar>
-
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      <HorizontalLongLine />
-                      <StarSvg style={{ marginTop: 2,paddingRight: "1rem"}}/>
-                    </div>
-                  </LineWithStar>
+                  <div style={{ display: "flex", alignItems: "center", gridColumn: 1, gridRow: 2 }}>
+                    <HorizontalLongLine />
+                    <StarSvg style={{ marginTop: 2, paddingRight: "1rem" }} />
+                  </div>
 
                   <IsMyBlock>
-                      Is My
+                    Is My
                   </IsMyBlock>
 
                   <ProjectText>
