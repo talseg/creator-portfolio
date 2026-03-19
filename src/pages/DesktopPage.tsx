@@ -4,7 +4,7 @@ import MainImagePng from "../images/MainPicture.png";
 import type { CategoryType } from "../database/dbInterfaces";
 import { useImageScrolling, type ScrollAreaType } from "../utilities/useImageScrolling";
 import LabelText from "../components/labeltext/LabelText";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { renderProjectImages } from "../utilities/projectUtils";
 import { projectsStore } from "../stores/projecrStore";
 import { observer } from "mobx-react-lite";
@@ -126,16 +126,17 @@ const MiddleSection = styled.div`
   justify-self: end;
 `;
 
-const MainImageWrapper = styled.div<{ $height: number }>`
-    height: ${({ $height }) => $height}rem;
-    display: flex;
+const MainImageWrapper = styled.div`
+    height: 75vh;
+    display: grid;
     width: 100%;
 `;
 
 const MainImage = styled.img`
   object-fit: cover;
   justify-content: center;
-  margin-left: 7rem;
+  height: 100%;
+  min-height: 0;
 `;
 
 const ImagesContainer = styled.div<{ $isActive: boolean }>`
@@ -178,12 +179,8 @@ const SimpleDot = styled.div`
   transform: translate(2px, -3px);
 `;
 
-
-const MAIN_IMAGE_HEIGHT_SCALE = 20;
-
 export const DesktopPage: React.FC = observer(() => {
 
-  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const [selectedProject, setSelectedProject] = useState<string | undefined>(undefined);
   const [hoveredTab, setHoveredTab] = useState<number | undefined>(undefined);
   const middledRef = useRef<HTMLDivElement>(null);
@@ -195,42 +192,8 @@ export const DesktopPage: React.FC = observer(() => {
   const imageContainerRef2 = useRef<HTMLDivElement>(null);
   const imageRefs = useRef([imageRef0, imageRef1, imageRef2]);
   const imageContainerRefs = useRef([imageContainerRef0, imageContainerRef1, imageContainerRef2]);
-  const [middleSectionHeightRem, setMiddleSectionHeightRem] = useState(window.innerHeight / MAIN_IMAGE_HEIGHT_SCALE);
-
-  useLayoutEffect(() => {
-    const el = middledRef.current;
-    if (!el || !selectedProject) {
-      setMiddleSectionHeightRem(window.innerHeight / MAIN_IMAGE_HEIGHT_SCALE);
-      return;
-    }
-
-    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
-
-    const update = () => {
-      const hPx = el.getBoundingClientRect().height;
-      const hRem = hPx / rem;
-      setMiddleSectionHeightRem(hRem);
-    };
-
-    update();
-
-    const ro = new ResizeObserver(() => update());
-    ro.observe(el);
-
-    return () => ro.disconnect();
-  }, [selectedProject, windowHeight]);
 
   const projects = projectsStore.projects;
-
-  useEffect(() => {
-    const onResize = () => {
-      setWindowHeight(window.innerHeight);
-    };
-
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
-
 
   const { onMouseEnter, onMouseLeave, scrollArea,
     onTouchStart, onTouchEnd,
@@ -239,7 +202,6 @@ export const DesktopPage: React.FC = observer(() => {
         middledRef,
         imageContainerRefs,
         imageRefs,
-        middleSectionHeight: middleSectionHeightRem
       }
     );
 
@@ -346,7 +308,7 @@ export const DesktopPage: React.FC = observer(() => {
           {
             selectedProject ?
               <ImbededProjectPage projectId={selectedProject} pageWidthVw={100} /> :
-              <MainImageWrapper $height={middleSectionHeightRem}>
+              <MainImageWrapper>
                 <MainImage src={MainImagePng} />
               </MainImageWrapper>
           }
