@@ -83,7 +83,7 @@ const HeaderRow = styled.div`
   grid-template-rows: 1fr auto;
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 10;
   width: 100%;
   height: calc(100% + 5px);
 `;
@@ -122,7 +122,6 @@ const MiddleSection = styled.div`
   display: flex;
   width: 100%;
   grid-column: 1 / -1;
-  z-index: 10;
   justify-self: end;
 `;
 
@@ -130,11 +129,15 @@ const MainImageWrapper = styled.div`
     height: 75vh;
     display: grid;
     width: 100%;
+    grid-template-columns: 25% 37% 1fr; 
+    grid-template-rows: 10% 80% 1fr;
 `;
 
 const MainImage = styled.img`
   object-fit: cover;
   justify-content: center;
+  grid-column: 2;
+  grid-row: 2;
   height: 100%;
   min-height: 0;
 `;
