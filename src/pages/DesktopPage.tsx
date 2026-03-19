@@ -4,11 +4,12 @@ import MainImagePng from "../images/MainPicture.png";
 import type { CategoryType } from "../database/dbInterfaces";
 import { useImageScrolling, type ScrollAreaType } from "../utilities/useImageScrolling";
 import LabelText from "../components/labeltext/LabelText";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { renderProjectImages } from "../utilities/projectUtils";
 import { projectsStore } from "../stores/projecrStore";
 import { observer } from "mobx-react-lite";
 import { ImbededProjectPage } from "./ImbededProjectPage";
+import StarSvg from "../assets/star.svg?react";
 
 const WrapperStyled = styled.div`
   display: flex;
@@ -83,7 +84,7 @@ const HeaderRow = styled.div`
   grid-template-rows: 1fr auto;
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 10;
   width: 100%;
   height: calc(100% + 5px);
 `;
@@ -122,20 +123,84 @@ const MiddleSection = styled.div`
   display: flex;
   width: 100%;
   grid-column: 1 / -1;
-  z-index: 10;
   justify-self: end;
 `;
 
-const MainImageWrapper = styled.div<{ $height: number }>`
-    height: ${({ $height }) => $height}rem;
-    display: flex;
+const MainImageWrapper = styled.div`
+    height: 80vh;
+    display: grid;
     width: 100%;
+    grid-template-columns: 25% auto 1fr; 
+    grid-template-rows: 5fr 50fr 5fr;
+    overflow: hidden;
 `;
 
 const MainImage = styled.img`
   object-fit: cover;
   justify-content: center;
-  margin-left: 7rem;
+  grid-column: 2;
+  grid-row: 2;
+  height: 100%;
+  min-height: 0;
+`;
+
+const MainInfoWrapper = styled.div`
+  width: 95%;
+  grid-row: 2;
+  grid-column: 3;
+  margin-left: -5px;
+  display: grid;
+  grid-template-rows: 2fr auto auto auto auto 1fr;
+  grid-template-columns: minmax(3.5rem, 15%) auto;
+`;
+
+const IsMyBlock = styled.div`
+  width: 100%;
+  height: 100%;
+  grid-row: 2;
+  grid-column: 2;
+  font-family: "EditorSans";
+  font-size: 1.1rem;
+  font-weight: bold;
+  display: flex;
+`;
+
+const ProjectText = styled.div`
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff01;
+  grid-row: 3;
+  grid-column: 2;
+  font-family: "EditorSans";
+  font-size: 1rem;
+  display: flex;
+  flex-direction: column;
+  max-height: 50vh;
+  overflow: hidden;
+`;
+
+const FirstLineWrapper = styled.div`
+  width: 100%;
+  grid-column: 1 / -1;
+  grid-row: 4;
+`;
+
+const CollegeText = styled.div`
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff01;
+  grid-row: 4;
+  grid-column: 2;
+  font-family: "EditorSans";
+  font-size: 1.1rem;
+  display: flex;
+  flex-direction: column;
+`;
+
+const SecondLineWrapper = styled.div`
+  width: 100%;
+  grid-column: 1 / -1;
+  grid-row: 5;
 `;
 
 const ImagesContainer = styled.div<{ $isActive: boolean }>`
@@ -178,12 +243,8 @@ const SimpleDot = styled.div`
   transform: translate(2px, -3px);
 `;
 
-
-const MAIN_IMAGE_HEIGHT_SCALE = 20;
-
 export const DesktopPage: React.FC = observer(() => {
 
-  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const [selectedProject, setSelectedProject] = useState<string | undefined>(undefined);
   const [hoveredTab, setHoveredTab] = useState<number | undefined>(undefined);
   const middledRef = useRef<HTMLDivElement>(null);
@@ -195,42 +256,8 @@ export const DesktopPage: React.FC = observer(() => {
   const imageContainerRef2 = useRef<HTMLDivElement>(null);
   const imageRefs = useRef([imageRef0, imageRef1, imageRef2]);
   const imageContainerRefs = useRef([imageContainerRef0, imageContainerRef1, imageContainerRef2]);
-  const [middleSectionHeightRem, setMiddleSectionHeightRem] = useState(window.innerHeight / MAIN_IMAGE_HEIGHT_SCALE);
-
-  useLayoutEffect(() => {
-    const el = middledRef.current;
-    if (!el || !selectedProject) {
-      setMiddleSectionHeightRem(window.innerHeight / MAIN_IMAGE_HEIGHT_SCALE);
-      return;
-    }
-
-    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
-
-    const update = () => {
-      const hPx = el.getBoundingClientRect().height;
-      const hRem = hPx / rem;
-      setMiddleSectionHeightRem(hRem);
-    };
-
-    update();
-
-    const ro = new ResizeObserver(() => update());
-    ro.observe(el);
-
-    return () => ro.disconnect();
-  }, [selectedProject, windowHeight]);
 
   const projects = projectsStore.projects;
-
-  useEffect(() => {
-    const onResize = () => {
-      setWindowHeight(window.innerHeight);
-    };
-
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
-
 
   const { onMouseEnter, onMouseLeave, scrollArea,
     onTouchStart, onTouchEnd,
@@ -239,7 +266,6 @@ export const DesktopPage: React.FC = observer(() => {
         middledRef,
         imageContainerRefs,
         imageRefs,
-        middleSectionHeight: middleSectionHeightRem
       }
     );
 
@@ -346,8 +372,54 @@ export const DesktopPage: React.FC = observer(() => {
           {
             selectedProject ?
               <ImbededProjectPage projectId={selectedProject} pageWidthVw={100} /> :
-              <MainImageWrapper $height={middleSectionHeightRem}>
+              <MainImageWrapper className="main-image-wrapper">
+
+                <MainInfoWrapper>
+
+                  <div style={{ display: "flex", alignItems: "center", gridColumn: 1, gridRow: 2 }}>
+                    <HorizontalLongLine />
+                    <StarSvg style={{ marginTop: 2, paddingRight: "1rem" }} />
+                  </div>
+
+                  <IsMyBlock>
+                    Is My
+                  </IsMyBlock>
+
+                  <ProjectText>
+                    <p>
+                      IS MY is a project of wandering and research in cemeteries.
+                      In London I discovered that cemeteries are located within the city.
+                      People cycle through them, read on benches, and sometimes there
+                      are even cafés inside. Since I grew up with the Jewish perception that
+                      the cemetery is an impure place (where one must wash their hands upon leaving),
+                      I was fascinated by the perception of death as part of life.
+                    </p>
+                  </ProjectText>
+
+                  <FirstLineWrapper>
+
+                    <div style={{ display: "flex" }}>
+                      <HorizontalLongLine />
+                      <SimpleDot style={{ marginLeft: "-5px", marginTop: "1px" }} />
+                    </div>
+                  </FirstLineWrapper>
+
+                  <CollegeText>
+                    <p>
+                      Royal College of Art, 2024
+                    </p>
+                  </CollegeText>
+
+                  <SecondLineWrapper>
+                    <div style={{ display: "flex" }}>
+                      <HorizontalLongLine />
+                      <SimpleDot style={{ marginLeft: "-5px", marginTop: "1px" }} />
+                    </div>
+                  </SecondLineWrapper>
+                </MainInfoWrapper>
+
                 <MainImage src={MainImagePng} />
+
               </MainImageWrapper>
           }
         </MiddleSection>

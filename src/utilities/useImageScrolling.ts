@@ -35,7 +35,6 @@ interface ImageScrollingProps {
   middledRef: React.RefObject<HTMLDivElement | null>;
   imageContainerRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
   imageRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
-  middleSectionHeight: number;
 }
 
 /**
@@ -68,9 +67,25 @@ type StateKey = (typeof SCROLL_STATE)[keyof typeof SCROLL_STATE];
 const USE_PARTIAL_SCROLL = true;
 
 export const useImageScrolling = (props: ImageScrollingProps) => {
-  const { imageRefs, imageContainerRefs, middledRef, middleSectionHeight } = props;
-
+  const { imageRefs, imageContainerRefs, middledRef } = props;
   const [hoveredArea, setHoveredArea] = useState<ScrollAreaType>(undefined);
+  const [middleSectionHeight, setMiddleSectionHeight] = useState(0);
+
+  useLayoutEffect(() => {
+    const el = middledRef.current;
+    if (!el) return;
+
+    const update = () => {
+      setMiddleSectionHeight(el.getBoundingClientRect().height);
+    };
+
+    update();
+
+    const ro = new ResizeObserver(() => update());
+    ro.observe(el);
+
+    return () => ro.disconnect();
+  }, [middledRef]);
 
   // Current vertical offset of the middle section
   const mainScrollValueRef = useRef(0);
@@ -88,9 +103,6 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
 
   const rafScheduledRef = useRef(false);
   const mousePosRef = useRef<{ x: number; y: number } | null>(null);
-
-  const getPixelSizeByRem = () =>
-    parseFloat(getComputedStyle(document.documentElement).fontSize);
 
   /**
    * Applies the current scroll offsets to the DOM.
@@ -315,10 +327,8 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
         setHoveredArea(pointerArea);
       }
 
-      const collapseHeight = middleSectionHeight * getPixelSizeByRem();
-
       const activeColumnIndex = typeof pointerArea === "number" ? pointerArea : undefined;
-      const isMiddleCollapsed = mainScrollValueRef.current <= -collapseHeight;
+      const isMiddleCollapsed = mainScrollValueRef.current <= -middleSectionHeight;
       const proposedMainScrollValue = mainScrollValueRef.current - deltaY;
 
       const stateKey =
@@ -331,7 +341,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
         case SCROLL_STATE.NONE_COLLAPSED:
         case SCROLL_STATE.MIDDLE_OPEN:
         case SCROLL_STATE.MIDDLE_COLLAPSED: {
-          applyMainScroll(proposedMainScrollValue, collapseHeight);
+          applyMainScroll(proposedMainScrollValue, middleSectionHeight);
           break;
         }
 
@@ -342,7 +352,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
           if (canRevealPreviousImageBeforeCollapse(activeColumnIndex, deltaY)) {
             scrollActiveImageColumn(activeColumnIndex!, deltaY);
           } else {
-            applyMainScroll(proposedMainScrollValue, collapseHeight);
+            applyMainScroll(proposedMainScrollValue, middleSectionHeight);
           }
           break;
         }
@@ -357,7 +367,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
             activeScrollTargetRef.current === "images" && typeof pointerArea === "number";
 
           if (!shouldScrollImages) {
-            applyMainScroll(proposedMainScrollValue, collapseHeight);
+            applyMainScroll(proposedMainScrollValue, middleSectionHeight);
             break;
           }
 

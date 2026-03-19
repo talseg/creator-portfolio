@@ -7,14 +7,8 @@ import { ImageSwapper } from "../components/imageSwapper/ImageSwapper";
 
 const PageWrapper = styled.div<{ $pageWidthVw: number }>`
   display: grid;
-  
   width: ${({ $pageWidthVw }) => `${$pageWidthVw}vw`};
   height: 100%;
-  /* background: linear-gradient(
-    to right,
-    #96BFC5 0%,
-    #a3cfd5 100%
-  ); */
 `;
 
 const StyledSpinner = styled(CircularProgress)`
