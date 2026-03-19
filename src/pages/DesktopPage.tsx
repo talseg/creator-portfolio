@@ -9,6 +9,7 @@ import { renderProjectImages } from "../utilities/projectUtils";
 import { projectsStore } from "../stores/projecrStore";
 import { observer } from "mobx-react-lite";
 import { ImbededProjectPage } from "./ImbededProjectPage";
+import StarSvg from "../assets/star.svg?react";
 
 const WrapperStyled = styled.div`
   display: flex;
@@ -126,11 +127,12 @@ const MiddleSection = styled.div`
 `;
 
 const MainImageWrapper = styled.div`
-    height: 75vh;
+    height: 80vh;
     display: grid;
     width: 100%;
-    grid-template-columns: 25% 37% 1fr; 
-    grid-template-rows: 10% 80% 1fr;
+    grid-template-columns: 25% auto 1fr; 
+    grid-template-rows: 5fr 50fr 5fr;
+    overflow: hidden;
 `;
 
 const MainImage = styled.img`
@@ -140,6 +142,70 @@ const MainImage = styled.img`
   grid-row: 2;
   height: 100%;
   min-height: 0;
+`;
+
+const MainInfoWrapper = styled.div`
+  width: 95%;
+  grid-row: 2;
+  grid-column: 3;
+  margin-left: -5px;
+  display: grid;
+  grid-template-rows: 2fr auto auto auto auto 1fr;
+  grid-template-columns: minmax(3.5rem, 15%) auto;
+`;
+
+const LineWithStar = styled.div`
+  grid-column: 1;
+  grid-row: 2;
+`;
+
+const IsMyBlock = styled.div`
+  width: 100%;
+  height: 100%;
+  grid-row: 2;
+  grid-column: 2;
+  font-family: "EditorSans";
+  font-size: 1.1rem;
+  font-weight: bold;
+  display: flex;
+`;
+
+const ProjectText = styled.div`
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff01;
+  grid-row: 3;
+  grid-column: 2;
+  font-family: "EditorSans";
+  font-size: 1rem;
+  display: flex;
+  flex-direction: column;
+  max-height: 50vh;
+  overflow: hidden;
+`;
+
+const FirstLineWrapper = styled.div`
+  width: 100%;
+  grid-column: 1 / -1;
+  grid-row: 4;
+`;
+
+const CollegeText = styled.div`
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff01;
+  grid-row: 4;
+  grid-column: 2;
+  font-family: "EditorSans";
+  font-size: 1.1rem;
+  display: flex;
+  flex-direction: column;
+`;
+
+const SecondLineWrapper = styled.div`
+  width: 100%;
+  grid-column: 1 / -1;
+  grid-row: 5;
 `;
 
 const ImagesContainer = styled.div<{ $isActive: boolean }>`
@@ -311,8 +377,59 @@ export const DesktopPage: React.FC = observer(() => {
           {
             selectedProject ?
               <ImbededProjectPage projectId={selectedProject} pageWidthVw={100} /> :
-              <MainImageWrapper>
+              <MainImageWrapper className="main-image-wrapper">
+
+                
+
+                <MainInfoWrapper>
+
+                  <LineWithStar>
+
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <HorizontalLongLine />
+                      <StarSvg style={{ marginTop: 2,paddingRight: "1rem"}}/>
+                    </div>
+                  </LineWithStar>
+
+                  <IsMyBlock>
+                      Is My
+                  </IsMyBlock>
+
+                  <ProjectText>
+                    <p>
+                      IS MY is a project of wandering and research in cemeteries.
+                      In London I discovered that cemeteries are located within the city.
+                      People cycle through them, read on benches, and sometimes there
+                      are even cafés inside. Since I grew up with the Jewish perception that
+                      the cemetery is an impure place (where one must wash their hands upon leaving),
+                      I was fascinated by the perception of death as part of life.
+                    </p>
+                  </ProjectText>
+
+                  <FirstLineWrapper>
+
+                    <div style={{ display: "flex" }}>
+                      <HorizontalLongLine />
+                      <SimpleDot style={{ marginLeft: "-5px", marginTop: "1px" }} />
+                    </div>
+                  </FirstLineWrapper>
+
+                  <CollegeText>
+                    <p>
+                      Royal College of Art, 2024
+                    </p>
+                  </CollegeText>
+
+                  <SecondLineWrapper>
+                    <div style={{ display: "flex" }}>
+                      <HorizontalLongLine />
+                      <SimpleDot style={{ marginLeft: "-5px", marginTop: "1px" }} />
+                    </div>
+                  </SecondLineWrapper>
+                </MainInfoWrapper>
+
                 <MainImage src={MainImagePng} />
+
               </MainImageWrapper>
           }
         </MiddleSection>
