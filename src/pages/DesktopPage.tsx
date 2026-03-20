@@ -145,13 +145,12 @@ const MainImage = styled.img`
 `;
 
 const MainInfoWrapper = styled.div`
-  width: 95%;
   grid-row: 2;
   grid-column: 3;
-  margin-left: -5px;
   display: grid;
   grid-template-rows: 2fr auto auto auto auto 1fr;
   grid-template-columns: minmax(3.5rem, 15%) auto;
+  margin-right: 1.5rem;
 `;
 
 const IsMyBlock = styled.div`
@@ -186,15 +185,14 @@ const FirstLineWrapper = styled.div`
 `;
 
 const CollegeText = styled.div`
-  width: 100%;
-  height: 100%;
+  height: 3rem;
   background-color: #ffffff01;
   grid-row: 4;
   grid-column: 2;
   font-family: "EditorSans";
   font-size: 1.1rem;
   display: flex;
-  flex-direction: column;
+  align-items: center;
 `;
 
 const SecondLineWrapper = styled.div`
@@ -242,6 +240,8 @@ const SimpleDot = styled.div`
   border-radius: 50%;
   transform: translate(2px, -3px);
 `;
+
+
 
 export const DesktopPage: React.FC = observer(() => {
 
@@ -405,9 +405,7 @@ export const DesktopPage: React.FC = observer(() => {
                   </FirstLineWrapper>
 
                   <CollegeText>
-                    <p>
                       Royal College of Art, 2024
-                    </p>
                   </CollegeText>
 
                   <SecondLineWrapper>
