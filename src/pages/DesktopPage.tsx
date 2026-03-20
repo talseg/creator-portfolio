@@ -185,15 +185,14 @@ const FirstLineWrapper = styled.div`
 `;
 
 const CollegeText = styled.div`
-  width: 100%;
-  height: 100%;
+  height: 3rem;
   background-color: #ffffff01;
   grid-row: 4;
   grid-column: 2;
   font-family: "EditorSans";
   font-size: 1.1rem;
   display: flex;
-  flex-direction: column;
+  align-items: center;
 `;
 
 const SecondLineWrapper = styled.div`
@@ -406,9 +405,7 @@ export const DesktopPage: React.FC = observer(() => {
                   </FirstLineWrapper>
 
                   <CollegeText>
-                    <p>
                       Royal College of Art, 2024
-                    </p>
                   </CollegeText>
 
                   <SecondLineWrapper>
