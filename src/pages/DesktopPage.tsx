@@ -145,13 +145,12 @@ const MainImage = styled.img`
 `;
 
 const MainInfoWrapper = styled.div`
-  width: 95%;
   grid-row: 2;
   grid-column: 3;
-  margin-left: -5px;
   display: grid;
   grid-template-rows: 2fr auto auto auto auto 1fr;
   grid-template-columns: minmax(3.5rem, 15%) auto;
+  margin-right: 1.5rem;
 `;
 
 const IsMyBlock = styled.div`
@@ -242,6 +241,8 @@ const SimpleDot = styled.div`
   border-radius: 50%;
   transform: translate(2px, -3px);
 `;
+
+
 
 export const DesktopPage: React.FC = observer(() => {
 
