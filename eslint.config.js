@@ -8,6 +8,14 @@ import css from "@eslint/css";
 import { defineConfig } from "eslint/config";
 
 export default defineConfig([
+    {
+    ignores: [
+      "dist/**",
+      "node_modules/**",
+      "storybook-static/**",
+      "coverage/**",
+    ],
+  },
   { files: ["**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"], 
     languageOptions: {
       parser: tseslint.parser, // Let ESLint understand TypeScript
