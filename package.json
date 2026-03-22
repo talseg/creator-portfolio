@@ -13,7 +13,8 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "bump-version": "npm version patch -m \"release: bump patch to %s\" && git push --follow-tags",
-    "pc-sync-main": "pwsh ./scripts/sync-main.ps1"
+    "pc-sync-main": "pwsh ./scripts/sync-main.ps1",
+    "reset-history": "powershell -Command \"Remove-Item (Get-PSReadLineOption).HistorySavePath; echo 'history was reset'\""
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
