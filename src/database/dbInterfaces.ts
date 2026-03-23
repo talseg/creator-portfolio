@@ -1,10 +1,12 @@
+
+export const categories = ["designer", "artist", "illustrator"] as const;
+export type CategoryType = typeof categories[number];
+
 export interface Image {
     id: string;
     imageUrl: string;
     imageIndex: number;
 }
-
-export type CategoryType = "designer" | "artist" | "illustrator";
 
 export interface Project {
     id: string;

@@ -1,15 +1,16 @@
+import { useRef, useState } from "react";
 import styled from "styled-components";
 import OrSegalSvg from "../assets/orSegal.svg?react";
 import MainImagePng from "../images/MainPicture.png";
-import type { CategoryType } from "../database/dbInterfaces";
+import StarSvg from "../assets/star.svg?react";
 import { useImageScrolling, type ScrollAreaType } from "../utilities/useImageScrolling";
-import LabelText from "../components/labeltext/LabelText";
-import { useRef, useState } from "react";
 import { renderProjectImages } from "../utilities/projectUtils";
 import { projectsStore } from "../stores/projecrStore";
 import { observer } from "mobx-react-lite";
 import { ImbededProjectPage } from "./ImbededProjectPage";
-import StarSvg from "../assets/star.svg?react";
+import { categoryToIndex } from "../utilities/categoryUtils";
+import { categories, type CategoryType } from "../database/dbInterfaces";
+import LabelText from "../components/labeltext/LabelText";
 
 const WrapperStyled = styled.div`
   display: flex;
@@ -269,12 +270,7 @@ export const DesktopPage: React.FC = observer(() => {
       }
     );
 
-  const isColumnActive = (area: CategoryType): boolean => {
-    if (area === "designer") return scrollArea === 0;
-    if (area === "artist") return scrollArea === 1;
-    if (area === "illustrator") return scrollArea === 2;
-    return false;
-  }
+  const isColumnActive = (category: CategoryType): boolean => categoryToIndex[category] === scrollArea;
 
   const handleTouchStart = (area: ScrollAreaType, e: React.TouchEvent<HTMLDivElement>) => {
     e.stopPropagation();
@@ -299,6 +295,39 @@ export const DesktopPage: React.FC = observer(() => {
   const removeSelectedProject = () => {
     setSelectedProject(undefined);
     onResetScrolls();
+  }
+
+  const renderProjectCategories = () => {
+
+    return categories.map((category, i) => {
+      const area = i as ScrollAreaType;
+      const key = `images-column-${i}`;
+      const isLastColumn = i === categories.length - 1;
+
+      return (
+        <ImagesColumn className={key} key={key}
+          ref={imageContainerRefs.current[i]}
+          $column={i + 2}
+          onMouseEnter={() => onMouseEnter(area)}
+          onMouseLeave={() => onMouseLeave()}
+          onTouchStart={(e) => handleTouchStart(area, e)}
+          onTouchEnd={(e) => handleTouchEnd(e)}
+          onTouchMove={(e) => handleTouchMove(e)}
+          onTouchCancel={onTouchCancel}
+        >
+          <ImagesContainer $isActive={scrollArea === area || hoveredTab === area}
+            ref={imageRefs.current[i]}>
+            {
+              renderProjectImages(projects, category,
+                scrollArea === i, onProjectSelected)
+            }
+          </ImagesContainer>
+
+          { !isLastColumn && <VerticalLine /> }
+          
+        </ImagesColumn>
+      )
+    })
   }
 
   return (
@@ -405,7 +434,7 @@ export const DesktopPage: React.FC = observer(() => {
                   </FirstLineWrapper>
 
                   <CollegeText>
-                      Royal College of Art, 2024
+                    Royal College of Art, 2024
                   </CollegeText>
 
                   <SecondLineWrapper>
@@ -422,65 +451,7 @@ export const DesktopPage: React.FC = observer(() => {
           }
         </MiddleSection>
 
-        <ImagesColumn className="images-column-0"
-          // bottom moving section
-          ref={imageContainerRef0}
-          $column={2}
-          onMouseEnter={() => onMouseEnter(0)}
-          onMouseLeave={() => onMouseLeave()}
-          onTouchStart={(e) => handleTouchStart(0, e)}
-          onTouchEnd={(e) => handleTouchEnd(e)}
-          onTouchMove={(e) => handleTouchMove(e)}
-          onTouchCancel={onTouchCancel}
-        >
-          <ImagesContainer $isActive={scrollArea === 0 || hoveredTab === 0}
-            // Moving images section inside the bottom section
-            ref={imageRef0}
-          >
-            {
-              renderProjectImages(projects, "designer",
-                isColumnActive("designer"), onProjectSelected)
-            }
-          </ImagesContainer>
-
-          <VerticalLine />
-        </ImagesColumn>
-
-        <ImagesColumn className="images-column-1" ref={imageContainerRef1}
-          $column={3}
-          onMouseEnter={() => onMouseEnter(1)}
-          onMouseLeave={() => onMouseLeave()}
-          onTouchStart={(e) => handleTouchStart(1, e)}
-          onTouchEnd={(e) => handleTouchEnd(e)}
-          onTouchMove={(e) => handleTouchMove(e)}
-          onTouchCancel={onTouchCancel}
-        >
-
-          <ImagesContainer $isActive={scrollArea === 1 || hoveredTab === 1} ref={imageRef1} >
-            {
-              renderProjectImages(projects, "artist", isColumnActive("artist"), onProjectSelected)
-            }
-          </ImagesContainer>
-
-          <VerticalLine />
-
-        </ImagesColumn>
-
-        <ImagesColumn className="images-column-2" ref={imageContainerRef2}
-          $column={4}
-          onMouseEnter={() => onMouseEnter(2)}
-          onMouseLeave={() => onMouseLeave()}
-          onTouchStart={(e) => handleTouchStart(2, e)}
-          onTouchEnd={(e) => handleTouchEnd(e)}
-          onTouchMove={(e) => handleTouchMove(e)}
-          onTouchCancel={onTouchCancel}
-        >
-          <ImagesContainer $isActive={scrollArea === 2 || hoveredTab === 2} ref={imageRef2} >
-            {
-              renderProjectImages(projects, "illustrator", isColumnActive("illustrator"), onProjectSelected)
-            }
-          </ImagesContainer>
-        </ImagesColumn>
+        {renderProjectCategories()}
 
       </MainGridStyled>
 
