@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { createRef, useRef, useState } from "react";
 import styled from "styled-components";
 import OrSegalSvg from "../assets/orSegal.svg?react";
 import MainImagePng from "../images/MainPicture.png";
@@ -248,15 +248,8 @@ export const DesktopPage: React.FC = observer(() => {
   const [selectedProject, setSelectedProject] = useState<string | undefined>(undefined);
   const [hoveredTab, setHoveredTab] = useState<number | undefined>(undefined);
   const middledRef = useRef<HTMLDivElement>(null);
-  const imageRef0 = useRef<HTMLDivElement>(null);
-  const imageRef1 = useRef<HTMLDivElement>(null);
-  const imageRef2 = useRef<HTMLDivElement>(null);
-  const imageContainerRef0 = useRef<HTMLDivElement>(null);
-  const imageContainerRef1 = useRef<HTMLDivElement>(null);
-  const imageContainerRef2 = useRef<HTMLDivElement>(null);
-  const imageRefs = useRef([imageRef0, imageRef1, imageRef2]);
-  const imageContainerRefs = useRef([imageContainerRef0, imageContainerRef1, imageContainerRef2]);
-
+  const imageColumnRefs = useRef(categories.map(() => createRef<HTMLDivElement>()));
+  const imageContainerRefs = useRef(categories.map(() => createRef<HTMLDivElement>()));
   const projects = projectsStore.projects;
 
   const { onMouseEnter, onMouseLeave, scrollArea,
@@ -264,8 +257,8 @@ export const DesktopPage: React.FC = observer(() => {
     onTouchMove, onTouchCancel, onResetScrolls } = useImageScrolling(
       {
         middledRef,
-        imageContainerRefs,
-        imageRefs,
+        imageColumnRefs,
+        imageContainerRefs
       }
     );
 
@@ -305,7 +298,7 @@ export const DesktopPage: React.FC = observer(() => {
 
       return (
         <ImagesColumn className={key} key={key}
-          ref={imageContainerRefs.current[i]}
+          ref={imageColumnRefs.current[i]}
           $column={i + 2}
           onMouseEnter={() => onMouseEnter(area)}
           onMouseLeave={() => onMouseLeave()}
@@ -315,7 +308,7 @@ export const DesktopPage: React.FC = observer(() => {
           onTouchCancel={onTouchCancel}
         >
           <ImagesContainer $isActive={scrollArea === area || hoveredTab === area}
-            ref={imageRefs.current[i]}>
+            ref={imageContainerRefs.current[i]}>
             {
               renderProjectImages(projects, category, onProjectSelected)
             }

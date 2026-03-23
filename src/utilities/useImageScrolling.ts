@@ -33,8 +33,8 @@ type ActiveScrollTarget = "main" | "images";
 
 interface ImageScrollingProps {
   middledRef: React.RefObject<HTMLDivElement | null>;
+  imageColumnRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
   imageContainerRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
-  imageRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
 }
 
 /**
@@ -67,7 +67,7 @@ type StateKey = (typeof SCROLL_STATE)[keyof typeof SCROLL_STATE];
 const USE_PARTIAL_SCROLL = true;
 
 export const useImageScrolling = (props: ImageScrollingProps) => {
-  const { imageRefs, imageContainerRefs, middledRef } = props;
+  const { imageContainerRefs: imageRefs, imageColumnRefs: imageContainerRefs, middledRef } = props;
   const [hoveredArea, setHoveredArea] = useState<ScrollAreaType>(undefined);
   const [middleSectionHeight, setMiddleSectionHeight] = useState(0);
 
