@@ -33,8 +33,10 @@ type ActiveScrollTarget = "main" | "images";
 
 interface ImageScrollingProps {
   middledRef: React.RefObject<HTMLDivElement | null>;
+  // ref to the column with the images (moves with the middle section)
+  imageColumnRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
+  // ref to the inner column with the images (moves when scrolling inside the image column)
   imageContainerRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
-  imageRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
 }
 
 /**
@@ -67,7 +69,7 @@ type StateKey = (typeof SCROLL_STATE)[keyof typeof SCROLL_STATE];
 const USE_PARTIAL_SCROLL = true;
 
 export const useImageScrolling = (props: ImageScrollingProps) => {
-  const { imageRefs, imageContainerRefs, middledRef } = props;
+  const { imageColumnRefs, imageContainerRefs, middledRef } = props;
   const [hoveredArea, setHoveredArea] = useState<ScrollAreaType>(undefined);
   const [middleSectionHeight, setMiddleSectionHeight] = useState(0);
 
@@ -115,18 +117,18 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
 
     middledRef.current.style.transform = `translateY(${mainScrollValueRef.current}px)`;
 
-    imageContainerRefs.current.forEach((containerRef) => {
+    imageColumnRefs.current.forEach((containerRef) => {
       if (!containerRef.current) return;
       containerRef.current.style.transform = `translateY(${mainScrollValueRef.current}px)`;
     });
 
-    imageRefs.current.forEach((imageRef, index) => {
+    imageContainerRefs.current.forEach((imageRef, index) => {
       const imageScrollValue = imageScrollValuesRef.current[index];
       if (!imageRef.current || imageScrollValue === undefined) return;
 
       imageRef.current.style.transform = `translateY(${imageScrollValue}px)`;
     });
-  }, [imageContainerRefs, imageRefs, middledRef]);
+  }, [imageColumnRefs, imageContainerRefs, middledRef]);
 
   /**
    * Initialize scroll values from MobX store
@@ -142,7 +144,8 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       projectsStore.setImageScrollValues(imageScrollValuesRef.current);
     };
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // intentional: run only on mount/unmount
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /**
@@ -177,8 +180,8 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       }
     }
 
-    for (let index = 0; index < imageContainerRefs.current.length; index++) {
-      const containerRef = imageContainerRefs.current[index];
+    for (let index = 0; index < imageColumnRefs.current.length; index++) {
+      const containerRef = imageColumnRefs.current[index];
       if (!containerRef?.current) continue;
 
       const rect = containerRef.current.getBoundingClientRect();
@@ -188,14 +191,14 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
     }
 
     return undefined;
-  }, [imageContainerRefs, middledRef]);
+  }, [imageColumnRefs, middledRef]);
 
   /**
    * Prevents an image column from scrolling beyond its last image.
    */
   const getClampedImageScrollValue = useCallback(
     (columnIndex: number, proposedImageScrollValue: number, currentImageScrollValue: number) => {
-      const columnRef = imageRefs.current[columnIndex];
+      const columnRef = imageContainerRefs.current[columnIndex];
       if (!columnRef?.current) return currentImageScrollValue;
 
       const rect = columnRef.current.getBoundingClientRect();
@@ -213,7 +216,7 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
 
       return window.innerHeight - rect.bottom + currentImageScrollValue;
     },
-    [imageRefs]
+    [imageContainerRefs]
   );
 
   const scheduleDomUpdate = useCallback(() => {
