@@ -144,7 +144,8 @@ export const useImageScrolling = (props: ImageScrollingProps) => {
       projectsStore.setImageScrollValues(imageScrollValuesRef.current);
     };
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // intentional: run only on mount/unmount
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /**
