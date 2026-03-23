@@ -33,7 +33,9 @@ type ActiveScrollTarget = "main" | "images";
 
 interface ImageScrollingProps {
   middledRef: React.RefObject<HTMLDivElement | null>;
+  // ref to the column with the images (moves with the middle section)
   imageColumnRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
+  // ref to the inner column with the images (moves when scrolling inside the image column)
   imageContainerRefs: React.RefObject<React.RefObject<HTMLDivElement | null>[]>;
 }
 
