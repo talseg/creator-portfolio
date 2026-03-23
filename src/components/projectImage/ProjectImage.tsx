@@ -27,7 +27,7 @@ const ImageWrapper = styled.div`
   grid-column: 2;
   cursor: pointer;
 `
-const ProjectNameWrapper = styled(LabelText)<{ $isActive: boolean }>`
+const ProjectNameWrapper = styled(LabelText)`
   display: flex;
   width: 100%;
   justify-content: start;
@@ -35,65 +35,44 @@ const ProjectNameWrapper = styled(LabelText)<{ $isActive: boolean }>`
   grid-column: 2 / -1;
   position: relative;
   align-items: center;
-  color: ${({ $isActive }) => $isActive ? "black" : "#454545" };
+  color: black;
 `;
 
 const ImageStyled = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
-
 `
-
-const ColumnWrapper = styled.div`
-  display: flex;
-`;
-
-// const LeftImageDot = styled.div`
-//   width: 5px;
-//   height: 5px;
-//   background: black;
-//   border-radius: 50%;
-//   transform: translate(7px, -3px);
-//   z-index: 100;
-//   grid-column: 3;
-//   grid-row: 3; 
-//   position: relative;
-// `;
 
 const ProjectYearStyled = styled.span`
   padding: 0 0 0 0.8rem;
   font-style: normal;
 `;
-
 interface ProjectImageProps {
   project: Project;
-  isActive: boolean;
   className?: string;
   onProjectSelected?: (projectId: string) => undefined;
 }
 
-const ProjectImage: React.FC<ProjectImageProps> = ({ project, isActive, 
-  className, onProjectSelected
- }) => {
+const ProjectImage: React.FC<ProjectImageProps> = ({ project, className, onProjectSelected }) => {
 
   const url = project.projectImageUrl ? project.projectImageUrl : errorImage;
   return (
-    <ColumnWrapper 
+    <div style={{ display: "flex" }}
       onClick={() => onProjectSelected && onProjectSelected(project.id)}
       className={className + " image-column-wrapper"}>
+
       <Wrapper>
         <ImageWrapper><ImageStyled src={url} /></ImageWrapper>
-        <ProjectNameWrapper $isActive={isActive}>
+        <ProjectNameWrapper>
           <span>
-            {project.projectName} 
+            {project.projectName}
             {(project.projectYear !== 0) && <ProjectYearStyled>{project.projectYear}</ProjectYearStyled>}
           </span>
         </ProjectNameWrapper>
-        
       </Wrapper>
-      
-    </ColumnWrapper>
+
+    </div>
   )
 }
 

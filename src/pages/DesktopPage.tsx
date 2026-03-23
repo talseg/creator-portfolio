@@ -243,7 +243,6 @@ const SimpleDot = styled.div`
 `;
 
 
-
 export const DesktopPage: React.FC = observer(() => {
 
   const [selectedProject, setSelectedProject] = useState<string | undefined>(undefined);
@@ -297,45 +296,6 @@ export const DesktopPage: React.FC = observer(() => {
     onResetScrolls();
   }
 
-
-//   const renderProjectCategories1 = () => {
-//   return categories.map((category, i) => {
-//     const key = `images-column-${i}`;
-//     const isLastColumn = i === categories.length - 1;
-//     const isActive = scrollArea === categoryToIndex[category] || hoveredTab === categoryToIndex[category];
-
-//     return (
-//       <ImagesColumn
-//         className={key}
-//         key={key}
-//         ref={imageContainerRefs.current[i]}
-//         $column={i + 2}
-//         onMouseEnter={() => onMouseEnter(categoryToIndex[category])} // 🔴 changed
-//         onMouseLeave={() => onMouseLeave()}
-//         onTouchStart={(e) => handleTouchStart(categoryToIndex[category], e)} // 🔴 changed
-//         onTouchEnd={(e) => handleTouchEnd(e)}
-//         onTouchMove={(e) => handleTouchMove(e)}
-//         onTouchCancel={onTouchCancel}
-//       >
-//         <ImagesContainer
-//           $isActive={isActive} // 🔴 changed
-//           ref={imageRefs.current[i]}
-//         >
-//           {renderProjectImages(
-//             projects,
-//             category,
-//             scrollArea === categoryToIndex[category], // 🔴 changed
-//             onProjectSelected
-//           )}
-//         </ImagesContainer>
-
-//         {!isLastColumn && <VerticalLine />}
-//       </ImagesColumn>
-//     );
-//   });
-// };
-
-
   const renderProjectCategories = () => {
 
     return categories.map((category, i) => {
@@ -357,8 +317,7 @@ export const DesktopPage: React.FC = observer(() => {
           <ImagesContainer $isActive={scrollArea === area || hoveredTab === area}
             ref={imageRefs.current[i]}>
             {
-              renderProjectImages(projects, category,
-                scrollArea === i, onProjectSelected)
+              renderProjectImages(projects, category, onProjectSelected)
             }
           </ImagesContainer>
 
