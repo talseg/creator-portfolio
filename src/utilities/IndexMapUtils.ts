@@ -14,6 +14,8 @@ function validateCategoryMapping() {
   }
 }
 
+validateCategoryMapping();
+
 export const numberToScrollArea = (index: number): ScrollAreaType => {
   if (index < 0 || index >= categories.length) {
     throw new Error(`Invalid scroll area index: ${index}`);
@@ -21,4 +23,3 @@ export const numberToScrollArea = (index: number): ScrollAreaType => {
   return index as ScrollAreaType;
 };
 
-validateCategoryMapping();
