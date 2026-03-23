@@ -8,7 +8,7 @@ import { renderProjectImages } from "../utilities/projectUtils";
 import { projectsStore } from "../stores/projecrStore";
 import { observer } from "mobx-react-lite";
 import { ImbededProjectPage } from "./ImbededProjectPage";
-import { categoryToIndex } from "../utilities/categoryUtils";
+import { categoryToIndex, numberToScrollArea } from "../utilities/IndexMapUtils";
 import { categories, type CategoryType } from "../database/dbInterfaces";
 import LabelText from "../components/labeltext/LabelText";
 
@@ -297,10 +297,49 @@ export const DesktopPage: React.FC = observer(() => {
     onResetScrolls();
   }
 
+
+//   const renderProjectCategories1 = () => {
+//   return categories.map((category, i) => {
+//     const key = `images-column-${i}`;
+//     const isLastColumn = i === categories.length - 1;
+//     const isActive = scrollArea === categoryToIndex[category] || hoveredTab === categoryToIndex[category];
+
+//     return (
+//       <ImagesColumn
+//         className={key}
+//         key={key}
+//         ref={imageContainerRefs.current[i]}
+//         $column={i + 2}
+//         onMouseEnter={() => onMouseEnter(categoryToIndex[category])} // 🔴 changed
+//         onMouseLeave={() => onMouseLeave()}
+//         onTouchStart={(e) => handleTouchStart(categoryToIndex[category], e)} // 🔴 changed
+//         onTouchEnd={(e) => handleTouchEnd(e)}
+//         onTouchMove={(e) => handleTouchMove(e)}
+//         onTouchCancel={onTouchCancel}
+//       >
+//         <ImagesContainer
+//           $isActive={isActive} // 🔴 changed
+//           ref={imageRefs.current[i]}
+//         >
+//           {renderProjectImages(
+//             projects,
+//             category,
+//             scrollArea === categoryToIndex[category], // 🔴 changed
+//             onProjectSelected
+//           )}
+//         </ImagesContainer>
+
+//         {!isLastColumn && <VerticalLine />}
+//       </ImagesColumn>
+//     );
+//   });
+// };
+
+
   const renderProjectCategories = () => {
 
     return categories.map((category, i) => {
-      const area = i as ScrollAreaType;
+      const area = numberToScrollArea(i);
       const key = `images-column-${i}`;
       const isLastColumn = i === categories.length - 1;
 
