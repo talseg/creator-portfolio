@@ -165,6 +165,7 @@ const SimpleDot = styled.div`
   background: black;
   border-radius: 50%;
   transform: translate(2px, -3px);
+  justify-self: flex-end;
 `;
 
 const VersionStyled = styled(LabelText)`
@@ -226,7 +227,6 @@ export const DesktopPage: React.FC = observer(() => {
   }
 
   const renderProjectCategories = () => {
-
     return categories.map((category, i) => {
       const area = numberToScrollArea(i);
       const key = `images-column-${i}`;
@@ -257,6 +257,24 @@ export const DesktopPage: React.FC = observer(() => {
     })
   }
 
+  const renderCategoryTabs = () => {
+    return categories.map((category, i) => {
+      const isLastColumn = i === categories.length - 1;
+      return (
+        <HeaderBox onClick={() => removeSelectedProject()} key={`header-box-${category}`}
+          onMouseEnter={() => setHoveredTab(i)}
+          onMouseLeave={() => setHoveredTab(undefined)}
+        >
+          <HeaderTextBox $isActive={isColumnActive(category)}>
+            <HeaderTextStyled $isActive={isColumnActive(category)}>{category}</HeaderTextStyled>
+          </HeaderTextBox>
+
+          {!isLastColumn && <VerticalLine />}
+        </HeaderBox >
+      )
+    })
+  }
+
   return (
     <WrapperStyled>
 
@@ -274,45 +292,11 @@ export const DesktopPage: React.FC = observer(() => {
             </LogoBox>
           </HeaderBox>
 
-          <HeaderBox
-            onClick={() => removeSelectedProject()}
-            onMouseEnter={() => setHoveredTab(0)}
-            onMouseLeave={() => setHoveredTab(undefined)}
-          >
-            <HeaderTextBox $isActive={isColumnActive("designer")}>
-              <HeaderTextStyled $isActive={isColumnActive("designer")}>Designer</HeaderTextStyled>
-            </HeaderTextBox>
-            <VerticalLine />
-          </HeaderBox>
-
-          <HeaderBox onClick={() => removeSelectedProject()}
-            onMouseEnter={() => setHoveredTab(1)}
-            onMouseLeave={() => setHoveredTab(undefined)}
-          >
-            <HeaderTextBox $isActive={isColumnActive("artist")}>
-              <HeaderTextStyled $isActive={isColumnActive("artist")}>Artist</HeaderTextStyled>
-            </HeaderTextBox>
-            <VerticalLine />
-          </HeaderBox>
-
-          <HeaderBox onClick={() => removeSelectedProject()}
-            onMouseEnter={() => setHoveredTab(2)}
-            onMouseLeave={() => setHoveredTab(undefined)}
-          >
-            <HeaderTextBox $isActive={isColumnActive("illustrator")}>
-              <HeaderTextStyled $isActive={isColumnActive("illustrator")}>Illustrator</HeaderTextStyled>
-            </HeaderTextBox>
-          </HeaderBox>
+          {renderCategoryTabs()}
 
           <HorizontalLongLine></HorizontalLongLine>
-          <SimpleDot style={{
-            gridColumn: 2,
-            justifySelf: "flex-end"
-          }}></SimpleDot>
-          <SimpleDot style={{
-            gridColumn: 3,
-            justifySelf: "flex-end"
-          }}></SimpleDot>
+          <SimpleDot style={{ gridColumn: 2 }} />
+          <SimpleDot style={{ gridColumn: 3 }} />
 
         </HeaderRow>
 
@@ -329,7 +313,7 @@ export const DesktopPage: React.FC = observer(() => {
             selectedProject ?
               <ImbededProjectPage projectId={selectedProject} pageWidthVw={100} />
               :
-              <StaticInfoStyled />
+              <StaticInfoStyled height={"80vh"} />
           }
         </MiddleSection>
 

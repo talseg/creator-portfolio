@@ -90,9 +90,14 @@ const MainImage = styled.img`
   min-height: 0;
 `;
 
-export const DesktopStaticInfo: React.FC<{ className?: string }> = ({ className }) => 
+interface DesktopStaticInfoProps {
+  className?: string;
+  height: string;
+}
 
-    <MainImageWrapper className={`main-image-wrapper ${className}`}>
+export const DesktopStaticInfo: React.FC<DesktopStaticInfoProps> = ({ height, className }) => 
+
+    <MainImageWrapper style={{ height: `${height}`}} className={`main-image-wrapper ${className}`} >
 
       <MainInfoWrapper>
 
