@@ -39,12 +39,12 @@ const createMockProject: () => Project = () => {
     );
 }
 
-const ProjectImageTester: React.FC<{ project: Project, isActive: boolean }> = ({ project, isActive }) => {
+const ProjectImageTester: React.FC<{ project: Project, isActive: boolean }> = ({ project }) => {
     console.log(project);
     return (
         <MainWindow>
             <ImageColumn>
-                <ProjectImage project={project} isActive={isActive}/>
+                <ProjectImage project={project}/>
             </ImageColumn>
         </MainWindow>
     );
