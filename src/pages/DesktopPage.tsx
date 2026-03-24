@@ -3,13 +3,14 @@ import styled from "styled-components";
 import OrSegalSvg from "../assets/orSegal.svg?react";
 import MainImagePng from "../images/MainPicture.png";
 import StarSvg from "../assets/star.svg?react";
-import { useImageScrolling, type ScrollAreaType } from "../utilities/useImageScrolling";
+import { useImageScrolling, type ScrollAreaType } from "../scrolling/useImageScrolling";
 import { renderProjectImages } from "../utilities/projectUtils";
 import { projectsStore } from "../stores/projecrStore";
 import { observer } from "mobx-react-lite";
 import { ImbededProjectPage } from "./ImbededProjectPage";
 import { categoryToIndex, numberToScrollArea } from "../utilities/IndexMapUtils";
 import { categories, type CategoryType } from "../database/dbInterfaces";
+import pkg from '../../package.json';
 import LabelText from "../components/labeltext/LabelText";
 
 const WrapperStyled = styled.div`
@@ -60,7 +61,7 @@ const MainGridStyled = styled.div`
   font-size: 20px;
   width: 100%;
   grid-template-columns: 5.4fr 10fr 10fr 10fr;
-  grid-template-rows: 4.625rem auto auto;
+  grid-template-rows: 4.625rem auto;
   justify-items: center;
 
   overflow: hidden;
@@ -242,6 +243,13 @@ const SimpleDot = styled.div`
   transform: translate(2px, -3px);
 `;
 
+const VersionStyled = styled(LabelText)`
+  grid-row: 3;
+  align-self: end;
+  justify-self: start;
+  margin:  0 0 4px 14px;
+  font-size: 0.8rem;
+`
 
 export const DesktopPage: React.FC = observer(() => {
 
@@ -443,6 +451,8 @@ export const DesktopPage: React.FC = observer(() => {
         </MiddleSection>
 
         {renderProjectCategories()}
+
+        <VersionStyled>version:{pkg.version}</VersionStyled>
 
       </MainGridStyled>
 

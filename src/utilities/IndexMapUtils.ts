@@ -1,5 +1,5 @@
 import { categories, type CategoryType } from "../database/dbInterfaces";
-import type { ScrollAreaType } from "./useImageScrolling";
+import type { ScrollAreaType } from "../scrolling/useImageScrolling";
 
 export const categoryToIndex = {
   designer: categories.indexOf("designer"),
