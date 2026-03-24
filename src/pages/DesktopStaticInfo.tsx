@@ -3,10 +3,11 @@ import StarSvg from "../assets/star.svg?react";
 import MainImagePng from "../images/MainPicture.png";
 
 
-const MainImageWrapper = styled.div`
+const MainImageWrapper = styled.div<{ $height: string }>`
     display: grid;
     grid-template-columns: 25% auto 1fr; 
     grid-template-rows: 5fr 50fr 5fr;
+    height: ${({ $height }) => $height};
 `;
 
 const MainInfoWrapper = styled.div`
@@ -97,7 +98,7 @@ interface DesktopStaticInfoProps {
 
 export const DesktopStaticInfo: React.FC<DesktopStaticInfoProps> = ({ height, className }) => 
 
-    <MainImageWrapper style={{ height: `${height}`}} className={`main-image-wrapper ${className}`} >
+    <MainImageWrapper $height={height} className={`main-image-wrapper ${className}`} >
 
       <MainInfoWrapper>
 
