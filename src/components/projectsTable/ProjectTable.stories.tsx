@@ -2,6 +2,7 @@ import type { StoryObj } from '@storybook/react-vite';
 import type { Project, Image } from '../../database/dbInterfaces';
 import { useState } from 'react';
 import { ProjectTable } from './ProjectTable';
+import { ProjectTableProvider } from './ProjectTableContext';
 
 const getName = (index: number) => {
   switch (index) {
@@ -68,8 +69,13 @@ const ProjectTableTester: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>(createProjects(3));
 
   return (
-    <ProjectTable projects={projects} setProjects={setProjects}
-    />
+    <ProjectTableProvider 
+      projects={[]} 
+      updateProject={() => {}} 
+      setDirty={() => {}}>
+
+      <ProjectTable projects={projects} setProjects={setProjects}/>
+    </ProjectTableProvider>
   );
   
 }
