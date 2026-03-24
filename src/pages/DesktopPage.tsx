@@ -3,7 +3,7 @@ import styled from "styled-components";
 import OrSegalSvg from "../assets/orSegal.svg?react";
 import MainImagePng from "../images/MainPicture.png";
 import StarSvg from "../assets/star.svg?react";
-import { useImageScrolling, type ScrollAreaType } from "../utilities/useImageScrolling";
+import { useImageScrolling, type ScrollAreaType } from "../scrolling/useImageScrolling";
 import { renderProjectImages } from "../utilities/projectUtils";
 import { projectsStore } from "../stores/projecrStore";
 import { observer } from "mobx-react-lite";
