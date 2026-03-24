@@ -1,8 +1,6 @@
 import { createRef, useRef, useState } from "react";
 import styled from "styled-components";
 import OrSegalSvg from "../assets/orSegal.svg?react";
-import MainImagePng from "../images/MainPicture.png";
-import StarSvg from "../assets/star.svg?react";
 import { useImageScrolling, type ScrollAreaType } from "../scrolling/useImageScrolling";
 import { renderProjectImages } from "../utilities/projectUtils";
 import { projectsStore } from "../stores/projecrStore";
@@ -10,6 +8,7 @@ import { observer } from "mobx-react-lite";
 import { ImbededProjectPage } from "./ImbededProjectPage";
 import { categoryToIndex, numberToScrollArea } from "../utilities/IndexMapUtils";
 import { categories, type CategoryType } from "../database/dbInterfaces";
+import { DesktopStaticInfo } from "./DesktopStaticInfo";
 import pkg from '../../package.json';
 import LabelText from "../components/labeltext/LabelText";
 
@@ -128,81 +127,6 @@ const MiddleSection = styled.div`
   justify-self: end;
 `;
 
-const MainImageWrapper = styled.div`
-    height: 80vh;
-    display: grid;
-    width: 100%;
-    grid-template-columns: 25% auto 1fr; 
-    grid-template-rows: 5fr 50fr 5fr;
-    overflow: hidden;
-`;
-
-const MainImage = styled.img`
-  object-fit: cover;
-  justify-content: center;
-  grid-column: 2;
-  grid-row: 2;
-  height: 100%;
-  min-height: 0;
-`;
-
-const MainInfoWrapper = styled.div`
-  grid-row: 2;
-  grid-column: 3;
-  display: grid;
-  grid-template-rows: 2fr auto auto auto auto 1fr;
-  grid-template-columns: minmax(3.5rem, 15%) auto;
-  margin-right: 1.5rem;
-`;
-
-const IsMyBlock = styled.div`
-  width: 100%;
-  height: 100%;
-  grid-row: 2;
-  grid-column: 2;
-  font-family: "EditorSans";
-  font-size: 1.1rem;
-  font-weight: bold;
-  display: flex;
-`;
-
-const ProjectText = styled.div`
-  width: 100%;
-  height: 100%;
-  background-color: #ffffff01;
-  grid-row: 3;
-  grid-column: 2;
-  font-family: "EditorSans";
-  font-size: 1rem;
-  display: flex;
-  flex-direction: column;
-  max-height: 50vh;
-  overflow: hidden;
-`;
-
-const FirstLineWrapper = styled.div`
-  width: 100%;
-  grid-column: 1 / -1;
-  grid-row: 4;
-`;
-
-const CollegeText = styled.div`
-  height: 3rem;
-  background-color: #ffffff01;
-  grid-row: 4;
-  grid-column: 2;
-  font-family: "EditorSans";
-  font-size: 1.1rem;
-  display: flex;
-  align-items: center;
-`;
-
-const SecondLineWrapper = styled.div`
-  width: 100%;
-  grid-column: 1 / -1;
-  grid-row: 5;
-`;
-
 const ImagesContainer = styled.div<{ $isActive: boolean }>`
   display: flex;
   grid-column: 1;
@@ -241,6 +165,7 @@ const SimpleDot = styled.div`
   background: black;
   border-radius: 50%;
   transform: translate(2px, -3px);
+  justify-self: flex-end;
 `;
 
 const VersionStyled = styled(LabelText)`
@@ -250,6 +175,10 @@ const VersionStyled = styled(LabelText)`
   margin:  0 0 4px 14px;
   font-size: 0.8rem;
 `
+
+const StaticInfoStyled = styled(DesktopStaticInfo)`
+  height: 80vh;
+`;
 
 export const DesktopPage: React.FC = observer(() => {
 
@@ -298,7 +227,6 @@ export const DesktopPage: React.FC = observer(() => {
   }
 
   const renderProjectCategories = () => {
-
     return categories.map((category, i) => {
       const area = numberToScrollArea(i);
       const key = `images-column-${i}`;
@@ -322,9 +250,27 @@ export const DesktopPage: React.FC = observer(() => {
             }
           </ImagesContainer>
 
-          { !isLastColumn && <VerticalLine /> }
-          
+          {!isLastColumn && <VerticalLine />}
+
         </ImagesColumn>
+      )
+    })
+  }
+
+  const renderCategoryTabs = () => {
+    return categories.map((category, i) => {
+      const isLastColumn = i === categories.length - 1;
+      return (
+        <HeaderBox onClick={() => removeSelectedProject()} key={`header-box-${category}`}
+          onMouseEnter={() => setHoveredTab(i)}
+          onMouseLeave={() => setHoveredTab(undefined)}
+        >
+          <HeaderTextBox $isActive={isColumnActive(category)}>
+            <HeaderTextStyled $isActive={isColumnActive(category)}>{category}</HeaderTextStyled>
+          </HeaderTextBox>
+
+          {!isLastColumn && <VerticalLine />}
+        </HeaderBox >
       )
     })
   }
@@ -346,45 +292,11 @@ export const DesktopPage: React.FC = observer(() => {
             </LogoBox>
           </HeaderBox>
 
-          <HeaderBox
-            onClick={() => removeSelectedProject()}
-            onMouseEnter={() => setHoveredTab(0)}
-            onMouseLeave={() => setHoveredTab(undefined)}
-          >
-            <HeaderTextBox $isActive={isColumnActive("designer")}>
-              <HeaderTextStyled $isActive={isColumnActive("designer")}>Designer</HeaderTextStyled>
-            </HeaderTextBox>
-            <VerticalLine />
-          </HeaderBox>
-
-          <HeaderBox onClick={() => removeSelectedProject()}
-            onMouseEnter={() => setHoveredTab(1)}
-            onMouseLeave={() => setHoveredTab(undefined)}
-          >
-            <HeaderTextBox $isActive={isColumnActive("artist")}>
-              <HeaderTextStyled $isActive={isColumnActive("artist")}>Artist</HeaderTextStyled>
-            </HeaderTextBox>
-            <VerticalLine />
-          </HeaderBox>
-
-          <HeaderBox onClick={() => removeSelectedProject()}
-            onMouseEnter={() => setHoveredTab(2)}
-            onMouseLeave={() => setHoveredTab(undefined)}
-          >
-            <HeaderTextBox $isActive={isColumnActive("illustrator")}>
-              <HeaderTextStyled $isActive={isColumnActive("illustrator")}>Illustrator</HeaderTextStyled>
-            </HeaderTextBox>
-          </HeaderBox>
+          {renderCategoryTabs()}
 
           <HorizontalLongLine></HorizontalLongLine>
-          <SimpleDot style={{
-            gridColumn: 2,
-            justifySelf: "flex-end"
-          }}></SimpleDot>
-          <SimpleDot style={{
-            gridColumn: 3,
-            justifySelf: "flex-end"
-          }}></SimpleDot>
+          <SimpleDot style={{ gridColumn: 2 }} />
+          <SimpleDot style={{ gridColumn: 3 }} />
 
         </HeaderRow>
 
@@ -399,54 +311,9 @@ export const DesktopPage: React.FC = observer(() => {
           onTouchCancel={onTouchCancel}>
           {
             selectedProject ?
-              <ImbededProjectPage projectId={selectedProject} pageWidthVw={100} /> :
-              <MainImageWrapper className="main-image-wrapper">
-
-                <MainInfoWrapper>
-
-                  <div style={{ display: "flex", alignItems: "center", gridColumn: 1, gridRow: 2 }}>
-                    <HorizontalLongLine />
-                    <StarSvg style={{ marginTop: 2, paddingRight: "1rem" }} />
-                  </div>
-
-                  <IsMyBlock>
-                    Is My
-                  </IsMyBlock>
-
-                  <ProjectText>
-                    <p>
-                      IS MY is a project of wandering and research in cemeteries.
-                      In London I discovered that cemeteries are located within the city.
-                      People cycle through them, read on benches, and sometimes there
-                      are even cafés inside. Since I grew up with the Jewish perception that
-                      the cemetery is an impure place (where one must wash their hands upon leaving),
-                      I was fascinated by the perception of death as part of life.
-                    </p>
-                  </ProjectText>
-
-                  <FirstLineWrapper>
-
-                    <div style={{ display: "flex" }}>
-                      <HorizontalLongLine />
-                      <SimpleDot style={{ marginLeft: "-5px", marginTop: "1px" }} />
-                    </div>
-                  </FirstLineWrapper>
-
-                  <CollegeText>
-                    Royal College of Art, 2024
-                  </CollegeText>
-
-                  <SecondLineWrapper>
-                    <div style={{ display: "flex" }}>
-                      <HorizontalLongLine />
-                      <SimpleDot style={{ marginLeft: "-5px", marginTop: "1px" }} />
-                    </div>
-                  </SecondLineWrapper>
-                </MainInfoWrapper>
-
-                <MainImage src={MainImagePng} />
-
-              </MainImageWrapper>
+              <ImbededProjectPage projectId={selectedProject} pageWidthVw={100} />
+              :
+              <StaticInfoStyled height={"80vh"} />
           }
         </MiddleSection>
 
