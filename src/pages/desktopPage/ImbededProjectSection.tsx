@@ -1,9 +1,10 @@
+import StarSvg from "../../assets/star.svg?react";
 import { CircularProgress } from "@mui/material";
-import { projectsStore } from "../stores/projecrStore";
 import { observer } from "mobx-react-lite";
-import StarSvg from "../assets/star.svg?react";
+import { projectsStore } from "../../stores/projecrStore";
+import { ImageSwapper } from "../../components/imageSwapper/ImageSwapper";
 import styled from "styled-components";
-import { ImageSwapper } from "../components/imageSwapper/ImageSwapper";
+
 
 const PageWrapper = styled.div<{ $pageWidthVw: number }>`
   display: grid;
@@ -141,7 +142,7 @@ interface ImbededProjectPageProps {
   pageWidthVw: number;
 }
 
-export const ImbededProjectPage: React.FC<ImbededProjectPageProps> = observer(({ projectId, pageWidthVw }) => {
+export const ImbededProjectSection: React.FC<ImbededProjectPageProps> = observer(({ projectId, pageWidthVw }) => {
 
   const projects = projectsStore.projects;
   const project = projects.find((proj) => proj.id === projectId);

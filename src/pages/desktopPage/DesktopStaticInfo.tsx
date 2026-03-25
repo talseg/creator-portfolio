@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import StarSvg from "../assets/star.svg?react";
-import MainImagePng from "../images/MainPicture.png";
+import StarSvg from "../../assets/star.svg?react";
+import MainImagePng from "../../images/MainPicture.png";
 
 
 const MainImageWrapper = styled.div<{ $height: string }>`

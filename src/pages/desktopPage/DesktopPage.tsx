@@ -1,16 +1,16 @@
 import { createRef, useRef, useState } from "react";
+import pkg from '../../../package.json';
 import styled from "styled-components";
-import OrSegalSvg from "../assets/orSegal.svg?react";
-import { useImageScrolling, type ScrollAreaType } from "../scrolling/useImageScrolling";
-import { renderProjectImages } from "../utilities/projectUtils";
-import { projectsStore } from "../stores/projecrStore";
+import OrSegalSvg from "../../assets/orSegal.svg?react";
+import { useImageScrolling, type ScrollAreaType } from "../../scrolling/useImageScrolling";
+import { renderProjectImages } from "../../utilities/projectUtils";
+import { projectsStore } from "../../stores/projecrStore";
 import { observer } from "mobx-react-lite";
-import { ImbededProjectPage } from "./ImbededProjectPage";
-import { categoryToIndex, numberToScrollArea } from "../utilities/IndexMapUtils";
-import { categories, type CategoryType } from "../database/dbInterfaces";
+import { ImbededProjectSection } from "./ImbededProjectSection";
+import { categoryToIndex, numberToScrollArea } from "../../utilities/IndexMapUtils";
+import { categories, type CategoryType } from "../../database/dbInterfaces";
 import { DesktopStaticInfo } from "./DesktopStaticInfo";
-import pkg from '../../package.json';
-import LabelText from "../components/labeltext/LabelText";
+import LabelText from "../../components/labeltext/LabelText";
 
 const WrapperStyled = styled.div`
   display: flex;
@@ -311,7 +311,7 @@ export const DesktopPage: React.FC = observer(() => {
           onTouchCancel={onTouchCancel}>
           {
             selectedProject ?
-              <ImbededProjectPage projectId={selectedProject} pageWidthVw={100} />
+              <ImbededProjectSection projectId={selectedProject} pageWidthVw={100} />
               :
               <StaticInfoStyled height={"80vh"} />
           }

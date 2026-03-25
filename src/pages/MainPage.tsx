@@ -1,5 +1,5 @@
 //import { useEffect, useState } from "react";
-import { DesktopPage } from "./DesktopPage";
+import { DesktopPage } from "./desktopPage/DesktopPage";
 import { MobilePage } from "./MobilePage";
 
 export type InteractionMode = "desktop-columns" | "mobile-swipe";

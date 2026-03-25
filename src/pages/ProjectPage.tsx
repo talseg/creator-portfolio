@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 import { projectsStore } from "../stores/projecrStore";
 import { observer } from "mobx-react-lite";
-import { ImbededProjectPage } from "./ImbededProjectPage";
+import { ImbededProjectSection } from "./desktopPage/ImbededProjectSection";
 import styled from "styled-components";
 
 
@@ -19,6 +19,6 @@ export const ProjectPage: React.FC = observer(() => {
   const { projectId } = useParams<{ projectId: string }>();
   return (
     projectsStore.allLoaded ?
-    <ImbededProjectPage projectId={projectId} pageWidthVw={99}/> : <StyledSpinner />
+    <ImbededProjectSection projectId={projectId} pageWidthVw={99}/> : <StyledSpinner />
   );
 });
